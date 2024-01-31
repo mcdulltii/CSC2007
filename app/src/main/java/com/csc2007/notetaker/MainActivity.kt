@@ -1,58 +1,104 @@
 package com.csc2007.notetaker
 
+import android.net.Uri
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
-import com.csc2007.notetaker.databinding.ActivityMainBinding
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
+import com.csc2007.notetaker.camera.CameraCapture
+import com.csc2007.notetaker.gallery.GallerySelect
+import com.csc2007.notetaker.ui.ComposePhotoIntegrationTheme
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-class MainActivity : AppCompatActivity() {
-
-    private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var binding: ActivityMainBinding
-
+@ExperimentalCoilApi
+@ExperimentalCoroutinesApi
+@ExperimentalPermissionsApi
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        setSupportActionBar(binding.toolbar)
-
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        setContent {
+            ComposePhotoIntegrationTheme {
+                // A surface container using the 'background' color from the theme
+                Surface(color = MaterialTheme.colors.background) {
+                    MainContent(Modifier.fillMaxSize())
+                }
+            }
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
     }
 }
+
+@ExperimentalCoilApi
+@ExperimentalCoroutinesApi
+@ExperimentalPermissionsApi
+@Composable
+fun MainContent(modifier: Modifier = Modifier) {
+    var imageUri by remember { mutableStateOf(EMPTY_IMAGE_URI) }
+    if (imageUri != EMPTY_IMAGE_URI) {
+        Box(modifier = modifier) {
+            Image(
+                modifier = Modifier.fillMaxSize(),
+                painter = rememberImagePainter(imageUri),
+                contentDescription = "Captured image"
+            )
+            Button(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                onClick = {
+                    imageUri = EMPTY_IMAGE_URI
+                }
+            ) {
+                Text("Remove image")
+            }
+        }
+    } else {
+        var showGallerySelect by remember { mutableStateOf(false) }
+        if (showGallerySelect) {
+            GallerySelect(
+                modifier = modifier,
+                onImageUri = { uri ->
+                    showGallerySelect = false
+                    imageUri = uri
+                }
+            )
+        } else {
+            Box(modifier = modifier) {
+                CameraCapture(
+                    modifier = modifier,
+                    onImageFile = { file ->
+                        imageUri = file.toUri()
+                    }
+                )
+                Button(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(4.dp),
+                    onClick = {
+                        showGallerySelect = true
+                    }
+                ) {
+                    Text("Select from Gallery")
+                }
+            }
+        }
+    }
+}
+
+val EMPTY_IMAGE_URI: Uri = Uri.parse("file://dev/null")
