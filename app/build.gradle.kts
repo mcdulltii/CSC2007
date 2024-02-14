@@ -73,4 +73,16 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${compose_version}")
     debugImplementation("androidx.compose.ui:ui-tooling:${compose_version}")
+
+    // Material 3
+    implementation("androidx.compose.material3:material3:1.1.2")
+
+
+    // Navigation
+    val nav_version = "2.7.6"
+    implementation("androidx.navigation:navigation-compose:$nav_version")
+
+
+    // Icon Pack from Composable-Icon-Pack library
+    implementation("br.com.devsrsouza.compose.icons:font-awesome:1.1.0")
 }
