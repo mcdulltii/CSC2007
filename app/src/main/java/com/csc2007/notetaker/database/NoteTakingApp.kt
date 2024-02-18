@@ -5,7 +5,6 @@ import android.content.Context
 import com.csc2007.notetaker.database.repository.UsersRepository
 import kotlinx.coroutines.GlobalScope
 import androidx.datastore.preferences.preferencesDataStore
-import com.csc2007.notetaker.database.NoteTakingDatabase
 
 class NoteTakingApp : Application() {
 

@@ -26,14 +26,12 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.csc2007.notetaker.camera.CameraCapture
 import com.csc2007.notetaker.database.NoteTakingApp
-import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
 import com.csc2007.notetaker.gallery.GallerySelect
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.util.NavGraph
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 @ExperimentalCoilApi
 @ExperimentalCoroutinesApi
