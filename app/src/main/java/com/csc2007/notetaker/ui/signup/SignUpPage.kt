@@ -61,7 +61,7 @@ fun SignUpPage(
         modifier = modifier
     ) {
 
-        TopNavBar()
+        TopNavBar(navController = navController)
 
         Column(
             modifier = Modifier

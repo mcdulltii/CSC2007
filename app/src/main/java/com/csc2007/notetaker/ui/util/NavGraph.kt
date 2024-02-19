@@ -80,6 +80,7 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val confirmPassword = remember { mutableStateOf("") }
+    val loggedIn = remember { mutableStateOf<Boolean?>(false) }
 
     NavHost(
         navController = navController,
@@ -92,7 +93,7 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
 
         composable(Screens.LoginScreen.route) {
             val viewModel : UserViewModel = viewModel(factory = viewModelFactory)
-            LoginPage(viewModel = viewModel, navController = navController, email = email, password = password)
+            LoginPage(viewModel = viewModel, navController = navController, email = email, password = password, loggedIn = loggedIn)
         }
 
         composable(Screens.SignUpScreen.route) {

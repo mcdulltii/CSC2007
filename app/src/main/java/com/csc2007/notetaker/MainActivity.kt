@@ -45,7 +45,6 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-
             MainApp(viewModelFactory = viewModelFactory)
 //            ComposePhotoIntegrationTheme {
                 // A surface container using the 'background' color from the theme

@@ -6,12 +6,16 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.csc2007.notetaker.database.User
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
 
     @Query("SELECT * FROM user_table ORDER BY id ASC")
-    fun getUsers(): kotlinx.coroutines.flow.Flow<List<User>>
+    fun getUsers(): Flow<List<User>>
+
+    @Query("SELECT * FROM user_table WHERE email = :email  AND password = :password")
+    fun login(email: String, password: String): User
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(user: User)
