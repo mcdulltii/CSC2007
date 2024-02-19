@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -40,6 +41,15 @@ android {
         viewBinding = true
         compose = true
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.1"
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
 }
 
 dependencies {
@@ -52,11 +62,20 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("com.google.accompanist:accompanist-permissions:0.18.0")
-    implementation("io.coil-kt:coil-compose:1.3.2")
+    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
+    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // Room components
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation("androidx.datastore:datastore-core:1.0.0")
+    ksp("androidx.room:room-compiler:2.6.1")
+    androidTestImplementation("androidx.room:room-testing:2.6.1")
 
     val compose_version = "1.5.4"
     implementation("androidx.compose.ui:ui:${compose_version}")
-    implementation("androidx.compose.material:material:${compose_version}")
     implementation("androidx.compose.ui:ui-tooling-preview:${compose_version}")
 
     val camerax_version = "1.3.1"
@@ -73,4 +92,19 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${compose_version}")
     debugImplementation("androidx.compose.ui:ui-tooling:${compose_version}")
+
+    // Material 3
+    implementation("androidx.compose.material3:material3:1.1.2")
+
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+
+    // Navigation
+    val nav_version = "2.7.6"
+    implementation("androidx.navigation:navigation-compose:$nav_version")
+
+
+    // Icon Pack from Composable-Icon-Pack library
+    implementation("br.com.devsrsouza.compose.icons:font-awesome:1.1.0")
 }
