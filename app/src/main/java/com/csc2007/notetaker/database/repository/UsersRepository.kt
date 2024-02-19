@@ -6,7 +6,6 @@ import com.csc2007.notetaker.database.User
 import com.csc2007.notetaker.database.dao.UserDao
 import kotlinx.coroutines.flow.Flow
 import androidx.datastore.preferences.core.Preferences
-import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
