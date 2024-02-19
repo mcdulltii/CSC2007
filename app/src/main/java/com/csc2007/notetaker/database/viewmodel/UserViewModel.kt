@@ -10,6 +10,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.security.MessageDigest
+
+fun hashString(password: String): ByteArray {
+    val data = password.toByteArray()
+    val sha256 = MessageDigest.getInstance("SHA-256")
+    return sha256.digest(data)
+}
 
 class UserViewModel(private val repository: UsersRepository) : ViewModel() {
 
@@ -27,14 +34,17 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
             if (email.isEmpty() or password.isEmpty()) {
                 _loggedIn.value = false
             } else {
-                val user = repository.login(email, password)
-                _loggedIn.value = user != null && user.password == password
+                val user = repository.login(email, hashString(password))
+                _loggedIn.value = user != null && user.password.contentEquals(hashString(password))
             }
         }
     }
 
-    fun insert(user: User) = viewModelScope.launch {
-        repository.insert(user)
+    fun register(email: String, username: String, password: String) {
+        viewModelScope.launch {
+            val user = User(email = email, userName = username, password = hashString(password))
+            repository.insert(user)
+        }
     }
 }
 

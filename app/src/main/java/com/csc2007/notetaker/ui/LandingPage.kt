@@ -47,7 +47,7 @@ fun LandingPage(
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
             modifier = Modifier.width(380.dp)) {
             Text(
-                text = "Sign Up",
+                text = "Register",
                 color = MaterialTheme.colorScheme.onSecondary)
         }
     }

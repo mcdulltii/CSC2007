@@ -1,6 +1,5 @@
 package com.csc2007.notetaker.ui.login
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -57,7 +56,7 @@ fun LoginPage(
 
     if (loggedInState == true) {
         loggedIn.value = loggedInState
-        navController.navigate("modules_screen")
+        navController.navigate("camera_screen")
     }
 
     Column(modifier = modifier) {
@@ -80,7 +79,7 @@ fun LoginPage(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Login Here Now",
+                    text = "Sign In",
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp,
                     modifier = Modifier.align(Alignment.Start))

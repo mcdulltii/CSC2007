@@ -1,4 +1,4 @@
-package com.csc2007.notetaker.gallery
+package com.csc2007.notetaker.ui.gallery
 
 import android.Manifest
 import android.content.Intent
@@ -19,8 +19,8 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.csc2007.notetaker.EMPTY_IMAGE_URI
-import com.csc2007.notetaker.util.Permission
+import com.csc2007.notetaker.ui.camera.EMPTY_IMAGE_URI
+import com.csc2007.notetaker.ui.util.Permission
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 @ExperimentalPermissionsApi

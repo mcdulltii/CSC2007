@@ -1,4 +1,4 @@
-package com.csc2007.notetaker.util
+package com.csc2007.notetaker.ui.util
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button

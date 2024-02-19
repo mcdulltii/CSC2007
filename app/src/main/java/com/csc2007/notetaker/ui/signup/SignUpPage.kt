@@ -1,5 +1,6 @@
 package com.csc2007.notetaker.ui.signup
 
+import android.util.Patterns.EMAIL_ADDRESS
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,10 +37,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.csc2007.notetaker.R
-import com.csc2007.notetaker.database.User
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.TopNavBar
+import kotlinx.coroutines.delay
 
 @Composable
 fun SignUpPage(
@@ -55,7 +57,7 @@ fun SignUpPage(
         Font(R.font.ibm_plex_mono_bold, FontWeight.Bold)
     )
     
-    var result by remember { mutableStateOf<Boolean?>(null) }
+    var result by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = modifier
@@ -82,7 +84,7 @@ fun SignUpPage(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Create New Account",
+                    text = "Sign Up",
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp,
                     modifier = Modifier.align(Alignment.Start))
@@ -117,9 +119,12 @@ fun SignUpPage(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Button(onClick = {
-                    result = RegisterUser(email, username, password, confirmPassword, viewModel)
-                }) {
+                Button(
+                    onClick = {
+                        result = RegisterUser(email, username, password, confirmPassword, viewModel)
+                    },
+                    enabled = email.value.isNotBlank() && username.value.isNotBlank() && password.value.isNotBlank() && confirmPassword.value.isNotBlank()
+                ) {
                     Text(text = "Register")
                 }
 
@@ -140,10 +145,12 @@ fun SignUpPage(
                 }
 
                 if (result != null) {
-                    if (result == false) {
-                        ShowFailedSnackbar()
-                    } else {
-                        ShowPassedSnackbar()
+                    ShowSnackbar(result!!)
+                    if (result!!.contains("Success")) {
+                        LaunchedEffect(Unit) {
+                            delay(1000)
+                            navController.navigate("login_screen")
+                        }
                     }
                 }
             }
@@ -152,22 +159,12 @@ fun SignUpPage(
 }
 
 @Composable
-private fun ShowFailedSnackbar() {
+private fun ShowSnackbar(msg: String) {
     Snackbar(
         modifier = Modifier
             .padding(8.dp)
     ) {
-        Text(text = "Failed to create user account")
-    }
-}
-
-@Composable
-private fun ShowPassedSnackbar() {
-    Snackbar(
-        modifier = Modifier
-            .padding(8.dp)
-    ) {
-        Text(text = "Successfully created user account")
+        Text(text = msg)
     }
 }
 
@@ -176,20 +173,23 @@ private fun RegisterUser(
     username: MutableState<String>,
     password: MutableState<String>,
     confirmPassword: MutableState<String>,
-    viewModel: UserViewModel) : Boolean {
+    viewModel: UserViewModel) : String {
 
     if (email.value.isEmpty() or username.value.isEmpty() or password.value.isEmpty() or confirmPassword.value.isEmpty()) {
-        return false
+        return "Invalid input"
+    }
+
+    if (!EMAIL_ADDRESS.matcher(email.value).matches()) {
+        return "Invalid email address"
     }
 
     if (password.value != confirmPassword.value) {
-        return false
+        return "Password mismatch"
     }
 
-    val newUser = User(email = email.value, userName = username.value, password = password.value)
-    viewModel.insert(newUser)
+    viewModel.register(email.value, username.value, password.value)
 
-    return true
+    return "Successfully created user account"
 }
 
 

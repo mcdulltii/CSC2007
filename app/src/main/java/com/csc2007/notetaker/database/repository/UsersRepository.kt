@@ -2,11 +2,11 @@ package com.csc2007.notetaker.database.repository
 
 import androidx.annotation.WorkerThread
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.csc2007.notetaker.database.User
 import com.csc2007.notetaker.database.dao.UserDao
-import kotlinx.coroutines.flow.Flow
-import androidx.datastore.preferences.core.Preferences
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class UsersRepository(private val userDao: UserDao, private val dataStore: DataStore<Preferences>) {
@@ -15,7 +15,7 @@ class UsersRepository(private val userDao: UserDao, private val dataStore: DataS
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun login(email: String, password: String): User {
+    suspend fun login(email: String, password: ByteArray): User {
         return withContext(Dispatchers.IO) {
             userDao.login(email, password)
         }

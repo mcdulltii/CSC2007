@@ -1,4 +1,4 @@
-package com.csc2007.notetaker.camera
+package com.csc2007.notetaker.ui.camera
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource

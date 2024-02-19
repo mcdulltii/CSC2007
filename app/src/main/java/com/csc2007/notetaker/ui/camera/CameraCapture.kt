@@ -1,4 +1,4 @@
-package com.csc2007.notetaker.camera
+package com.csc2007.notetaker.ui.camera
 
 import android.Manifest
 import android.content.Intent
@@ -31,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
-import com.csc2007.notetaker.util.Permission
+import com.csc2007.notetaker.ui.util.Permission
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
