@@ -1,43 +1,39 @@
 package com.csc2007.notetaker.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ChatBubbleOutline
-import androidx.compose.material.icons.filled.MenuBook
-import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.csc2007.notetaker.ui.util.Screens
 
 
 @Composable
@@ -93,105 +89,50 @@ fun TopNavBarText(navController: NavController = rememberNavController(), title:
 }
 
 @Composable
-fun BottomNavBar() {
+fun BottomNavBar(
+    navController: NavController = rememberNavController(),
+    state: MutableState<Boolean> = mutableStateOf(false),
+    modifier: Modifier = Modifier
+) {
+    val screens = listOf(
+        Screens.ModulesScreen, Screens.ChatScreen, Screens.PomodoroScreen, Screens.AvatarScreen, Screens.SettingsScreen
+    )
+
     BottomAppBar {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                Icons.Default.MenuBook,
-                contentDescription = "Notes Icon",
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(color = MaterialTheme.colorScheme.secondaryContainer)
-                    .padding(horizontal = 19.dp, vertical = 4.dp))
-            Text(
-                text = "Notes",
-                fontSize = 12.sp,
-                lineHeight = 16.sp,
-                letterSpacing = 0.5.sp,
-                fontWeight = FontWeight.Bold
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+
+        screens.forEach { screen ->
+            NavigationBarItem(
+                label = {
+                    Text(
+                        text = screen.title!!,
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                },
+                icon = {
+                    screen.icon?.let { icon ->
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = "",
+                            modifier = Modifier.size(24.dp) // Adjust the size of the icon here
+                        )
+                    }
+                },
+                selected = currentRoute == screen.route,
+                onClick = {
+                    navController.navigate(screen.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    unselectedTextColor = Color.Black, selectedTextColor = Color.Black
+                ),
             )
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                Icons.Default.ChatBubbleOutline,
-                contentDescription = "Chat Icon",
-                modifier = Modifier
-                    .padding(vertical = 4.dp ))
-            Text(
-                text = "Chat",
-                fontSize = 12.sp,
-                lineHeight = 16.sp,
-                letterSpacing = 0.5.sp,
-                fontWeight = FontWeight.Bold)
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                Icons.Default.AccessTime,
-                contentDescription = "Pomodoro Icon",
-                modifier = Modifier
-                    .padding(vertical = 4.dp ))
-            Text(
-                text = "Pomodoro",
-                fontSize = 12.sp,
-                lineHeight = 16.sp,
-                letterSpacing = 0.5.sp,
-                fontWeight = FontWeight.Bold)
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                Icons.Default.PersonOutline,
-                contentDescription = "Profile Icon",
-                modifier = Modifier
-                    .padding(vertical = 4.dp ))
-            Text(
-                text = "Avatar",
-                fontSize = 12.sp,
-                lineHeight = 16.sp,
-                letterSpacing = 0.5.sp,
-                fontWeight = FontWeight.Bold)
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                Icons.Default.Settings,
-                contentDescription = "Settings Icon",
-                modifier = Modifier
-                    .padding(vertical = 4.dp ))
-            Text(
-                text = "Settings",
-                fontSize = 12.sp,
-                lineHeight = 16.sp,
-                letterSpacing = 0.5.sp,
-                fontWeight = FontWeight.Bold)
         }
     }
 }

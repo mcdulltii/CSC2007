@@ -99,9 +99,7 @@ fun PomodoroSettingsPage(
 
         Spacer(modifier = Modifier.weight(1f))
 
-
-        BottomNavBar()
-
+        BottomNavBar(navController = navController)
     }
 }
 
