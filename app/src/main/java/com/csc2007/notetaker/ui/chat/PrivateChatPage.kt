@@ -211,7 +211,10 @@ fun messageRow(message: Message, myUserId: Int, navController: NavHostController
             {
                 ImageBubble(drawableId = message.imageContent, navController = navController)
             }
-            TextBubble(text = message.content, sender = message.senderId, myUserId = myUserId)
+            if(message.content != null)
+            {
+                TextBubble(text = message.content, sender = message.senderId, myUserId = myUserId)
+            }
         }
 
     }
@@ -283,7 +286,7 @@ data class Message(
     val senderId: Int = 0,
     val from: Chatter = Chatter(id = 0,
         imgDrawable = R.drawable.kacie),
-    val content: String = "Hello!",
+    val content: String? = null,
     val imageContent: Int? = null
 // can add an image to the Message and render together
 )
