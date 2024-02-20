@@ -30,6 +30,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,8 +61,8 @@ fun TopNavBar(navController: NavController = rememberNavController()) {
 @Composable
 fun TopSearchBar() {
 
-    val search = remember { mutableStateOf("") }
-    val isActive = remember { mutableStateOf(false) }
+    val search = rememberSaveable { mutableStateOf("") }
+    val isActive = rememberSaveable { mutableStateOf(false) }
 
     Row {
         SearchBar(

@@ -3,6 +3,10 @@ package com.csc2007.notetaker.ui.util
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.ChatBubbleOutline
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +35,7 @@ import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
 import com.csc2007.notetaker.ui.LandingPage
 import com.csc2007.notetaker.ui.avatar.AvatarPage
 import com.csc2007.notetaker.ui.camera.CameraPage
+import com.csc2007.notetaker.ui.chat.ChatPage
 import com.csc2007.notetaker.ui.individual_note.IndividualNotePage
 import com.csc2007.notetaker.ui.login.LoginPage
 import com.csc2007.notetaker.ui.modules.ModulesPage
@@ -55,7 +60,7 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
     object CameraScreen: Screens(route = "camera_screen")
 
     object NotesScreen :
-        Screens(route = "notes_screen", icon = FontAwesomeIcons.Regular.StickyNote, title = "Notes")
+        Screens(route = "notes_screen", icon = Icons.Default.MenuBook, title = "Notes")
 
     object ModulesScreen :
         Screens(route = "modules_screen", icon = FontAwesomeIcons.Regular.StickyNote, title = "Modules")
@@ -64,13 +69,13 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
         Screens(route = "individual_note_screen", icon = FontAwesomeIcons.Regular.StickyNote, title = "IndividualNote")
 
     object ChatScreen :
-        Screens(route = "chat_screen", icon = FontAwesomeIcons.Regular.CommentDots, title = "Chat")
+        Screens(route = "chat_screen", icon = Icons.Default.ChatBubbleOutline, title = "Chat")
 
     object PomodoroScreen :
-        Screens(route = "pomodoro_screen", icon = FontAwesomeIcons.Regular.TimesCircle, title = "Pomodoro")
+        Screens(route = "pomodoro_screen", icon = Icons.Default.AccessTime, title = "Pomodoro")
 
     object AvatarScreen :
-        Screens(route = "avatar_screen", icon = FontAwesomeIcons.Regular.User, title = "Avatar")
+        Screens(route = "avatar_screen", icon = Icons.Default.PersonOutline, title = "Avatar")
 
     object SettingsScreen :
         Screens(route = "avatar_screen", icon = Icons.Default.Settings, title = "Settings")
@@ -112,12 +117,16 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
             CameraPage(navController = navController)
         }
 
+
         composable(Screens.ModulesScreen.route) {
             ModulesPage(navController = navController)
         }
+
         composable(Screens.ChatScreen.route) {
-            NotesPage(navController = navController)
+            val viewModel : UserViewModel = viewModel(factory = viewModelFactory)
+            ChatPage(navController = navController, viewModel = viewModel)
         }
+
         composable(Screens.PomodoroScreen.route) {
             IndividualNotePage(navController = navController)
         }
@@ -132,7 +141,7 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
 
 @Composable
 fun BottomBar(
-    navController: NavHostController, state: MutableState<Boolean>, modifier: Modifier = Modifier
+    navController: NavHostController, modifier: Modifier = Modifier
 ) {
     val screens = listOf(
         Screens.ModulesScreen, Screens.ChatScreen, Screens.PomodoroScreen, Screens.AvatarScreen, Screens.SettingsScreen

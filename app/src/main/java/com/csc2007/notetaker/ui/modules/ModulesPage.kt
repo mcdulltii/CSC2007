@@ -54,6 +54,7 @@ import com.csc2007.notetaker.R
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.TopSearchBar
+import com.csc2007.notetaker.ui.colors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -148,7 +149,7 @@ fun Module(moduleName: String, lastEdited: String) {
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(color = MaterialTheme.colorScheme.primary),
+                    .background(color = colors.primaryColor),
                 contentAlignment = Alignment.Center
             ) {
                 Text(

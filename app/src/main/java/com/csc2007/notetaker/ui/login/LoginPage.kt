@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Snackbar
@@ -37,6 +38,8 @@ import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.TopNavBar
+import com.csc2007.notetaker.ui.colors
+import com.csc2007.notetaker.ui.util.Screens
 
 @Composable
 fun LoginPage(
@@ -56,7 +59,7 @@ fun LoginPage(
 
     if (loggedInState == true) {
         loggedIn.value = loggedInState
-        navController.navigate("modules_screen")
+        navController.navigate(Screens.ChatScreen.route)
     }
 
     Column(modifier = modifier) {
@@ -103,7 +106,8 @@ fun LoginPage(
 
                 Button(onClick = {
                     viewModel.login(email.value, password.value)
-                }) {
+                },
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.primaryColor)) {
                     Text(text = "Login")
                 }
 
