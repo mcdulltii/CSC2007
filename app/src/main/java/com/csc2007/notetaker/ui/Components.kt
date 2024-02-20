@@ -83,9 +83,9 @@ fun TopSearchBar() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopNavBarText(navController: NavController = rememberNavController()) {
+fun TopNavBarText(navController: NavController = rememberNavController(), title: String) {
     TopAppBar(
-        title = { Text(text = "Add New Module") },
+        title = { Text(text = title) },
         navigationIcon = { IconButton(onClick = { /*TODO*/ }) {
             Icon(Icons.Filled.ArrowBack, contentDescription = "Back Arrow")
         } },
