@@ -134,8 +134,9 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
         composable("private_chat_screen")
         {
             val viewModel : UserViewModel = viewModel(factory = viewModelFactory)
-            PrivateChatPage(navController = navController, viewModel = viewModel, selected_chat = privateChat.value, userId = userId.value)
+            PrivateChatPage(navController = navController, viewModel = viewModel, selected_chatter = privateChat.value, userId = userId.value)
         }
+
         composable(Screens.PomodoroScreen.route) {
             IndividualNotePage(navController = navController)
         }
