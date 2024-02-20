@@ -15,7 +15,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,25 +29,24 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.annotation.ExperimentalCoilApi
+import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
 import com.csc2007.notetaker.ui.LandingPage
 import com.csc2007.notetaker.ui.avatar.AvatarPage
 import com.csc2007.notetaker.ui.camera.CameraPage
 import com.csc2007.notetaker.ui.chat.ChatPage
+import com.csc2007.notetaker.ui.chat.Chatter
+import com.csc2007.notetaker.ui.chat.PrivateChatPage
 import com.csc2007.notetaker.ui.individual_note.IndividualNotePage
 import com.csc2007.notetaker.ui.login.LoginPage
 import com.csc2007.notetaker.ui.modules.ModulesPage
-import com.csc2007.notetaker.ui.note.NotesPage
 import com.csc2007.notetaker.ui.settings.SettingsPage
 import com.csc2007.notetaker.ui.signup.SignUpPage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
-import compose.icons.fontawesomeicons.regular.CommentDots
 import compose.icons.fontawesomeicons.regular.StickyNote
-import compose.icons.fontawesomeicons.regular.TimesCircle
-import compose.icons.fontawesomeicons.regular.User
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 
@@ -88,12 +86,18 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
 @Composable
 fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFactory) {
 
+    val userId = remember{ mutableStateOf(-1)}
     val userName = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val confirmPassword = remember { mutableStateOf("") }
     val loggedIn = remember { mutableStateOf<Boolean?>(false) }
-
+    val privateChat = remember{ mutableStateOf<Chatter>(
+        Chatter(id = 999,
+        userName = "Kacie",
+        lastSentTo = "Sandra Adams",
+        latestText = " - It’s the one week of the year in which you get the chance to take…",
+        imgDrawable = R.drawable.kacie),)}
     NavHost(
         navController = navController,
         startDestination = Screens.LandingScreen.route
@@ -105,7 +109,7 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
 
         composable(Screens.LoginScreen.route) {
             val viewModel : UserViewModel = viewModel(factory = viewModelFactory)
-            LoginPage(viewModel = viewModel, navController = navController, email = email, password = password, loggedIn = loggedIn)
+            LoginPage(viewModel = viewModel, navController = navController, email = email, password = password, loggedIn = loggedIn, userId = userId)
         }
 
         composable(Screens.SignUpScreen.route) {
@@ -124,9 +128,14 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
 
         composable(Screens.ChatScreen.route) {
             val viewModel : UserViewModel = viewModel(factory = viewModelFactory)
-            ChatPage(navController = navController, viewModel = viewModel)
+            ChatPage(navController = navController, viewModel = viewModel, select_chat = privateChat)
         }
 
+        composable("private_chat_screen")
+        {
+            val viewModel : UserViewModel = viewModel(factory = viewModelFactory)
+            PrivateChatPage(navController = navController, viewModel = viewModel, selected_chat = privateChat.value, userId = userId.value)
+        }
         composable(Screens.PomodoroScreen.route) {
             IndividualNotePage(navController = navController)
         }

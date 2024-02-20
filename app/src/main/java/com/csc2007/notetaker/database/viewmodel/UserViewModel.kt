@@ -23,6 +23,9 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
     private val _loggedIn = MutableStateFlow<Boolean?>(null)
     val loggedIn: StateFlow<Boolean?> = _loggedIn
 
+    private var _loggedInUserId = MutableStateFlow<Int?>(0)
+    var loggedInUserId: StateFlow<Int?> = _loggedInUserId
+
     val allUsers = repository.allUsers.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
@@ -35,7 +38,12 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
                 _loggedIn.value = false
             } else {
                 val user = repository.login(email, hashString(password))
-                _loggedIn.value = user != null && user.password.contentEquals(hashString(password))
+
+                val loggedIn = user != null && user.password.contentEquals(hashString(password))
+                _loggedIn.value = loggedIn
+                if (loggedIn) {
+                    _loggedInUserId.value = user.id // Store the user ID if logged in successfully
+                }
             }
         }
     }

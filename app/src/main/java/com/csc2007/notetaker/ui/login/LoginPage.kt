@@ -48,7 +48,8 @@ fun LoginPage(
     navController: NavController = rememberNavController(),
     email: MutableState<String> = mutableStateOf(""),
     password: MutableState<String> = mutableStateOf(""),
-    loggedIn: MutableState<Boolean?> = mutableStateOf(false)
+    loggedIn: MutableState<Boolean?> = mutableStateOf(false),
+    userId: MutableState<Int> = mutableStateOf(0)
 ) {
 
     val ibmPlexFamily = FontFamily(
@@ -56,9 +57,11 @@ fun LoginPage(
     )
 
     val loggedInState by viewModel.loggedIn.collectAsState()
+    val userIdState by viewModel.loggedInUserId.collectAsState()
 
     if (loggedInState == true) {
         loggedIn.value = loggedInState
+        userId.value = userIdState!!
         navController.navigate(Screens.ChatScreen.route)
     }
 

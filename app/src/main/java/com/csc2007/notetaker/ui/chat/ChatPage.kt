@@ -58,10 +58,14 @@ import com.csc2007.notetaker.ui.util.BottomBar
 
 @Composable
 fun ChatPage(navController: NavHostController,
-             viewModel: UserViewModel = viewModel()) {
+             viewModel: UserViewModel = viewModel(),
+             select_chat: MutableState<Chatter>)
+{
+    val searchQuery = rememberSaveable{mutableStateOf("")}
+    val searchIsActive = rememberSaveable{ mutableStateOf(false )}
 
 //    val users by viewModel.allUsers.collectAsState()
-    var sampleChatters = listOf(
+    val sampleChatters = listOf(
         Chatter(id = 0,
                 userName = "Kacie",
                 lastSentTo = "Sandra Adams",
@@ -98,10 +102,10 @@ fun ChatPage(navController: NavHostController,
             horizontalAlignment = Alignment.CenterHorizontally)
         {
             Spacer(modifier = Modifier.padding(6.dp))
-            TopSearchBar()
+            TopSearchBar(search = searchQuery, isActive = searchIsActive)
             Spacer(modifier = Modifier.padding(6.dp))
 
-            ChatList(chats = sampleChatters)
+            ChatList(chats = sampleChatters, navController = navController, select_chat = select_chat)
         }
         Column(verticalArrangement = Arrangement.Bottom)
         {
@@ -112,9 +116,13 @@ fun ChatPage(navController: NavHostController,
 }
 
 @Composable
-fun chatRow(chatter: Chatter)
+fun chatRow(chatter: Chatter, navController: NavHostController, select_chat: MutableState<Chatter>)
 {
-    Row(modifier = Modifier.padding(8.dp).clickable{/*TODO implement navigation to this specific chat*/})
+    Row(modifier = Modifier
+        .padding(8.dp)
+        .clickable {
+            select_chat.value = chatter
+            navController.navigate("private_chat_screen") })
     {
         Image(
         painter = painterResource(id = chatter.imgDrawable),
@@ -157,11 +165,11 @@ fun chatRow(chatter: Chatter)
 }
 
 @Composable
-fun ChatList(chats: List<Chatter>, modifier: Modifier = Modifier) {
+fun ChatList(chats: List<Chatter>, modifier: Modifier = Modifier, navController: NavHostController, select_chat: MutableState<Chatter>) {
     LazyColumn(
         modifier = Modifier.testTag("LazyColumn")){
         items(chats){
-                chat -> chatRow(chat)
+                chat -> chatRow(chat, navController, select_chat)
         }
     }
 }
