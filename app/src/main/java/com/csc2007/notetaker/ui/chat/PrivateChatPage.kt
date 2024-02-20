@@ -86,11 +86,12 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel =
             messageList(messages = sampleMessages, myUserId = userId, navController = navController)
         }
 
-        Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(16.dp))
+        Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(4.dp))
         {
 
             Spacer(Modifier.padding(8.dp))
 
+            // add logic checks for even if input is empty but theres an image/file attached to allow sending
             inputBar(label = "Text message", userInput = userInput, modifier = Modifier.weight(0.6f), messages = sampleMessages)
 
             Box(modifier = Modifier
