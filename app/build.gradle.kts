@@ -77,6 +77,7 @@ dependencies {
     val compose_version = "1.5.4"
     implementation("androidx.compose.ui:ui:${compose_version}")
     implementation("androidx.compose.ui:ui-tooling-preview:${compose_version}")
+    implementation("androidx.compose.material:material-icons-extended:$compose_version")
 
     val camerax_version = "1.3.1"
     implementation("androidx.camera:camera-core:${camerax_version}")

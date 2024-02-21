@@ -56,7 +56,7 @@ fun LoginPage(
 
     if (loggedInState == true) {
         loggedIn.value = loggedInState
-        navController.navigate("camera_screen")
+        navController.navigate("modules_screen")
     }
 
     Column(modifier = modifier) {
