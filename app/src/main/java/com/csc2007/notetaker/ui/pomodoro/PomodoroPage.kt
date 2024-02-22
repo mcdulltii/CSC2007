@@ -1,5 +1,6 @@
 package com.csc2007.notetaker.ui.pomodoro
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,8 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.csc2007.notetaker.database.viewmodel.PomodoroTimerViewModel
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.NoteTakerTheme
 
@@ -44,11 +45,16 @@ import com.csc2007.notetaker.ui.NoteTakerTheme
 @Composable
 fun PomodoroPage(
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    pomodoroTimerViewModel: PomodoroTimerViewModel = PomodoroTimerViewModel()
 ) {
 
-    var selectedMinute = remember { mutableStateOf("20") }
-    var selectedSecond = remember { mutableStateOf("00") }
+    var displayMinutes = pomodoroTimerViewModel.displayMinutes.collectAsState()
+    var displaySeconds = pomodoroTimerViewModel.displaySeconds.collectAsState()
+
+    var timerState = pomodoroTimerViewModel.timerState.collectAsState()
+
+    Log.d("PomodoroPage", "${timerState.value}")
 
     Column(
         modifier = modifier.fillMaxSize()) {
@@ -86,8 +92,8 @@ fun PomodoroPage(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         TextField(
-                            value = selectedMinute.value,
-                            onValueChange = { selectedMinute.value = it },
+                            value = displayMinutes.value.padStart(2, '0'),
+                            onValueChange = { },
                             textStyle = TextStyle(
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                                 fontSize = 57.sp,
@@ -109,8 +115,8 @@ fun PomodoroPage(
                             color = MaterialTheme.colorScheme.onPrimaryContainer)
 
                         TextField(
-                            value = selectedSecond.value,
-                            onValueChange = { selectedSecond.value = it },
+                            value = displaySeconds.value.padStart(2, '0'),
+                            onValueChange = { },
                             textStyle = TextStyle(
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                                 fontSize = 57.sp,
@@ -129,9 +135,27 @@ fun PomodoroPage(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     ElevatedButton(
-                        onClick = { /*TODO*/ },
+                        onClick = {
+                            if (!timerState.value) {
+                                pomodoroTimerViewModel.startTimer()
+                            } else {
+                                pomodoroTimerViewModel.pauseTimer()
+                            }
+                        },
                         modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                        Text(text = "Start")
+                        if (!timerState.value) {
+                            Text(text = "Start")
+                        } else {
+                            Text(text = "Pause")
+                        }
+                    }
+
+                    ElevatedButton(
+                        onClick = {
+                            pomodoroTimerViewModel.resetTimer()
+                        },
+                        modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                        Text(text = "Restart")
                     }
 
                 }

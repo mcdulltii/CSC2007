@@ -56,7 +56,7 @@ fun LoginPage(
 
     if (loggedInState == true) {
         loggedIn.value = loggedInState
-        navController.navigate("modules_screen")
+        navController.navigate("pomodoro_screen")
     }
 
     Column(modifier = modifier) {

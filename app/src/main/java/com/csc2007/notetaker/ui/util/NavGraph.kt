@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import coil.annotation.ExperimentalCoilApi
+import com.csc2007.notetaker.database.viewmodel.PomodoroTimerViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
 import com.csc2007.notetaker.ui.LandingPage
@@ -119,7 +120,8 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
         }
 
         composable(Screens.PomodoroScreen.route) {
-            PomodoroPage(navController = navController)
+            val pomodoroTimerViewModel : PomodoroTimerViewModel = PomodoroTimerViewModel()
+            PomodoroPage(navController = navController, pomodoroTimerViewModel = pomodoroTimerViewModel)
         }
 
         composable(Screens.AvatarScreen.route) {
