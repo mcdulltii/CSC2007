@@ -25,6 +25,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,7 +53,8 @@ import java.io.File
 @Composable
 fun CameraCapture(
     modifier: Modifier = Modifier,
-    cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
+    cameraSelector: MutableState<CameraSelector> = mutableStateOf(CameraSelector.DEFAULT_BACK_CAMERA),
+    onImageRotate: () -> Unit = {},
     onImageFile: (File) -> Unit = {},
     onImageSelect: () -> Unit = {}
 ) {
@@ -89,6 +91,7 @@ fun CameraCapture(
                         .build()
                 )
             }
+
             Box {
                 CameraPreview(
                     modifier = Modifier.fillMaxSize(),
@@ -114,7 +117,9 @@ fun CameraCapture(
                                 .padding(16.dp),
                             icon = FontAwesomeIcons.Solid.SyncAlt,
                             desc = "Rotate",
-                            onClick = {}
+                            onClick = {
+                                onImageRotate()
+                            }
                         )
                     }
 
@@ -147,13 +152,13 @@ fun CameraCapture(
                     }
                 }
             }
-            LaunchedEffect(previewUseCase) {
+            LaunchedEffect(cameraSelector.value) {
                 val cameraProvider = context.getCameraProvider()
                 try {
                     // Must unbind the use-cases before rebinding them.
                     cameraProvider.unbindAll()
                     cameraProvider.bindToLifecycle(
-                        lifecycleOwner, cameraSelector, previewUseCase, imageCaptureUseCase
+                        lifecycleOwner, cameraSelector.value, previewUseCase, imageCaptureUseCase
                     )
                 } catch (ex: Exception) {
                     Log.e("CameraCapture", "Failed to bind camera use cases", ex)

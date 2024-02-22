@@ -100,11 +100,9 @@ dependencies {
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
-
     // Navigation
     val nav_version = "2.7.6"
     implementation("androidx.navigation:navigation-compose:$nav_version")
-
 
     // Icon Pack from Composable-Icon-Pack library
     implementation("br.com.devsrsouza.compose.icons:font-awesome:1.1.0")
