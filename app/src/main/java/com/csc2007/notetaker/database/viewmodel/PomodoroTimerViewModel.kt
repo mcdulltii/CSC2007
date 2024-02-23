@@ -3,6 +3,7 @@ package com.csc2007.notetaker.database.viewmodel
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.CountDownTimer
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.csc2007.notetaker.R
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,11 +13,23 @@ import java.util.concurrent.TimeUnit
 class PomodoroTimerViewModel() : ViewModel() {
     private var countDownTimer: CountDownTimer? = null
 
-    var startingMinutes = MutableStateFlow(0)
-    var startingSeconds = MutableStateFlow(10)
+    private val _pomodoroMinutes = MutableStateFlow(15)
+    var pomodoroMinutes: StateFlow<Int> = _pomodoroMinutes
+    private val _pomodoroSeconds = MutableStateFlow(0)
+    var pomodoroSeconds: StateFlow<Int> = _pomodoroSeconds
 
-    var originalMinutesInMillis = MutableStateFlow(TimeUnit.MINUTES.toMillis(startingMinutes.value.toLong()))
-    var originalSecondsInMillis = MutableStateFlow(TimeUnit.SECONDS.toMillis(startingSeconds.value.toLong()))
+    private val _shortBreakMinutes = MutableStateFlow(10)
+    var shortBreakMinutes: StateFlow<Int> = _shortBreakMinutes
+    private val _shortBreakSeconds = MutableStateFlow(0)
+    var shortBreakSeconds: StateFlow<Int> = _shortBreakSeconds
+
+    private val _longBreakMinutes = MutableStateFlow(20)
+    var longBreakMinutes: StateFlow<Int> = _longBreakMinutes
+    private val _longBreakSeconds = MutableStateFlow(0)
+    var longBreakSeconds: StateFlow<Int> = _longBreakSeconds
+
+    var originalMinutesInMillis = MutableStateFlow(TimeUnit.MINUTES.toMillis(_pomodoroMinutes.value.toLong()))
+    var originalSecondsInMillis = MutableStateFlow(TimeUnit.SECONDS.toMillis(_pomodoroSeconds.value.toLong()))
 
     private val initialTotalTimeInMillis = MutableStateFlow(originalMinutesInMillis.value + originalSecondsInMillis.value)
     private val _timeLeft = MutableStateFlow(initialTotalTimeInMillis.value)
@@ -27,13 +40,13 @@ class PomodoroTimerViewModel() : ViewModel() {
     private var _timerState = MutableStateFlow(false)
     var timerState: StateFlow<Boolean> = _timerState
 
-    private val _displayMinutes = MutableStateFlow(startingMinutes.value.toString())
+    private val _displayMinutes = MutableStateFlow(_pomodoroMinutes.value.toString())
     var displayMinutes: StateFlow<String> = _displayMinutes
     
-    private val _displaySeconds = MutableStateFlow(startingSeconds.value.toString())
+    private val _displaySeconds = MutableStateFlow(_pomodoroSeconds.value.toString())
     var displaySeconds: StateFlow<String> = _displaySeconds
 
-    fun startTimer(context: Context) {
+    fun startTimer(context: Context, selectedTimer: String) {
 
         _timerState.value = true
         countDownTimer = object : CountDownTimer(timeLeft.value, countDownInterval) {
@@ -47,6 +60,7 @@ class PomodoroTimerViewModel() : ViewModel() {
                 _timerState.value = false
                 countDownTimer?.cancel()
                 playSound(context)
+                resetTimer(selectedTimer)
             }
         }.start()
     }
@@ -56,29 +70,60 @@ class PomodoroTimerViewModel() : ViewModel() {
         _timerState.value = false
     }
 
-    fun resetTimer() {
+    fun resetTimer(selectedTimer: String) {
         countDownTimer?.cancel()
         _timerState.value = false
 
-        _displayMinutes.value = startingMinutes.value.toString()
-        _displaySeconds.value = startingSeconds.value.toString()
-        _timeLeft.value = initialTotalTimeInMillis.value
+        if (selectedTimer == "Pomodoro") {
+            _displayMinutes.value = _pomodoroMinutes.value.toString()
+            _displaySeconds.value = _pomodoroSeconds.value.toString()
+
+            originalMinutesInMillis.value = TimeUnit.MINUTES.toMillis(_pomodoroMinutes.value.toLong())
+            originalSecondsInMillis.value = TimeUnit.SECONDS.toMillis(_pomodoroSeconds.value.toLong())
+            initialTotalTimeInMillis.value = originalMinutesInMillis.value + originalSecondsInMillis.value
+
+            _timeLeft.value = initialTotalTimeInMillis.value
+        } else if (selectedTimer == "Short Break") {
+            _displayMinutes.value = _shortBreakMinutes.value.toString()
+            _displaySeconds.value = _shortBreakSeconds.value.toString()
+
+            originalMinutesInMillis.value = TimeUnit.MINUTES.toMillis(_shortBreakMinutes.value.toLong())
+            originalSecondsInMillis.value = TimeUnit.SECONDS.toMillis(_shortBreakSeconds.value.toLong())
+            initialTotalTimeInMillis.value = originalMinutesInMillis.value + originalSecondsInMillis.value
+
+            _timeLeft.value = initialTotalTimeInMillis.value
+        } else if (selectedTimer == "Long Break") {
+            _displayMinutes.value = _longBreakMinutes.value.toString()
+            _displaySeconds.value = _longBreakSeconds.value.toString()
+
+            originalMinutesInMillis.value = TimeUnit.MINUTES.toMillis(_longBreakMinutes.value.toLong())
+            originalSecondsInMillis.value = TimeUnit.SECONDS.toMillis(_longBreakSeconds.value.toLong())
+            initialTotalTimeInMillis.value = originalMinutesInMillis.value + originalSecondsInMillis.value
+
+            _timeLeft.value = initialTotalTimeInMillis.value
+        }
     }
 
-    fun adjustTimer(minutes: Int, seconds: Int) {
+    fun adjustTimer(minutes: Int, seconds: Int, selectedTimer: String) {
         countDownTimer?.cancel()
         _timerState.value = false
 
-        startingMinutes.value = minutes
-        startingSeconds.value = seconds
-        _displayMinutes.value = startingMinutes.value.toString()
-        _displaySeconds.value = startingSeconds.value.toString()
+        if (selectedTimer == "Pomodoro") {
+            _pomodoroMinutes.value = minutes
+            _pomodoroSeconds.value = seconds
 
-        originalMinutesInMillis.value = TimeUnit.MINUTES.toMillis(startingMinutes.value.toLong())
-        originalSecondsInMillis.value = TimeUnit.SECONDS.toMillis(startingSeconds.value.toLong())
-        initialTotalTimeInMillis.value = originalMinutesInMillis.value + originalSecondsInMillis.value
+            resetTimer(selectedTimer)
+        } else if (selectedTimer == "Short Break") {
+            _shortBreakMinutes.value = minutes
+            _shortBreakSeconds.value = seconds
 
-        _timeLeft.value = initialTotalTimeInMillis.value
+            resetTimer(selectedTimer)
+        } else if (selectedTimer == "Long Break") {
+            _longBreakMinutes.value = minutes
+            _longBreakSeconds.value = seconds
+
+            resetTimer(selectedTimer)
+        }
     }
 
     private fun playSound(context: Context) {

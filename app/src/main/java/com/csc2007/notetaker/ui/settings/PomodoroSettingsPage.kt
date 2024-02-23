@@ -28,6 +28,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.csc2007.notetaker.database.viewmodel.PomodoroTimerViewModel
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.TopNavBarText
@@ -50,13 +52,15 @@ import com.csc2007.notetaker.ui.TopNavBarText
 @Composable
 fun PomodoroSettingsPage(
     modifier: Modifier = Modifier,
-    navController: NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
+    pomodoroTimerViewModel: PomodoroTimerViewModel = PomodoroTimerViewModel()
 ) {
 
     var showPomodoroTimerDialog = remember { mutableStateOf(false) }
+    var selectedOption = remember { mutableStateOf("") }
 
-    if (showPomodoroTimerDialog.value) {
-        PomodoroTimerDialog(showPomodoroTimerDialog)
+    if (showPomodoroTimerDialog.value and selectedOption.value.isNotEmpty()) {
+        PomodoroTimerDialog(showPomodoroTimerDialog, selectedOption.value, pomodoroTimerViewModel)
     }
 
     Column(modifier = modifier) {
@@ -71,7 +75,10 @@ fun PomodoroSettingsPage(
                 leadingContent = {
                     Icon(Icons.Default.AccessTime, contentDescription = "Time Icon")
                 },
-                modifier = Modifier.clickable { showPomodoroTimerDialog.value = true }
+                modifier = Modifier.clickable {
+                    showPomodoroTimerDialog.value = true
+                    selectedOption.value = "Pomodoro"
+                }
             )
 
             ListItem(
@@ -81,6 +88,10 @@ fun PomodoroSettingsPage(
                 },
                 leadingContent = {
                     Icon(Icons.Default.HourglassEmpty, contentDescription = "Time Icon")
+                },
+                modifier = Modifier.clickable {
+                    showPomodoroTimerDialog.value = true
+                    selectedOption.value = "Short Break"
                 }
             )
 
@@ -91,6 +102,10 @@ fun PomodoroSettingsPage(
                 },
                 leadingContent = {
                     Icon(Icons.Default.HourglassEmpty, contentDescription = "Time Icon")
+                },
+                modifier = Modifier.clickable {
+                    showPomodoroTimerDialog.value = true
+                    selectedOption.value = "Long Break"
                 }
             )
 
@@ -106,11 +121,24 @@ fun PomodoroSettingsPage(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PomodoroTimerDialog(
-    showPomodoroTimerDialog: MutableState<Boolean> = mutableStateOf(false)
+    showPomodoroTimerDialog: MutableState<Boolean> = mutableStateOf(false),
+    title: String = "",
+    pomodoroTimerViewModel: PomodoroTimerViewModel = PomodoroTimerViewModel()
 ) {
 
-    var selectedMinute = remember { mutableStateOf("") }
-    var selectedSecond = remember { mutableStateOf("") }
+    var displayMinutes = remember { mutableStateOf("") }
+    var displaySeconds = remember { mutableStateOf("") }
+
+    if (title == "Pomodoro") {
+        displayMinutes.value = pomodoroTimerViewModel.pomodoroMinutes.collectAsState().value.toString()
+        displaySeconds.value = pomodoroTimerViewModel.pomodoroSeconds.collectAsState().value.toString()
+    } else if (title == "Short Break") {
+        displayMinutes.value = pomodoroTimerViewModel.shortBreakMinutes.collectAsState().value.toString()
+        displaySeconds.value = pomodoroTimerViewModel.shortBreakSeconds.collectAsState().value.toString()
+    } else if (title == "Long Break") {
+        displayMinutes.value = pomodoroTimerViewModel.longBreakMinutes.collectAsState().value.toString()
+        displaySeconds.value = pomodoroTimerViewModel.longBreakSeconds.collectAsState().value.toString()
+    }
 
     Dialog(onDismissRequest = { showPomodoroTimerDialog.value = false }) {
         Card(
@@ -120,7 +148,7 @@ fun PomodoroTimerDialog(
                 modifier = Modifier.padding(24.dp)
             ) {
                 Text(
-                    text = "Adjust Pomodoro Timer",
+                    text = "Adjust $title Timer",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     lineHeight = 16.sp,
@@ -134,8 +162,8 @@ fun PomodoroTimerDialog(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     TextField(
-                        value = selectedMinute.value,
-                        onValueChange = { selectedMinute.value = it },
+                        value = displayMinutes.value.padStart(2, '0'),
+                        onValueChange = { displayMinutes.value = it },
                         textStyle = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontSize = 57.sp,
@@ -157,8 +185,8 @@ fun PomodoroTimerDialog(
                         color = MaterialTheme.colorScheme.onPrimaryContainer)
 
                     TextField(
-                        value = selectedSecond.value,
-                        onValueChange = { selectedSecond.value = it },
+                        value = displaySeconds.value.padStart(2, '0'),
+                        onValueChange = { displaySeconds.value = it },
                         textStyle = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontSize = 57.sp,
@@ -229,7 +257,11 @@ fun PomodoroTimerDialog(
                             fontWeight = FontWeight.Medium,
                             fontSize = 14.sp,
                             lineHeight = 20.sp,
-                            letterSpacing = 0.1.sp)
+                            letterSpacing = 0.1.sp,
+                            modifier = Modifier.clickable {
+                                pomodoroTimerViewModel.adjustTimer(displayMinutes.value.toInt(), displaySeconds.value.toInt(), title)
+                                showPomodoroTimerDialog.value = false
+                            })
                     }
                 }
             }

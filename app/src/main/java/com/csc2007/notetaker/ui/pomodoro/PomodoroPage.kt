@@ -1,5 +1,6 @@
 package com.csc2007.notetaker.ui.pomodoro
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,6 +48,7 @@ import androidx.navigation.compose.rememberNavController
 import com.csc2007.notetaker.database.viewmodel.PomodoroTimerViewModel
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.NoteTakerTheme
+import com.csc2007.notetaker.ui.util.Screens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,15 +66,6 @@ fun PomodoroPage(
     var timerState = pomodoroTimerViewModel.timerState.collectAsState()
 
     var selectedTimer = rememberSaveable { mutableStateOf("Pomodoro") }
-
-    val pomodoroMinutes = 15
-    val pomodoroSeconds = 0
-
-    val shortBreakMinutes = 10
-    val shortBreakSeconds = 0
-
-    val longBreakMinutes = 20
-    val longBreakSeconds = 0
 
     Column(
         modifier = modifier.fillMaxSize()) {
@@ -99,7 +92,7 @@ fun PomodoroPage(
                             lineHeight = 16.sp,
                             letterSpacing = 0.5.sp)
 
-                        Icon(Icons.Default.Settings, contentDescription = "Pomodoro Settings")
+                        Icon(Icons.Default.Settings, contentDescription = "Pomodoro Settings", modifier = Modifier.clickable { navController.navigate(Screens.PomodoroSettingsScreen.route) })
                     }
 
                     Spacer(modifier = Modifier.height(15.dp))
@@ -157,7 +150,7 @@ fun PomodoroPage(
                     ElevatedButton(
                         onClick = {
                             if (!timerState.value) {
-                                pomodoroTimerViewModel.startTimer(context)
+                                pomodoroTimerViewModel.startTimer(context, selectedTimer.value)
                             } else {
                                 pomodoroTimerViewModel.pauseTimer()
                             }
@@ -172,7 +165,7 @@ fun PomodoroPage(
 
                     ElevatedButton(
                         onClick = {
-                            pomodoroTimerViewModel.resetTimer()
+                            pomodoroTimerViewModel.resetTimer(selectedTimer.value)
                         },
                         modifier = Modifier.align(Alignment.CenterHorizontally)) {
                         Text(text = "Restart")
@@ -188,7 +181,7 @@ fun PomodoroPage(
                 OutlinedButton(
                     onClick = {
                         selectedTimer.value = "Pomodoro"
-                        pomodoroTimerViewModel.adjustTimer(pomodoroMinutes, pomodoroSeconds)
+                        pomodoroTimerViewModel.resetTimer(selectedTimer.value)
                     },
                     enabled = selectedTimer.value !== "Pomodoro",
                     shape = RoundedCornerShape(topStartPercent = 50, topEndPercent = 0, bottomStartPercent = 50, bottomEndPercent = 0),
@@ -206,7 +199,7 @@ fun PomodoroPage(
                 OutlinedButton(
                     onClick = {
                         selectedTimer.value = "Short Break"
-                        pomodoroTimerViewModel.adjustTimer(shortBreakMinutes, shortBreakSeconds)
+                        pomodoroTimerViewModel.resetTimer(selectedTimer.value)
                     },
                     enabled = selectedTimer.value !== "Short Break",
                     shape = RoundedCornerShape(topStartPercent = 0, topEndPercent = 0, bottomStartPercent = 0, bottomEndPercent = 0),
@@ -224,7 +217,7 @@ fun PomodoroPage(
                 OutlinedButton(
                     onClick = {
                         selectedTimer.value = "Long Break"
-                        pomodoroTimerViewModel.adjustTimer(longBreakMinutes, longBreakSeconds)
+                        pomodoroTimerViewModel.resetTimer(selectedTimer.value)
                     },
                     enabled = selectedTimer.value !== "Long Break",
                     shape = RoundedCornerShape(topStartPercent = 0, topEndPercent = 50, bottomStartPercent = 0, bottomEndPercent = 50),
