@@ -35,6 +35,7 @@ import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.TopNavBarText
 import com.csc2007.notetaker.ui.TopSearchBar
+import com.csc2007.notetaker.ui.util.Screens
 
 @Composable
 fun SettingsPage(
@@ -62,7 +63,7 @@ fun SettingsPage(
                 leadingContent = {
                     Icon(Icons.Default.PersonOutline, contentDescription = "Account Icon")
                 },
-                modifier = Modifier.clickable { /** TODO **/ }
+                modifier = Modifier.clickable { navController.navigate(Screens.AccountSettingsScreen.route) }
             )
 
             ListItem(
@@ -73,7 +74,7 @@ fun SettingsPage(
                 leadingContent = {
                     Icon(Icons.Default.Alarm, contentDescription = "Notification Icon")
                 },
-                modifier = Modifier.clickable { /** TODO **/ }
+                modifier = Modifier.clickable { navController.navigate(Screens.NotificationsSettingsScreen.route) }
             )
 
             ListItem(

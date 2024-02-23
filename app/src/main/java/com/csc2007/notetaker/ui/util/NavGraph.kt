@@ -26,6 +26,8 @@ import com.csc2007.notetaker.ui.login.LoginPage
 import com.csc2007.notetaker.ui.modules.ModulesPage
 import com.csc2007.notetaker.ui.note.NotesPage
 import com.csc2007.notetaker.ui.pomodoro.PomodoroPage
+import com.csc2007.notetaker.ui.settings.AccountSettingsPage
+import com.csc2007.notetaker.ui.settings.NotificationsSettingsPage
 import com.csc2007.notetaker.ui.settings.SettingsPage
 import com.csc2007.notetaker.ui.signup.SignUpPage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -68,6 +70,9 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
 
     object SettingsScreen :
         Screens(route = "settings_screen", icon = Icons.Default.Settings, title = "Settings")
+
+    object AccountSettingsScreen: Screens(route = "account_settings_screen")
+    object NotificationsSettingsScreen: Screens(route = "notifications_settings_screen")
 
 }
 
@@ -132,6 +137,14 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
 
         composable(Screens.SettingsScreen.route) {
             SettingsPage(navController = navController)
+        }
+
+        composable(Screens.AccountSettingsScreen.route) {
+            AccountSettingsPage(navController = navController)
+        }
+
+        composable(Screens.NotificationsSettingsScreen.route) {
+            NotificationsSettingsPage(navController = navController)
         }
     }
 }
