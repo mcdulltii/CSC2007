@@ -26,4 +26,18 @@ class UsersRepository(private val userDao: UserDao, private val dataStore: DataS
     suspend fun insert(user: User) {
         userDao.insert(user)
     }
+
+    @Suppress("RedudantSuspendModifier")
+    @WorkerThread
+    suspend fun updateEmailAndUserName(email: String, username: String, id: Int) {
+        userDao.updateEmailAndUserName(email, username, id)
+    }
+
+    @Suppress("RedudantSuspendModifier")
+    @WorkerThread
+    suspend fun getUserById(id: Int): User {
+        return withContext(Dispatchers.IO) {
+            userDao.getUserById(id)
+        }
+    }
 }

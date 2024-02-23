@@ -88,6 +88,8 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
     val confirmPassword = remember { mutableStateOf("") }
     val loggedIn = remember { mutableStateOf<Boolean?>(false) }
 
+    val userViewModel : UserViewModel = viewModel(factory = viewModelFactory)
+
     NavHost(
         navController = navController,
         startDestination = Screens.LandingScreen.route
@@ -98,13 +100,11 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
         }
 
         composable(Screens.SignUpScreen.route) {
-            val viewModel : UserViewModel = viewModel(factory = viewModelFactory)
-            SignUpPage(viewModel = viewModel, navController = navController, username = userName, email = email, password = password, confirmPassword = confirmPassword)
+            SignUpPage(viewModel = userViewModel, navController = navController, username = userName, email = email, password = password, confirmPassword = confirmPassword)
         }
 
         composable(Screens.LoginScreen.route) {
-            val viewModel : UserViewModel = viewModel(factory = viewModelFactory)
-            LoginPage(viewModel = viewModel, navController = navController, email = email, password = password, loggedIn = loggedIn)
+            LoginPage(viewModel = userViewModel, navController = navController, email = email, password = password, loggedIn = loggedIn)
         }
 
         composable(Screens.CameraScreen.route) {
@@ -140,7 +140,7 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
         }
 
         composable(Screens.AccountSettingsScreen.route) {
-            AccountSettingsPage(navController = navController)
+            AccountSettingsPage(navController = navController, viewModel = userViewModel)
         }
 
         composable(Screens.NotificationsSettingsScreen.route) {

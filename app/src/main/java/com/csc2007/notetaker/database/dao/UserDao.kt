@@ -20,6 +20,12 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(user: User)
 
+    @Query("SELECT * FROM user_table WHERE id = :id")
+    suspend fun getUserById(id: Int): User
+
+    @Query("UPDATE user_table SET email = :email, username = :username WHERE id = :id")
+    suspend fun updateEmailAndUserName(email: String, username: String, id: Int)
+
     @Update
     suspend fun update(user: User)
 
