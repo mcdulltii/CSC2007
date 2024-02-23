@@ -82,7 +82,9 @@ fun TopSearchBar() {
 fun TopNavBarText(navController: NavController = rememberNavController(), title: String) {
     TopAppBar(
         title = { Text(text = title) },
-        navigationIcon = { IconButton(onClick = { /*TODO*/ }) {
+        navigationIcon = { IconButton(onClick = {
+            navController.popBackStack()
+        }) {
             Icon(Icons.Filled.ArrowBack, contentDescription = "Back Arrow")
         } },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface))
