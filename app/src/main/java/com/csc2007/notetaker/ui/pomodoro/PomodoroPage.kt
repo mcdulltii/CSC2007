@@ -1,6 +1,5 @@
 package com.csc2007.notetaker.ui.pomodoro
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,10 +8,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,13 +28,17 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,12 +56,23 @@ fun PomodoroPage(
     pomodoroTimerViewModel: PomodoroTimerViewModel = PomodoroTimerViewModel()
 ) {
 
+    val context = LocalContext.current
+
     var displayMinutes = pomodoroTimerViewModel.displayMinutes.collectAsState()
     var displaySeconds = pomodoroTimerViewModel.displaySeconds.collectAsState()
 
     var timerState = pomodoroTimerViewModel.timerState.collectAsState()
 
-    Log.d("PomodoroPage", "${timerState.value}")
+    var selectedTimer = rememberSaveable { mutableStateOf("Pomodoro") }
+
+    val pomodoroMinutes = 15
+    val pomodoroSeconds = 0
+
+    val shortBreakMinutes = 10
+    val shortBreakSeconds = 0
+
+    val longBreakMinutes = 20
+    val longBreakSeconds = 0
 
     Column(
         modifier = modifier.fillMaxSize()) {
@@ -93,6 +111,7 @@ fun PomodoroPage(
                     ) {
                         TextField(
                             value = displayMinutes.value.padStart(2, '0'),
+                            readOnly = true,
                             onValueChange = { },
                             textStyle = TextStyle(
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -116,6 +135,7 @@ fun PomodoroPage(
 
                         TextField(
                             value = displaySeconds.value.padStart(2, '0'),
+                            readOnly = true,
                             onValueChange = { },
                             textStyle = TextStyle(
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -137,7 +157,7 @@ fun PomodoroPage(
                     ElevatedButton(
                         onClick = {
                             if (!timerState.value) {
-                                pomodoroTimerViewModel.startTimer()
+                                pomodoroTimerViewModel.startTimer(context)
                             } else {
                                 pomodoroTimerViewModel.pauseTimer()
                             }
@@ -166,24 +186,57 @@ fun PomodoroPage(
                 horizontalArrangement = Arrangement.Center
             ) {
                 OutlinedButton(
-                    onClick = { /*TODO*/ },
-                    shape = RoundedCornerShape(topStartPercent = 50, topEndPercent = 0, bottomStartPercent = 50, bottomEndPercent = 0)
+                    onClick = {
+                        selectedTimer.value = "Pomodoro"
+                        pomodoroTimerViewModel.adjustTimer(pomodoroMinutes, pomodoroSeconds)
+                    },
+                    enabled = selectedTimer.value !== "Pomodoro",
+                    shape = RoundedCornerShape(topStartPercent = 50, topEndPercent = 0, bottomStartPercent = 50, bottomEndPercent = 0),
+                    colors = ButtonDefaults.buttonColors(disabledContainerColor = MaterialTheme.colorScheme.primary, disabledContentColor = MaterialTheme.colorScheme.onPrimary, contentColor = MaterialTheme.colorScheme.primary, containerColor = Color.Transparent),
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "Pomodoro")
+                    if (selectedTimer.value == "Pomodoro") {
+                        Icon(Icons.Default.Check, contentDescription = "Check Icon", modifier = Modifier.size(13.dp))
+
+                        Spacer(modifier = Modifier.width(4.dp))
+                    }
+                    Text(text = "Pomodoro", fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
 
                 OutlinedButton(
-                    onClick = { /*TODO*/ },
-                    shape = RoundedCornerShape(topStartPercent = 0, topEndPercent = 0, bottomStartPercent = 0, bottomEndPercent = 0)
+                    onClick = {
+                        selectedTimer.value = "Short Break"
+                        pomodoroTimerViewModel.adjustTimer(shortBreakMinutes, shortBreakSeconds)
+                    },
+                    enabled = selectedTimer.value !== "Short Break",
+                    shape = RoundedCornerShape(topStartPercent = 0, topEndPercent = 0, bottomStartPercent = 0, bottomEndPercent = 0),
+                    colors = ButtonDefaults.buttonColors(disabledContainerColor = MaterialTheme.colorScheme.primary, disabledContentColor = MaterialTheme.colorScheme.onPrimary, contentColor = MaterialTheme.colorScheme.primary, containerColor = Color.Transparent),
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "Break")
+                    if (selectedTimer.value == "Short Break") {
+                        Icon(Icons.Default.Check, contentDescription = "Check Icon", modifier = Modifier.size(13.dp))
+
+                        Spacer(modifier = Modifier.width(4.dp))
+                    }
+                    Text(text = "Short Break", fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
 
                 OutlinedButton(
-                    onClick = { /*TODO*/ },
-                    shape = RoundedCornerShape(topStartPercent = 0, topEndPercent = 50, bottomStartPercent = 0, bottomEndPercent = 50)
+                    onClick = {
+                        selectedTimer.value = "Long Break"
+                        pomodoroTimerViewModel.adjustTimer(longBreakMinutes, longBreakSeconds)
+                    },
+                    enabled = selectedTimer.value !== "Long Break",
+                    shape = RoundedCornerShape(topStartPercent = 0, topEndPercent = 50, bottomStartPercent = 0, bottomEndPercent = 50),
+                    colors = ButtonDefaults.buttonColors(disabledContainerColor = MaterialTheme.colorScheme.primary, disabledContentColor = MaterialTheme.colorScheme.onPrimary, contentColor = MaterialTheme.colorScheme.primary, containerColor = Color.Transparent),
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "Long Break")
+                    if (selectedTimer.value == "Long Break") {
+                        Icon(Icons.Default.Check, contentDescription = "Check Icon", modifier = Modifier.size(13.dp))
+
+                        Spacer(modifier = Modifier.width(4.dp))
+                    }
+                    Text(text = "Long Break", fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
         }
