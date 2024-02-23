@@ -1,6 +1,10 @@
 package com.csc2007.notetaker.ui.util
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.ChatBubbleOutline
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -48,19 +52,19 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
         Screens(route = "notes_screen", icon = FontAwesomeIcons.Regular.StickyNote, title = "Notes")
 
     object ModulesScreen :
-        Screens(route = "modules_screen", icon = FontAwesomeIcons.Regular.StickyNote, title = "Modules")
+        Screens(route = "modules_screen", icon = Icons.Default.MenuBook, title = "Modules")
 
     object IndividualNoteScreen :
         Screens(route = "individual_note_screen", icon = FontAwesomeIcons.Regular.StickyNote, title = "IndividualNote")
 
     object ChatScreen :
-        Screens(route = "chat_screen", icon = FontAwesomeIcons.Regular.CommentDots, title = "Chat")
+        Screens(route = "chat_screen", icon = Icons.Default.ChatBubbleOutline, title = "Chat")
 
     object PomodoroScreen :
-        Screens(route = "pomodoro_screen", icon = FontAwesomeIcons.Regular.Clock, title = "Pomodoro")
+        Screens(route = "pomodoro_screen", icon = Icons.Default.AccessTime, title = "Pomodoro")
 
     object AvatarScreen :
-        Screens(route = "avatar_screen", icon = FontAwesomeIcons.Regular.User, title = "Avatar")
+        Screens(route = "avatar_screen", icon = Icons.Default.PersonOutline, title = "Avatar")
 
     object SettingsScreen :
         Screens(route = "settings_screen", icon = Icons.Default.Settings, title = "Settings")
