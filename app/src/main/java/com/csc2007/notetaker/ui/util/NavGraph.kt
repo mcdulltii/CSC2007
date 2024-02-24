@@ -15,6 +15,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import coil.annotation.ExperimentalCoilApi
+import com.csc2007.notetaker.database.viewmodel.PomodoroTimerViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
 import com.csc2007.notetaker.ui.LandingPage
@@ -26,6 +27,7 @@ import com.csc2007.notetaker.ui.login.LoginPage
 import com.csc2007.notetaker.ui.modules.ModulesPage
 import com.csc2007.notetaker.ui.note.NotesPage
 import com.csc2007.notetaker.ui.pomodoro.PomodoroPage
+import com.csc2007.notetaker.ui.settings.PomodoroSettingsPage
 import com.csc2007.notetaker.ui.settings.AccountSettingsPage
 import com.csc2007.notetaker.ui.settings.NotificationsSettingsPage
 import com.csc2007.notetaker.ui.settings.SettingsPage
@@ -71,6 +73,7 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
     object SettingsScreen :
         Screens(route = "settings_screen", icon = Icons.Default.Settings, title = "Settings")
 
+    object PomodoroSettingsScreen: Screens(route = "pomodoro_settings_screen")
     object AccountSettingsScreen: Screens(route = "account_settings_screen")
     object NotificationsSettingsScreen: Screens(route = "notifications_settings_screen")
 
@@ -88,6 +91,7 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
     val confirmPassword = remember { mutableStateOf("") }
     val loggedIn = remember { mutableStateOf<Boolean?>(false) }
 
+    val pomodoroTimerViewModel = PomodoroTimerViewModel()
     val userViewModel : UserViewModel = viewModel(factory = viewModelFactory)
 
     NavHost(
@@ -128,7 +132,7 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
         }
 
         composable(Screens.PomodoroScreen.route) {
-            PomodoroPage(navController = navController)
+            PomodoroPage(navController = navController, pomodoroTimerViewModel = pomodoroTimerViewModel)
         }
 
         composable(Screens.AvatarScreen.route) {
@@ -137,6 +141,10 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
 
         composable(Screens.SettingsScreen.route) {
             SettingsPage(navController = navController)
+        }
+
+        composable(Screens.PomodoroSettingsScreen.route) {
+            PomodoroSettingsPage(navController = navController, pomodoroTimerViewModel = pomodoroTimerViewModel)
         }
 
         composable(Screens.AccountSettingsScreen.route) {
