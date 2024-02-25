@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
+import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.viewmodel.PomodoroTimerViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
@@ -32,6 +33,9 @@ import com.csc2007.notetaker.ui.LandingPage
 import com.csc2007.notetaker.ui.avatar.AvatarPage
 import com.csc2007.notetaker.ui.camera.CameraPage
 import com.csc2007.notetaker.ui.chat.ChatPage
+import com.csc2007.notetaker.ui.chat.Chatter
+import com.csc2007.notetaker.ui.chat.PrivateChatPage
+import com.csc2007.notetaker.ui.individual_note.IndividualNotePage
 import com.csc2007.notetaker.ui.login.LoginPage
 import com.csc2007.notetaker.ui.microphone.MicrophonePage
 import com.csc2007.notetaker.ui.microphone.VoiceToTextParser
@@ -82,9 +86,11 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
             title = "Modules"
         )
 
-
     object ChatScreen :
         Screens(route = "chat_screen", icon = Icons.Default.ChatBubbleOutline, title = "Chat")
+
+    object PrivateChatScreen :
+        Screens(route = "private_chat_screen", icon = Icons.Default.ChatBubbleOutline, title = "Private Chat")
 
     object PomodoroScreen :
         Screens(route = "pomodoro_screen", icon = Icons.Default.AccessTime, title = "Pomodoro")
@@ -126,6 +132,14 @@ fun NavGraph(
 
     val moduleViewModel: ModuleViewModel = viewModel(factory = moduleViewModelFactory)
     val moduleState by moduleViewModel.state.collectAsState()
+
+    // sample chatter
+    val privateChat = remember{ mutableStateOf<Chatter>(
+        Chatter(id = 999,
+            userName = "Kacie",
+            lastSentTo = "Sandra Adams",
+            latestText = " - It's the one week of the year in which you get the chance to take…",
+            imgDrawable = R.drawable.kacie),)}
 
     NavHost(
         navController = navController,
@@ -220,9 +234,14 @@ fun NavGraph(
             )
         }
 
-
         composable(Screens.ChatScreen.route) {
-            ChatPage(navController = navController)
+            ChatPage(navController = navController, viewModel = userViewModel, select_chat = privateChat)
+        }
+
+        composable(Screens.PrivateChatScreen.route) {
+            val user by userViewModel.loggedInUser.collectAsState()
+            val userId = user?.id
+            PrivateChatPage(navController = navController, viewModel = userViewModel, selected_chatter = privateChat.value, userId = userId!!)
         }
 
         composable(Screens.PomodoroScreen.route) {

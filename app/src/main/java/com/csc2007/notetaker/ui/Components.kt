@@ -1,5 +1,6 @@
 package com.csc2007.notetaker.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,9 +26,12 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -54,11 +58,9 @@ fun TopNavBar(navController: NavController = rememberNavController()) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopSearchBar() {
-
-    val search = remember { mutableStateOf("") }
-    val isActive = remember { mutableStateOf(false) }
-
+fun TopSearchBar(search: MutableState<String> = rememberSaveable { mutableStateOf("") },
+                 isActive: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) })
+{
     Row {
         SearchBar(
             query = search.value,
@@ -71,23 +73,31 @@ fun TopSearchBar() {
             },
             leadingIcon = {
                 Icon(Icons.Default.Search, contentDescription = "Search Icon")
-            }) {
-
+            },
+        ) {
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopNavBarText(navController: NavController = rememberNavController(), title: String) {
+fun TopNavBarText(navController: NavController = rememberNavController(), title: String = "Add New Module", imageDisplay: Int? = null, modifier: Modifier = Modifier) {
     TopAppBar(
-        title = { Text(text = title) },
-        navigationIcon = { IconButton(onClick = {
-            navController.popBackStack()
-        }) {
+        title = { Text(text = title,
+            modifier = modifier,
+            textAlign = TextAlign.Center) },
+        navigationIcon = { IconButton(onClick = { navController.popBackStack() }) {
             Icon(Icons.Filled.ArrowBack, contentDescription = "Back Arrow")
         } },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface))
+        actions = {
+            if (imageDisplay != null)
+                Image(
+                    painter = painterResource(id = imageDisplay),
+                    contentDescription = "profile picture",
+                    modifier = Modifier.size(60.dp).padding(end = 16.dp)
+                )
+        },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),)
 }
 
 @Composable

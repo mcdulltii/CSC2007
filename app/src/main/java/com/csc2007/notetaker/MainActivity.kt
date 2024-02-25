@@ -62,7 +62,7 @@ fun MainApp(
     NoteTakerTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+            color = MaterialTheme.colorScheme.background,
         ) {
             NavGraph(
                 navController = navController,
