@@ -86,9 +86,11 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
             title = "Modules"
         )
 
-
     object ChatScreen :
         Screens(route = "chat_screen", icon = Icons.Default.ChatBubbleOutline, title = "Chat")
+
+    object PrivateChatScreen :
+        Screens(route = "private_chat_screen", icon = Icons.Default.ChatBubbleOutline, title = "Private Chat")
 
     object PomodoroScreen :
         Screens(route = "pomodoro_screen", icon = Icons.Default.AccessTime, title = "Pomodoro")
@@ -136,7 +138,7 @@ fun NavGraph(
         Chatter(id = 999,
             userName = "Kacie",
             lastSentTo = "Sandra Adams",
-            latestText = " - It’s the one week of the year in which you get the chance to take…",
+            latestText = " - It's the one week of the year in which you get the chance to take…",
             imgDrawable = R.drawable.kacie),)}
 
     NavHost(
@@ -232,12 +234,11 @@ fun NavGraph(
             )
         }
 
-
         composable(Screens.ChatScreen.route) {
             ChatPage(navController = navController, viewModel = userViewModel, select_chat = privateChat)
         }
 
-        composable("private_chat_screen") {
+        composable(Screens.PrivateChatScreen.route) {
             val user by userViewModel.loggedInUser.collectAsState()
             val userId = user?.id
             PrivateChatPage(navController = navController, viewModel = userViewModel, selected_chatter = privateChat.value, userId = userId!!)
