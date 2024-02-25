@@ -55,7 +55,7 @@ import com.csc2007.notetaker.ui.TopSearchBar
 import com.csc2007.notetaker.ui.colors
 
 @Composable
-fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel = viewModel(), selected_chatter: Chatter, userId: Int){
+fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, selected_chatter: Chatter, userId: Int){
 // so far it assumes a single chatter with you, not grouped yet
 
     // change the sampleMessages to an observable list of messages from the database so
