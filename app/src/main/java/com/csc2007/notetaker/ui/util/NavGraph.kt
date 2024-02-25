@@ -19,7 +19,9 @@ import com.csc2007.notetaker.database.viewmodel.PomodoroTimerViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
 import com.csc2007.notetaker.ui.LandingPage
+import com.csc2007.notetaker.ui.avatar.AvatarEditPage
 import com.csc2007.notetaker.ui.avatar.AvatarPage
+import com.csc2007.notetaker.ui.avatar.AvatarShopPage
 import com.csc2007.notetaker.ui.camera.CameraPage
 import com.csc2007.notetaker.ui.chat.ChatPage
 import com.csc2007.notetaker.ui.individual_note.IndividualNotePage
@@ -76,6 +78,10 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
     object PomodoroSettingsScreen: Screens(route = "pomodoro_settings_screen")
     object AccountSettingsScreen: Screens(route = "account_settings_screen")
     object NotificationsSettingsScreen: Screens(route = "notifications_settings_screen")
+
+    object AvatarShopScreen: Screens(route = "avatar_shop_screen")
+
+    object AvatarEditScreen: Screens(route = "avatar_edit_screen")
 
 }
 
@@ -137,6 +143,14 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
 
         composable(Screens.AvatarScreen.route) {
             AvatarPage(navController = navController)
+        }
+
+        composable(Screens.AvatarEditScreen.route) {
+            AvatarEditPage(navController = navController)
+        }
+
+        composable(Screens.AvatarShopScreen.route) {
+            AvatarShopPage(navController = navController)
         }
 
         composable(Screens.SettingsScreen.route) {
