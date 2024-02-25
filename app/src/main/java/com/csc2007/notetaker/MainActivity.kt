@@ -12,6 +12,8 @@ import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
 import com.csc2007.notetaker.database.NoteTakingApp
 import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
+import com.csc2007.notetaker.database.viewmodel.module.ModuleViewModelFactory
+import com.csc2007.notetaker.database.viewmodel.note.NoteViewModelFactory
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.util.NavGraph
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -28,8 +30,20 @@ class MainActivity : ComponentActivity() {
             (application as NoteTakingApp).repository
         )
 
+        val noteViewModelFactory =
+            NoteViewModelFactory((application as NoteTakingApp).noteRepository)
+
+        val moduleViewModelFactory = ModuleViewModelFactory(
+            (application as NoteTakingApp).moduleRepository,
+            applicationContext
+        )
+
         setContent {
-            MainApp(viewModelFactory = viewModelFactory)
+            MainApp(
+                viewModelFactory = viewModelFactory,
+                noteViewModelFactory = noteViewModelFactory,
+                moduleViewModelFactory = moduleViewModelFactory
+            )
         }
     }
 }
@@ -39,7 +53,9 @@ class MainActivity : ComponentActivity() {
 @ExperimentalPermissionsApi
 @Composable
 fun MainApp(
-    viewModelFactory: UserViewModelFactory
+    viewModelFactory: UserViewModelFactory,
+    noteViewModelFactory: NoteViewModelFactory,
+    moduleViewModelFactory: ModuleViewModelFactory
 ) {
     val navController = rememberNavController()
 
@@ -48,7 +64,12 @@ fun MainApp(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background,
         ) {
-            NavGraph(navController = navController, viewModelFactory = viewModelFactory)
+            NavGraph(
+                navController = navController,
+                viewModelFactory = viewModelFactory,
+                noteViewModelFactory = noteViewModelFactory,
+                moduleViewModelFactory = moduleViewModelFactory
+            )
         }
     }
 }

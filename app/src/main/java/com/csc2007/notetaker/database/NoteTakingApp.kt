@@ -5,12 +5,23 @@ import android.content.Context
 import com.csc2007.notetaker.database.repository.UsersRepository
 import kotlinx.coroutines.GlobalScope
 import androidx.datastore.preferences.preferencesDataStore
+import com.csc2007.notetaker.database.repository.ModulesRepository
+import com.csc2007.notetaker.database.repository.NotesRepository
 
 class NoteTakingApp : Application() {
 
     val userDao by lazy { NoteTakingDatabase.getDatabase(this, GlobalScope).userDao() }
+
+    val noteDao by lazy { NoteTakingDatabase.getDatabase(this, GlobalScope).noteDao() }
+    val moduleDao by lazy { NoteTakingDatabase.getDatabase(this, GlobalScope).moduleDao() }
+
     val Context.dataStore by preferencesDataStore(
         name = "UserPreference"
     )
     val repository by lazy { UsersRepository(userDao, dataStore) }
+
+
+    val noteRepository by lazy { NotesRepository(noteDao) }
+
+    val moduleRepository by lazy { ModulesRepository(moduleDao) }
 }
