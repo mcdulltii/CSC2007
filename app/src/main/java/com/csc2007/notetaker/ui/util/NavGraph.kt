@@ -1,11 +1,9 @@
 package com.csc2007.notetaker.ui.util
 
-import AddNotePage
 import android.app.Application
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ChatBubbleOutline
-import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.Settings
@@ -41,6 +39,7 @@ import com.csc2007.notetaker.ui.module.pages.AddModulePage
 import com.csc2007.notetaker.ui.module.pages.ModulesPage
 import com.csc2007.notetaker.ui.note.pages.NotePage
 import com.csc2007.notetaker.ui.note.pages.NotesPage
+import com.csc2007.notetaker.ui.note.pages.AddNotePage
 import com.csc2007.notetaker.ui.pomodoro.PomodoroPage
 import com.csc2007.notetaker.ui.settings.PomodoroSettingsPage
 import com.csc2007.notetaker.ui.settings.AccountSettingsPage
@@ -51,10 +50,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.Solid
-import compose.icons.fontawesomeicons.regular.Clock
-import compose.icons.fontawesomeicons.regular.CommentDots
 import compose.icons.fontawesomeicons.regular.StickyNote
-import compose.icons.fontawesomeicons.regular.User
 import compose.icons.fontawesomeicons.solid.Camera
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 

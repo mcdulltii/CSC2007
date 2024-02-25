@@ -1,4 +1,5 @@
-import android.util.Log
+package com.csc2007.notetaker.ui.note.pages
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
@@ -16,7 +17,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import com.csc2007.notetaker.database.viewmodel.note.NoteEvent

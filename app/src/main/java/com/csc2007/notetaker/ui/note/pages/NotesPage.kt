@@ -1,6 +1,5 @@
 package com.csc2007.notetaker.ui.note.pages
 
-
 import NoteAppBarWithSortTypes
 import NoteSearchBar
 import ExpandableFloatingActionButton
