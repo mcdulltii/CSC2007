@@ -95,7 +95,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling:${compose_version}")
 
     // OCR
-    implementation("com.google.mlkit:text-recognition:16.0.0")
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition:16.0.0")
 
     // Material 3
     implementation("androidx.compose.material3:material3:1.1.2")
