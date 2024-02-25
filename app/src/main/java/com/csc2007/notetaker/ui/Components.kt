@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +40,7 @@ import com.csc2007.notetaker.ui.util.Screens
 
 
 @Composable
-fun TopNavBar(navController: NavController = rememberNavController()) {
+fun TopNavBar(navController: NavController = rememberNavController(), route: String? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -52,7 +51,13 @@ fun TopNavBar(navController: NavController = rememberNavController()) {
         Icon(
             Icons.Filled.ArrowBack,
             contentDescription = "Back Arrow",
-            modifier = Modifier.clickable { navController.popBackStack() })
+            modifier = Modifier.clickable {
+                if (route != null) {
+                    navController.navigate(route)
+                } else {
+                    navController.popBackStack()
+                }
+            })
     }
 }
 
@@ -81,14 +86,19 @@ fun TopSearchBar(search: MutableState<String> = rememberSaveable { mutableStateO
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopNavBarText(navController: NavController = rememberNavController(), title: String = "Add New Module", imageDisplay: Int? = null, modifier: Modifier = Modifier) {
+fun TopNavBarText(navController: NavController = rememberNavController(), title: String = "Add New Module", imageDisplay: Int? = null, navBack: Boolean = true, modifier: Modifier = Modifier) {
     TopAppBar(
         title = { Text(text = title,
             modifier = modifier,
-            textAlign = TextAlign.Center) },
-        navigationIcon = { IconButton(onClick = { navController.popBackStack() }) {
-            Icon(Icons.Filled.ArrowBack, contentDescription = "Back Arrow")
-        } },
+            textAlign = TextAlign.Center)
+        },
+        navigationIcon = {
+            if (navBack) {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back Arrow")
+                }
+            }
+        },
         actions = {
             if (imageDisplay != null)
                 Image(

@@ -17,8 +17,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.csc2007.notetaker.database.viewmodel.module.ModuleEvent
 import com.csc2007.notetaker.database.viewmodel.module.ModuleState
-import com.csc2007.notetaker.database.viewmodel.note.NoteEvent
-import com.csc2007.notetaker.database.viewmodel.note.NoteState
 
 @Composable
 fun ModuleSearchBar(state: ModuleState, onEvent: (ModuleEvent) -> Unit) {

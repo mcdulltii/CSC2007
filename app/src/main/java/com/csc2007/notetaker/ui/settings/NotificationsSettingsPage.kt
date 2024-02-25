@@ -1,6 +1,5 @@
 package com.csc2007.notetaker.ui.settings
 
-import android.widget.ToggleButton
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
