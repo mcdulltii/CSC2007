@@ -28,11 +28,19 @@ import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
+<<<<<<< Updated upstream
 import coil.compose.rememberImagePainter
 import com.csc2007.notetaker.camera.CameraCapture
 import com.csc2007.notetaker.gallery.GallerySelect
 import com.csc2007.notetaker.ui.ComposePhotoIntegrationTheme
 import com.csc2007.notetaker.ui.util.BottomBar
+=======
+import com.csc2007.notetaker.database.NoteTakingApp
+import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
+import com.csc2007.notetaker.database.viewmodel.module.ModuleViewModelFactory
+import com.csc2007.notetaker.database.viewmodel.note.NoteViewModelFactory
+import com.csc2007.notetaker.ui.NoteTakerTheme
+>>>>>>> Stashed changes
 import com.csc2007.notetaker.ui.util.NavGraph
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,6 +52,7 @@ import kotlin.math.roundToInt
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+<<<<<<< Updated upstream
         setContent {
             ComposePhotoIntegrationTheme {
                 // A surface container using the 'background' color from the theme
@@ -81,6 +90,28 @@ class MainActivity : ComponentActivity() {
                 }
 
             }
+=======
+
+        val viewModelFactory = UserViewModelFactory(
+            (application as NoteTakingApp).repository
+        )
+
+        val noteViewModelFactory =
+            NoteViewModelFactory((application as NoteTakingApp).noteRepository)
+
+        val moduleViewModelFactory = ModuleViewModelFactory(
+            (application as NoteTakingApp).moduleRepository,
+            applicationContext
+        )
+
+
+        setContent {
+            MainApp(
+                viewModelFactory = viewModelFactory,
+                noteViewModelFactory,
+                moduleViewModelFactory
+            )
+>>>>>>> Stashed changes
         }
     }
 }
@@ -89,6 +120,7 @@ class MainActivity : ComponentActivity() {
 @ExperimentalCoroutinesApi
 @ExperimentalPermissionsApi
 @Composable
+<<<<<<< Updated upstream
 fun MainContent(modifier: Modifier = Modifier) {
     var imageUri by remember { mutableStateOf(EMPTY_IMAGE_URI) }
     if (imageUri != EMPTY_IMAGE_URI) {
@@ -136,6 +168,26 @@ fun MainContent(modifier: Modifier = Modifier) {
                     Text("Select from Gallery")
                 }
             }
+=======
+fun MainApp(
+    viewModelFactory: UserViewModelFactory,
+    noteViewModelFactory: NoteViewModelFactory,
+    moduleViewModelFactory: ModuleViewModelFactory
+) {
+    val navController = rememberNavController()
+
+    NoteTakerTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            NavGraph(
+                navController = navController,
+                viewModelFactory = viewModelFactory,
+                noteViewModelFactory = noteViewModelFactory,
+                moduleViewModelFactory = moduleViewModelFactory
+            )
+>>>>>>> Stashed changes
         }
     }
 }
