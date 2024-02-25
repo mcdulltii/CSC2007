@@ -1,15 +1,18 @@
 package com.csc2007.notetaker.ui.util
 
+import android.app.Application
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -24,6 +27,8 @@ import com.csc2007.notetaker.ui.camera.CameraPage
 import com.csc2007.notetaker.ui.chat.ChatPage
 import com.csc2007.notetaker.ui.individual_note.IndividualNotePage
 import com.csc2007.notetaker.ui.login.LoginPage
+import com.csc2007.notetaker.ui.microphone.MicrophonePage
+import com.csc2007.notetaker.ui.microphone.VoiceToTextParser
 import com.csc2007.notetaker.ui.modules.ModulesPage
 import com.csc2007.notetaker.ui.note.NotesPage
 import com.csc2007.notetaker.ui.pomodoro.PomodoroPage
@@ -51,6 +56,9 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
     object LoginScreen: Screens(route = "login_screen")
     object CameraScreen:
         Screens(route = "camera_screen", icon = FontAwesomeIcons.Solid.Camera, title = "Camera")
+
+    object MicrophoneScreen:
+        Screens(route = "microphone_screen", icon = Icons.Default.Mic, title = "Microphone")
 
     object NotesScreen :
         Screens(route = "notes_screen", icon = FontAwesomeIcons.Regular.StickyNote, title = "Notes")
@@ -113,6 +121,11 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
 
         composable(Screens.CameraScreen.route) {
             CameraPage(navController = navController)
+        }
+
+        composable(Screens.MicrophoneScreen.route) {
+            val application = LocalContext.current.applicationContext as Application
+            MicrophonePage(navController = navController, voiceToTextParser = VoiceToTextParser(application))
         }
         
         composable(Screens.NotesScreen.route) {
