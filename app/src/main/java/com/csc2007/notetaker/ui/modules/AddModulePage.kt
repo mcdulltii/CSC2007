@@ -55,7 +55,7 @@ fun AddModulePage(
     Column(
         modifier = modifier
     ) {
-        TopNavBarText(navController = navController)
+        TopNavBarText(navController = navController, title = "Add New Module")
 
         Column(
             modifier = Modifier

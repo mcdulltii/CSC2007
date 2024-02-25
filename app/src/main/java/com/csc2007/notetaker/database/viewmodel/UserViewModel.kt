@@ -23,8 +23,14 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
     private val _loggedIn = MutableStateFlow<Boolean?>(null)
     val loggedIn: StateFlow<Boolean?> = _loggedIn
 
-    private var _loggedInUserId = MutableStateFlow<Int?>(0)
-    var loggedInUserId: StateFlow<Int?> = _loggedInUserId
+    private val _loggedInUser = MutableStateFlow<User?>(null)
+    val loggedInUser: StateFlow<User?> = _loggedInUser
+
+    private val _loggedInUserEmail = MutableStateFlow<String>("")
+    var loggedInUserEmail: StateFlow<String> = _loggedInUserEmail
+
+    private val _loggedInUserUsername = MutableStateFlow<String>("")
+    var loggedInUserUsername: StateFlow<String> = _loggedInUserUsername
 
     val allUsers = repository.allUsers.stateIn(
         scope = viewModelScope,
@@ -38,13 +44,33 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
                 _loggedIn.value = false
             } else {
                 val user = repository.login(email, hashString(password))
-
-                val loggedIn = user != null && user.password.contentEquals(hashString(password))
-                _loggedIn.value = loggedIn
-                if (loggedIn) {
-                    _loggedInUserId.value = user.id // Store the user ID if logged in successfully
+                _loggedIn.value = user != null && user.password.contentEquals(hashString(password))
+                if (_loggedIn.value == true) {
+                    _loggedInUser.value = user
+                    _loggedInUserEmail.value = user.email
+                    _loggedInUserUsername.value = user.userName
                 }
             }
+        }
+    }
+
+
+    private fun getUserById(id: Int) {
+        viewModelScope.launch {
+            val user = repository.getUserById(id)
+            _loggedInUser.value = user
+            _loggedInUserEmail.value = user.email
+            _loggedInUserUsername.value = user.userName
+        }
+    }
+
+    fun updateEmailAndUserName(email: String, username: String, id: Int) {
+        viewModelScope.launch {
+            repository.updateEmailAndUserName(email, username, id)
+            val user = repository.getUserById(id)
+            _loggedInUser.value = user
+            _loggedInUserEmail.value = user.email
+            _loggedInUserUsername.value = user.userName
         }
     }
 

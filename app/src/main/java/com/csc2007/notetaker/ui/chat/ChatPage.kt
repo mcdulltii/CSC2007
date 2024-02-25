@@ -19,14 +19,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -47,14 +54,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.User
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.TopNavBar
 import com.csc2007.notetaker.ui.TopSearchBar
-import com.csc2007.notetaker.ui.util.BottomBar
+import com.csc2007.notetaker.ui.util.Screens
 
 @Composable
 fun ChatPage(navController: NavHostController,
@@ -65,30 +76,31 @@ fun ChatPage(navController: NavHostController,
     val searchIsActive = rememberSaveable{ mutableStateOf(false )}
 
 //    val users by viewModel.allUsers.collectAsState()
+
     val sampleChatters = listOf(
         Chatter(id = 0,
-                userName = "Kacie",
-                lastSentTo = "Sandra Adams",
-                latestText = " - It’s the one week of the year in which you get the chance to take…",
-                imgDrawable = R.drawable.kacie),
+            userName = "Kacie",
+            lastSentTo = "Sandra Adams",
+            latestText = " - It’s the one week of the year in which you get the chance to take…",
+            imgDrawable = R.drawable.kacie),
         Chatter(id = 1,
-                userName = "Tommy",
-                lastSentTo = "Ray Neal",
-                latestText = " - Healthy, robust, contracting, healthy, robust and contracting like a lung.",
-                imgDrawable = R.drawable.tommy
+            userName = "Tommy",
+            lastSentTo = "Ray Neal",
+            latestText = " - Healthy, robust, contracting, healthy, robust and contracting like a lung.",
+            imgDrawable = R.drawable.tommy
         ),
         Chatter(id = 2,
-                userName = "Princess",
-                lastSentTo = "Carrie Mann",
-                latestText = " - A wonderful serenity has taken possession of my entire soul, like…",
-                imgDrawable = R.drawable.princess
+            userName = "Princess",
+            lastSentTo = "Carrie Mann",
+            latestText = " - A wonderful serenity has taken possession of my entire soul, like…",
+            imgDrawable = R.drawable.princess
         ),
         Chatter(id = 3,
             userName = "Magical Girl",
             lastSentTo = "Lelia Colon",
             latestText = " - Speaking of which, Peter really wants you to come in on Friday.",
             imgDrawable = R.drawable.magical_girl
-            ),
+        ),
         Chatter(id = 4,
             userName = "Emperor Of Meow",
             lastSentTo = "to Trevor, Andrew, Sandra",
@@ -109,7 +121,7 @@ fun ChatPage(navController: NavHostController,
         }
         Column(verticalArrangement = Arrangement.Bottom)
         {
-            BottomNavBar()
+            BottomNavBar(navController = navController)
         }
     }
 
@@ -122,15 +134,16 @@ fun chatRow(chatter: Chatter, navController: NavHostController, select_chat: Mut
         .padding(8.dp)
         .clickable {
             select_chat.value = chatter
-            navController.navigate("private_chat_screen") })
+            navController.navigate("private_chat_screen")
+        })
     {
         Image(
-        painter = painterResource(id = chatter.imgDrawable),
-        contentDescription = "Profile picture",
-        modifier = Modifier
-            .size(60.dp)
-            .clip(CircleShape),
-        contentScale = ContentScale.Crop,
+            painter = painterResource(id = chatter.imgDrawable),
+            contentDescription = "Profile picture",
+            modifier = Modifier
+                .size(60.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop,
         )
 
         Spacer(Modifier.padding(8.dp))
@@ -209,6 +222,4 @@ data class Chatter(
 //        )
 //    )
 //}
-
-
 

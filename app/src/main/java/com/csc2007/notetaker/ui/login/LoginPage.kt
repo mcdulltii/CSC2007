@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Snackbar
@@ -38,8 +37,6 @@ import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.TopNavBar
-import com.csc2007.notetaker.ui.colors
-import com.csc2007.notetaker.ui.util.Screens
 
 @Composable
 fun LoginPage(
@@ -48,8 +45,7 @@ fun LoginPage(
     navController: NavController = rememberNavController(),
     email: MutableState<String> = mutableStateOf(""),
     password: MutableState<String> = mutableStateOf(""),
-    loggedIn: MutableState<Boolean?> = mutableStateOf(false),
-    userId: MutableState<Int> = mutableStateOf(0)
+    loggedIn: MutableState<Boolean?> = mutableStateOf(false)
 ) {
 
     val ibmPlexFamily = FontFamily(
@@ -57,12 +53,10 @@ fun LoginPage(
     )
 
     val loggedInState by viewModel.loggedIn.collectAsState()
-    val userIdState by viewModel.loggedInUserId.collectAsState()
 
     if (loggedInState == true) {
         loggedIn.value = loggedInState
-        userId.value = userIdState!!
-        navController.navigate(Screens.ChatScreen.route)
+        navController.navigate("pomodoro_screen")
     }
 
     Column(modifier = modifier) {
@@ -109,8 +103,7 @@ fun LoginPage(
 
                 Button(onClick = {
                     viewModel.login(email.value, password.value)
-                },
-                    colors = ButtonDefaults.buttonColors(containerColor = colors.primaryColor)) {
+                }) {
                     Text(text = "Login")
                 }
 

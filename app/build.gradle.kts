@@ -94,17 +94,18 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${compose_version}")
     debugImplementation("androidx.compose.ui:ui-tooling:${compose_version}")
 
+    // OCR
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition:16.0.0")
+
     // Material 3
     implementation("androidx.compose.material3:material3:1.1.2")
 
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
-
     // Navigation
     val nav_version = "2.7.6"
     implementation("androidx.navigation:navigation-compose:$nav_version")
-
 
     // Icon Pack from Composable-Icon-Pack library
     implementation("br.com.devsrsouza.compose.icons:font-awesome:1.1.0")
