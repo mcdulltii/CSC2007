@@ -121,7 +121,7 @@ private fun ShowItemSnackBar() {
 
 @Preview
 @Composable
-fun ShowItemSnackbarPreview() {
+fun ShowItemSnackBarPreview() {
     ShowItemSnackBar()
 }
 

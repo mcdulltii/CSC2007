@@ -54,6 +54,13 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
         }
     }
 
+    fun logout() {
+        _loggedIn.value = null
+        _loggedInUser.value = null
+        _loggedInUserEmail.value = ""
+        _loggedInUserUsername.value = ""
+    }
+
 
     private fun getUserById(id: Int) {
         viewModelScope.launch {
@@ -71,6 +78,12 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
             _loggedInUser.value = user
             _loggedInUserEmail.value = user.email
             _loggedInUserUsername.value = user.userName
+        }
+    }
+
+    fun updatePassword(password: String, id: Int) {
+        viewModelScope.launch {
+            repository.updatePassword(password = hashString(password), id = id)
         }
     }
 

@@ -54,6 +54,7 @@ import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.TopNavBarText
+import com.csc2007.notetaker.ui.util.Screens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,8 +69,6 @@ fun AccountSettingsPage(
     var id = remember { mutableStateOf(if (loggedInUser !== null) loggedInUser.id else 0) }
     var email = remember { mutableStateOf(if (loggedInUser !== null) loggedInUser.email else "") }
     var username = remember { mutableStateOf(if (loggedInUser !== null) loggedInUser.userName else "") }
-    var password = remember { mutableStateOf("") }
-    var confirmPassword = remember { mutableStateOf("") }
 
     Column(modifier = modifier) {
 
@@ -143,23 +142,11 @@ fun AccountSettingsPage(
                 label = { Text(text = "Username") },
                 modifier = Modifier.fillMaxWidth())
 
-            OutlinedTextField(
-                value = password.value,
-                onValueChange = { password.value = it },
-                label = { Text(text = "Password") },
-                modifier = Modifier.fillMaxWidth())
-
-            OutlinedTextField(
-                value = confirmPassword.value,
-                onValueChange = { confirmPassword.value = it },
-                label = { Text(text = "Confirm Password") },
-                modifier = Modifier.fillMaxWidth())
-
             Spacer(modifier = Modifier.height(20.dp))
 
             Button(
                 onClick = {
-                      if (password.value.isEmpty() or confirmPassword.value.isEmpty()) {
+                      if (email.value.isNotEmpty() or username.value.isNotEmpty()) {
                           viewModel.updateEmailAndUserName(email.value, username.value, id.value)
                       }
                 },
@@ -170,7 +157,20 @@ fun AccountSettingsPage(
             Spacer(modifier = Modifier.height(10.dp))
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    navController.navigate(Screens.ChangePasswordScreen.route)
+                },
+                modifier = Modifier.fillMaxWidth()) {
+                Text(text = "Change Password")
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = {
+                    viewModel.logout()
+                    navController.popBackStack(Screens.LandingScreen.route, inclusive = false)
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary, contentColor = MaterialTheme.colorScheme.onSecondary),
                 modifier = Modifier.fillMaxWidth()) {
                 Text(text = "Sign Out")

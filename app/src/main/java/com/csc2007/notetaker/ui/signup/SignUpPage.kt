@@ -47,16 +47,16 @@ fun SignUpPage(
     modifier: Modifier = Modifier,
     viewModel: UserViewModel = viewModel(),
     navController: NavController = rememberNavController(),
-    email: MutableState<String> = mutableStateOf(""),
-    username: MutableState<String> = mutableStateOf(""),
-    password: MutableState<String> = mutableStateOf(""),
-    confirmPassword: MutableState<String> = mutableStateOf("")
 ) {
 
     val ibmPlexFamily = FontFamily(
         Font(R.font.ibm_plex_mono_bold, FontWeight.Bold)
     )
-    
+
+    var email = remember { mutableStateOf("") }
+    var username = remember { mutableStateOf("") }
+    var password = remember { mutableStateOf("") }
+    var confirmPassword = remember { mutableStateOf("") }
     var result by remember { mutableStateOf<String?>(null) }
 
     Column(

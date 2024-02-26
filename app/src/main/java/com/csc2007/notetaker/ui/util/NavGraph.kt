@@ -31,6 +31,7 @@ import com.csc2007.notetaker.ui.note.NotesPage
 import com.csc2007.notetaker.ui.pomodoro.PomodoroPage
 import com.csc2007.notetaker.ui.settings.PomodoroSettingsPage
 import com.csc2007.notetaker.ui.settings.AccountSettingsPage
+import com.csc2007.notetaker.ui.settings.ChangePasswordPage
 import com.csc2007.notetaker.ui.settings.NotificationsSettingsPage
 import com.csc2007.notetaker.ui.settings.SettingsPage
 import com.csc2007.notetaker.ui.signup.SignUpPage
@@ -77,6 +78,7 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
 
     object PomodoroSettingsScreen: Screens(route = "pomodoro_settings_screen")
     object AccountSettingsScreen: Screens(route = "account_settings_screen")
+    object ChangePasswordScreen: Screens(route = "change_password_screen")
     object NotificationsSettingsScreen: Screens(route = "notifications_settings_screen")
 
     object AvatarShopScreen: Screens(route = "avatar_shop_screen")
@@ -91,12 +93,6 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
 @Composable
 fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFactory) {
 
-    val userName = remember { mutableStateOf("") }
-    val email = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
-    val confirmPassword = remember { mutableStateOf("") }
-    val loggedIn = remember { mutableStateOf<Boolean?>(false) }
-
     val pomodoroTimerViewModel = PomodoroTimerViewModel()
     val userViewModel : UserViewModel = viewModel(factory = viewModelFactory)
 
@@ -110,11 +106,11 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
         }
 
         composable(Screens.SignUpScreen.route) {
-            SignUpPage(viewModel = userViewModel, navController = navController, username = userName, email = email, password = password, confirmPassword = confirmPassword)
+            SignUpPage(viewModel = userViewModel, navController = navController)
         }
 
         composable(Screens.LoginScreen.route) {
-            LoginPage(viewModel = userViewModel, navController = navController, email = email, password = password, loggedIn = loggedIn)
+            LoginPage(viewModel = userViewModel, navController = navController)
         }
 
         composable(Screens.CameraScreen.route) {
@@ -163,6 +159,10 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
 
         composable(Screens.AccountSettingsScreen.route) {
             AccountSettingsPage(navController = navController, viewModel = userViewModel)
+        }
+
+        composable(Screens.ChangePasswordScreen.route) {
+            ChangePasswordPage(navController = navController, viewModel = userViewModel)
         }
 
         composable(Screens.NotificationsSettingsScreen.route) {

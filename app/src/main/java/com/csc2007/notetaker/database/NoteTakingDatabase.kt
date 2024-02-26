@@ -8,7 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.csc2007.notetaker.database.dao.UserDao
 import kotlinx.coroutines.CoroutineScope
 
-@Database(entities = [User::class], version = 2)
+@Database(entities = [User::class, Item::class], version = 3)
 abstract class NoteTakingDatabase : RoomDatabase() {
 
     abstract fun userDao() : UserDao
