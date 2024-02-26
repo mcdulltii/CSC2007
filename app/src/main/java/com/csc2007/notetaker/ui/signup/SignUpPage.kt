@@ -53,10 +53,10 @@ fun SignUpPage(
         Font(R.font.ibm_plex_mono_bold, FontWeight.Bold)
     )
 
-    var email = remember { mutableStateOf("") }
-    var username = remember { mutableStateOf("") }
-    var password = remember { mutableStateOf("") }
-    var confirmPassword = remember { mutableStateOf("") }
+    val email = remember { mutableStateOf("") }
+    val username = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
+    val confirmPassword = remember { mutableStateOf("") }
     var result by remember { mutableStateOf<String?>(null) }
 
     Column(

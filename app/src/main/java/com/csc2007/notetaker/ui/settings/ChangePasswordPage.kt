@@ -37,13 +37,13 @@ fun ChangePasswordPage(
     viewModel: UserViewModel = viewModel()
 ) {
 
-    var loggedInUser = viewModel.loggedInUser.collectAsState().value
+    val loggedInUser = viewModel.loggedInUser.collectAsState().value
 
     val id = remember { mutableStateOf(if (loggedInUser !== null) loggedInUser.id else 0 ) }
 
-    var password = remember { mutableStateOf("") }
-    var confirmPassword = remember { mutableStateOf("") }
-    var result = remember { mutableStateOf<String?>(null) }
+    val password = remember { mutableStateOf("") }
+    val confirmPassword = remember { mutableStateOf("") }
+    val result = remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = modifier.fillMaxSize()

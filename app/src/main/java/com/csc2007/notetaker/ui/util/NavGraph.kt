@@ -7,8 +7,6 @@ import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -39,10 +37,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.Solid
-import compose.icons.fontawesomeicons.regular.Clock
-import compose.icons.fontawesomeicons.regular.CommentDots
 import compose.icons.fontawesomeicons.regular.StickyNote
-import compose.icons.fontawesomeicons.regular.User
 import compose.icons.fontawesomeicons.solid.Camera
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 

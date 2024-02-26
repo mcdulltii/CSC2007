@@ -1,12 +1,10 @@
 package com.csc2007.notetaker.database.viewmodel
 
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.csc2007.notetaker.database.Item
 import com.csc2007.notetaker.database.repository.ItemRepository
-import com.csc2007.notetaker.database.repository.UsersRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
