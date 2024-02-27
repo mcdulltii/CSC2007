@@ -42,7 +42,7 @@ import com.csc2007.notetaker.ui.util.Screens
 @Composable
 fun LoginPage(
     modifier: Modifier = Modifier,
-    viewModel: UserViewModel = viewModel(),
+    userViewModel: UserViewModel = viewModel(),
     navController: NavController = rememberNavController()
 ) {
 
@@ -50,7 +50,7 @@ fun LoginPage(
         Font(R.font.ibm_plex_mono_bold, FontWeight.Bold)
     )
 
-    val loggedInState by viewModel.loggedIn.collectAsState()
+    val loggedInState by userViewModel.loggedIn.collectAsState()
 
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
@@ -102,7 +102,7 @@ fun LoginPage(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Button(onClick = {
-                    viewModel.login(email.value, password.value)
+                    userViewModel.login(email.value, password.value)
                 }) {
                     Text(text = "Login")
                 }

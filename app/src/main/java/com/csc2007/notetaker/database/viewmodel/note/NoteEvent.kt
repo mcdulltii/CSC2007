@@ -1,6 +1,6 @@
 package com.csc2007.notetaker.database.viewmodel.note
 
-import com.csc2007.notetaker.database.entity.Note
+import com.csc2007.notetaker.database.Note
 
 sealed interface NoteEvent {
 

@@ -2,7 +2,7 @@ package com.csc2007.notetaker.database.viewmodel.module
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.csc2007.notetaker.database.entity.Module
+import com.csc2007.notetaker.database.Module
 import com.csc2007.notetaker.database.viewmodel.note.SortType
 
 

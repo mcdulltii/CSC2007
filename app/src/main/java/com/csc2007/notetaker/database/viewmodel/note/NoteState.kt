@@ -2,7 +2,7 @@ package com.csc2007.notetaker.database.viewmodel.note
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.csc2007.notetaker.database.entity.Note
+import com.csc2007.notetaker.database.Note
 
 data class NoteState(
     val notes: List<Note> = emptyList(),

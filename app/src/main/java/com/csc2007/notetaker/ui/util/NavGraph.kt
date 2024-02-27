@@ -21,13 +21,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
+import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.viewmodel.AvatarViewModel
 import com.csc2007.notetaker.database.viewmodel.AvatarViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.ItemViewModel
 import com.csc2007.notetaker.database.viewmodel.ItemViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.OwnViewModel
 import com.csc2007.notetaker.database.viewmodel.OwnViewModelFactory
-import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.viewmodel.PomodoroTimerViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
@@ -82,17 +82,11 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
         Screens(route = "notes_screen", icon = FontAwesomeIcons.Regular.StickyNote, title = "Notes")
 
     object NoteScreen : Screens(route = "note_screen")
-
     object AddNoteScreen : Screens(route = "add_note_screen")
-
     object AddModuleScreen : Screens(route = "add_module_screen")
 
     object ModulesScreen :
-        Screens(
-            route = "modules_screen",
-            icon = FontAwesomeIcons.Regular.StickyNote,
-            title = "Modules"
-        )
+        Screens(route = "modules_screen", icon = FontAwesomeIcons.Regular.StickyNote, title = "Modules")
 
     object ChatScreen :
         Screens(route = "chat_screen", icon = Icons.Default.ChatBubbleOutline, title = "Chat")
@@ -115,7 +109,6 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
     object NotificationsSettingsScreen: Screens(route = "notifications_settings_screen")
 
     object AvatarShopScreen: Screens(route = "avatar_shop_screen")
-
     object AvatarEditScreen: Screens(route = "avatar_edit_screen")
 
 }
@@ -145,20 +138,22 @@ fun NavGraph(
     val moduleViewModel: ModuleViewModel = viewModel(factory = moduleViewModelFactory)
     val moduleState by moduleViewModel.state.collectAsState()
 
-    itemViewModel.deleteAll()
-    itemViewModel.insert(id = 1, name = "Penguin Hat", type = "Hat", rarity = "Rare", image = "hat_1")
-    itemViewModel.insert(id = 2, name = "Santa Boy Hat", type = "Hat", rarity = "Epic", image = "santa_boy_hat")
-    itemViewModel.insert(id = 3, name = "Janus Wig", type = "Hat", rarity = "Legendary", image = "janus_wig")
+//    itemViewModel.deleteAll()
+//    itemViewModel.insert(id = 1, name = "Penguin Hat", type = "Hat", rarity = "Rare", image = "hat_1")
+//    itemViewModel.insert(id = 2, name = "Santa Boy Hat", type = "Hat", rarity = "Epic", image = "santa_boy_hat")
+//    itemViewModel.insert(id = 3, name = "Janus Wig", type = "Hat", rarity = "Legendary", image = "janus_wig")
+//
+//    ownViewModel.deleteAll()
 
-    ownViewModel.deleteAll()
-    
     // sample chatter
     val privateChat = remember{ mutableStateOf<Chatter>(
         Chatter(id = 999,
             userName = "Kacie",
             lastSentTo = "Sandra Adams",
             latestText = " - It's the one week of the year in which you get the chance to take…",
-            imgDrawable = R.drawable.kacie),)}
+            imgDrawable = R.drawable.kacie)
+        )
+    }
 
     NavHost(
         navController = navController,
@@ -178,26 +173,8 @@ fun NavGraph(
 
         composable(Screens.LoginScreen.route) {
             LoginPage(
-              viewModel = userViewModel, 
-              navController = navController)
-
-            SignUpPage(
-                viewModel = userViewModel,
+                userViewModel = userViewModel,
                 navController = navController,
-                username = userName,
-                email = email,
-                password = password,
-                confirmPassword = confirmPassword
-            )
-        }
-
-        composable(Screens.LoginScreen.route) {
-            LoginPage(
-                viewModel = userViewModel,
-                navController = navController,
-                email = email,
-                password = password,
-                loggedIn = loggedIn
             )
         }
 

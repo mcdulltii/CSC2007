@@ -45,8 +45,9 @@ class MainActivity : ComponentActivity() {
             (application as NoteTakingApp).avatarRepository
         )
 
-        val noteViewModelFactory =
-            NoteViewModelFactory((application as NoteTakingApp).noteRepository)
+        val noteViewModelFactory = NoteViewModelFactory(
+            (application as NoteTakingApp).noteRepository
+        )
 
         val moduleViewModelFactory = ModuleViewModelFactory(
             (application as NoteTakingApp).moduleRepository,

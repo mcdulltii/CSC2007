@@ -37,7 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.csc2007.notetaker.database.entity.Note
+import com.csc2007.notetaker.database.Note
 import com.csc2007.notetaker.database.viewmodel.note.NoteEvent
 import com.csc2007.notetaker.database.viewmodel.note.NoteState
 import com.csc2007.notetaker.ui.note.util.formatDate

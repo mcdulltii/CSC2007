@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.csc2007.notetaker.database.entity.Module
+import com.csc2007.notetaker.database.Module
 import com.csc2007.notetaker.database.repository.ModulesRepository
 import com.csc2007.notetaker.database.viewmodel.note.SortType
 import kotlinx.coroutines.Dispatchers

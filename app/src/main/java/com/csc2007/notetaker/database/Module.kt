@@ -1,12 +1,13 @@
-package com.csc2007.notetaker.database.entity
+package com.csc2007.notetaker.database
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(tableName = "module_table")
 data class Module(
-    val title: String,
-    val dateCreated: Long,
-    val imagePath: String,
-    @PrimaryKey(autoGenerate = true) val id: Int = 0
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo(name = "title") val title: String,
+    @ColumnInfo(name = "dateCreated") val dateCreated: Long,
+    @ColumnInfo(name = "imagePath") val imagePath: String,
 )

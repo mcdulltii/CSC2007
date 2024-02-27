@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
-import com.csc2007.notetaker.database.entity.Module
+import com.csc2007.notetaker.database.Module
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,19 +16,19 @@ interface ModuleDao {
     @Delete
     suspend fun deleteModule(module: Module)
 
-    @Query("SELECT * FROM module")
+    @Query("SELECT * FROM module_table")
     fun getAllNotes(): Flow<List<Module>>
 
-    @Query("SELECT * FROM module ORDER BY title ASC")
+    @Query("SELECT * FROM module_table ORDER BY title ASC")
     fun getNotesOrderedByASCTitle(): Flow<List<Module>>
 
-    @Query("SELECT * from module ORDER BY title DESC")
+    @Query("SELECT * from module_table ORDER BY title DESC")
     fun getNotesOrderedByDESCTitle(): Flow<List<Module>>
 
-    @Query("SELECT * FROM module ORDER BY dateCreated ASC")
+    @Query("SELECT * FROM module_table ORDER BY dateCreated ASC")
     fun getNotesOrderedByASCDate(): Flow<List<Module>>
 
-    @Query("SELECT * from module ORDER BY dateCreated DESC")
+    @Query("SELECT * from module_table ORDER BY dateCreated DESC")
     fun getNotesOrderedByDESCDate(): Flow<List<Module>>
 
 }

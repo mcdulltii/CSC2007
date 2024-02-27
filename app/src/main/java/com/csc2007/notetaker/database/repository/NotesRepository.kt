@@ -2,7 +2,7 @@ package com.csc2007.notetaker.database.repository
 
 import androidx.annotation.WorkerThread
 import com.csc2007.notetaker.database.dao.NoteDao
-import com.csc2007.notetaker.database.entity.Note
+import com.csc2007.notetaker.database.Note
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext

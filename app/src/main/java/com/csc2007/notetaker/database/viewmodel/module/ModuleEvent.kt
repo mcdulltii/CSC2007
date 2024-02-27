@@ -1,10 +1,7 @@
 package com.csc2007.notetaker.database.viewmodel.module
 
-import android.content.Context
-import android.graphics.Bitmap
 import android.net.Uri
-import com.csc2007.notetaker.database.entity.Module
-import com.csc2007.notetaker.database.entity.Note
+import com.csc2007.notetaker.database.Module
 import com.csc2007.notetaker.database.viewmodel.note.SortType
 
 sealed interface ModuleEvent {
