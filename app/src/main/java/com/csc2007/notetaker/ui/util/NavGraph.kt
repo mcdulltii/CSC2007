@@ -13,6 +13,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import coil.annotation.ExperimentalCoilApi
+import com.csc2007.notetaker.database.Item
+import com.csc2007.notetaker.database.viewmodel.ItemViewModel
+import com.csc2007.notetaker.database.viewmodel.ItemViewModelFactory
+import com.csc2007.notetaker.database.viewmodel.OwnViewModel
+import com.csc2007.notetaker.database.viewmodel.OwnViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.PomodoroTimerViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
@@ -86,10 +91,19 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
 @ExperimentalCoroutinesApi
 @ExperimentalPermissionsApi
 @Composable
-fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFactory) {
+fun NavGraph(navController: NavHostController, userViewModelFactory: UserViewModelFactory, itemViewModelFactory: ItemViewModelFactory, ownViewModelFactory: OwnViewModelFactory) {
 
     val pomodoroTimerViewModel = PomodoroTimerViewModel()
-    val userViewModel : UserViewModel = viewModel(factory = viewModelFactory)
+    val userViewModel : UserViewModel = viewModel(factory = userViewModelFactory)
+    val itemViewModel: ItemViewModel = viewModel(factory = itemViewModelFactory)
+    val ownViewModel: OwnViewModel = viewModel(factory = ownViewModelFactory)
+
+    itemViewModel.deleteAll()
+    itemViewModel.insert(id = 1, name = "Penguin Hat", type = "Hat", rarity = "Rare", image = "hat_1")
+    itemViewModel.insert(id = 2, name = "Santa Boy Hat", type = "Hat", rarity = "Epic", image = "santa_boy_hat")
+    itemViewModel.insert(id = 3, name = "Janus Wig", type = "Hat", rarity = "Legendary", image = "janus_wig")
+
+    ownViewModel.deleteAll()
 
     NavHost(
         navController = navController,
@@ -137,11 +151,11 @@ fun NavGraph(navController: NavHostController, viewModelFactory: UserViewModelFa
         }
 
         composable(Screens.AvatarEditScreen.route) {
-            AvatarEditPage(navController = navController)
+            AvatarEditPage(navController = navController, userViewModel = userViewModel, itemViewModel = itemViewModel, ownViewModel = ownViewModel)
         }
 
         composable(Screens.AvatarShopScreen.route) {
-            AvatarShopPage(navController = navController)
+            AvatarShopPage(navController = navController, userViewModel = userViewModel, itemViewModel = itemViewModel, ownViewModel = ownViewModel)
         }
 
         composable(Screens.SettingsScreen.route) {

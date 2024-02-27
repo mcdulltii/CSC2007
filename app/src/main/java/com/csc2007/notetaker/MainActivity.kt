@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
 import com.csc2007.notetaker.database.NoteTakingApp
+import com.csc2007.notetaker.database.viewmodel.ItemViewModelFactory
+import com.csc2007.notetaker.database.viewmodel.OwnViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.util.NavGraph
@@ -24,12 +26,20 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val viewModelFactory = UserViewModelFactory(
-            (application as NoteTakingApp).repository
+        val userViewModelFactory = UserViewModelFactory(
+            (application as NoteTakingApp).userRepository
+        )
+
+        val itemViewModelFactory = ItemViewModelFactory(
+            (application as NoteTakingApp).itemRepository
+        )
+
+        val ownViewModelFactory = OwnViewModelFactory(
+            (application as NoteTakingApp).ownRepository
         )
 
         setContent {
-            MainApp(viewModelFactory = viewModelFactory)
+            MainApp(userViewModelFactory = userViewModelFactory, itemViewModelFactory = itemViewModelFactory, ownViewModelFactory = ownViewModelFactory)
         }
     }
 }
@@ -39,7 +49,9 @@ class MainActivity : ComponentActivity() {
 @ExperimentalPermissionsApi
 @Composable
 fun MainApp(
-    viewModelFactory: UserViewModelFactory
+    userViewModelFactory: UserViewModelFactory,
+    itemViewModelFactory: ItemViewModelFactory,
+    ownViewModelFactory: OwnViewModelFactory
 ) {
     val navController = rememberNavController()
 
@@ -48,7 +60,7 @@ fun MainApp(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            NavGraph(navController = navController, viewModelFactory = viewModelFactory)
+            NavGraph(navController = navController, userViewModelFactory = userViewModelFactory, itemViewModelFactory = itemViewModelFactory, ownViewModelFactory = ownViewModelFactory)
         }
     }
 }

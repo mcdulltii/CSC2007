@@ -28,6 +28,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,23 +41,40 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.ImageLoader
+import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
+import coil.request.ImageRequest
+import coil.size.Size
 import com.csc2007.notetaker.R
+import com.csc2007.notetaker.database.viewmodel.ItemViewModel
+import com.csc2007.notetaker.database.viewmodel.OwnViewModel
+import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.ui.AvatarBottomNavBar
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.TopNavBarText
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AvatarEditPage(
     modifier: Modifier = Modifier,
-    navController: NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
+    userViewModel: UserViewModel = viewModel(),
+    itemViewModel: ItemViewModel = viewModel(),
+    ownViewModel: OwnViewModel = viewModel()
 ) {
+
+    // Get current logged in user's details
+    val loggedInUser = userViewModel.loggedInUser.collectAsState().value
+    val id = remember { mutableStateOf(if (loggedInUser !== null) loggedInUser.id else 0) }
+
+    // Get current logged in user's items
+    ownViewModel.getOwnedItems(userId = id.value)
+    val ownedItems by ownViewModel.ownedItems.collectAsState()
 
     val context = LocalContext.current
     val imageLoader = ImageLoader.Builder(context)
@@ -68,13 +88,15 @@ fun AvatarEditPage(
         .build()
 
 
-    val hats = listOf(R.drawable.hat_1, R.drawable.hat_1, R.drawable.hat_1, R.drawable.hat_1)
+//    val hats = listOf(R.drawable.hat_1, R.drawable.hat_1, R.drawable.hat_1, R.drawable.hat_1)
 
     Column(modifier = modifier){
         TopNavBarText(navController = navController, title = "Edit Avatar")
 
         Image(
-            painter = painterResource(id = R.drawable.base_avatar),
+            painter = rememberAsyncImagePainter(ImageRequest.Builder(context).data(data = R.drawable.base_avatar).apply(block = {
+                size(Size.ORIGINAL)
+            }).build(), imageLoader = imageLoader),
             contentDescription = "Avatar Image",
             modifier = Modifier
                 .size(250.dp)
@@ -90,24 +112,34 @@ fun AvatarEditPage(
                     .clip(shape = RoundedCornerShape(30.dp, 30.dp, 0.dp, 0.dp))
                     .background(color = MaterialTheme.colorScheme.secondaryContainer),
                 horizontalArrangement = Arrangement.Center) {
-                items(hats) {
-                        hat ->
-                    Box(
-                        modifier = Modifier.aspectRatio(1f),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        FloatingActionButton(
-                            onClick = { /*TODO*/ },) {
-                            Image(
-                                painter = painterResource(id = hat),
-                                contentDescription = "Avatar Image",
-                                modifier = Modifier
-                                    .padding(16.dp)
-                                    .size(50.dp)
-                                    .align(Alignment.Center))
+                if (ownedItems !== null) {
+                    items(ownedItems!!) {
+                        item ->
+
+                        val resID = context.resources.getIdentifier(
+                            item.image,
+                            "drawable",
+                            context.packageName
+                        )
+
+                        Box(
+                            modifier = Modifier.aspectRatio(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            FloatingActionButton(
+                                onClick = { /*TODO*/ },) {
+                                Image(
+                                    painter = painterResource(id = resID),
+                                    contentDescription = "Avatar Image",
+                                    modifier = Modifier
+                                        .padding(16.dp)
+                                        .size(50.dp)
+                                        .align(Alignment.Center))
+                            }
                         }
                     }
                 }
+
             }
 
             AvatarBottomNavBar()

@@ -10,5 +10,5 @@ data class Item (
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "type") val type: String,
     @ColumnInfo(name = "rarity") val rarity: String,
-    @ColumnInfo(name = "image") val image: Int,
+    @ColumnInfo(name = "image") val image: String,
 )

@@ -18,4 +18,16 @@ class ItemRepository(private val itemDao: ItemDao) {
             itemDao.getItemById(id)
         }
     }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun insert(item: Item) {
+        itemDao.insert(item)
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun deleteAll() {
+        itemDao.deleteAll()
+    }
 }

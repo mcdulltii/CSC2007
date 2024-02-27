@@ -86,7 +86,9 @@ fun AvatarPage(
                 contentAlignment = Alignment.TopEnd
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.base_avatar),
+                    painter = rememberAsyncImagePainter(ImageRequest.Builder(context).data(data = R.drawable.base_avatar).apply(block = {
+                        size(Size.ORIGINAL)
+                    }).build(), imageLoader = imageLoader),
                     contentDescription = "Avatar Image",
                     modifier = Modifier
                         .size(250.dp)
