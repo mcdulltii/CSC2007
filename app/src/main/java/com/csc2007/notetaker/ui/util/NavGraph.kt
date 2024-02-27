@@ -138,13 +138,6 @@ fun NavGraph(
     val moduleViewModel: ModuleViewModel = viewModel(factory = moduleViewModelFactory)
     val moduleState by moduleViewModel.state.collectAsState()
 
-//    itemViewModel.deleteAll()
-//    itemViewModel.insert(id = 1, name = "Penguin Hat", type = "Hat", rarity = "Rare", image = "hat_1")
-//    itemViewModel.insert(id = 2, name = "Santa Boy Hat", type = "Hat", rarity = "Epic", image = "santa_boy_hat")
-//    itemViewModel.insert(id = 3, name = "Janus Wig", type = "Hat", rarity = "Legendary", image = "janus_wig")
-//
-//    ownViewModel.deleteAll()
-
     // sample chatter
     val privateChat = remember{ mutableStateOf<Chatter>(
         Chatter(id = 999,
