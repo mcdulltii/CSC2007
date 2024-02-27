@@ -57,8 +57,8 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.6")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("com.google.accompanist:accompanist-permissions:0.18.0")
@@ -75,7 +75,7 @@ dependencies {
     ksp("androidx.room:room-compiler:2.6.1")
     androidTestImplementation("androidx.room:room-testing:2.6.1")
 
-    val compose_version = "1.5.4"
+    val compose_version = "1.6.1"
     implementation("androidx.compose.ui:ui:${compose_version}")
     implementation("androidx.compose.ui:ui-tooling-preview:${compose_version}")
     implementation("androidx.compose.material:material-icons-extended")
@@ -95,14 +95,17 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${compose_version}")
     debugImplementation("androidx.compose.ui:ui-tooling:${compose_version}")
 
+    // OCR
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition:16.0.0")
+
     // Material 3
-    implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("androidx.compose.material3:material3:1.2.0")
 
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // Navigation
-    val nav_version = "2.7.6"
+    val nav_version = "2.7.7"
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
     // Icon Pack from Composable-Icon-Pack library

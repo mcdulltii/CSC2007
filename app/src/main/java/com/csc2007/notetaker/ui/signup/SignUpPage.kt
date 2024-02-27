@@ -41,6 +41,7 @@ import com.csc2007.notetaker.database.viewmodel.AvatarViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.TopNavBar
+import com.csc2007.notetaker.ui.util.Screens
 import kotlinx.coroutines.delay
 
 @Composable
@@ -65,7 +66,7 @@ fun SignUpPage(
         modifier = modifier
     ) {
 
-        TopNavBar(navController = navController)
+        TopNavBar(navController = navController, route = Screens.LandingScreen.route)
 
         Column(
             modifier = Modifier

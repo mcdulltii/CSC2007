@@ -15,6 +15,8 @@ import com.csc2007.notetaker.database.viewmodel.AvatarViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.ItemViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.OwnViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
+import com.csc2007.notetaker.database.viewmodel.module.ModuleViewModelFactory
+import com.csc2007.notetaker.database.viewmodel.note.NoteViewModelFactory
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.util.NavGraph
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -43,8 +45,22 @@ class MainActivity : ComponentActivity() {
             (application as NoteTakingApp).avatarRepository
         )
 
+        val noteViewModelFactory =
+            NoteViewModelFactory((application as NoteTakingApp).noteRepository)
+
+        val moduleViewModelFactory = ModuleViewModelFactory(
+            (application as NoteTakingApp).moduleRepository,
+            applicationContext
+        )
+
         setContent {
-            MainApp(userViewModelFactory = userViewModelFactory, itemViewModelFactory = itemViewModelFactory, ownViewModelFactory = ownViewModelFactory, avatarViewModelFactory = avatarViewModelFactory)
+            MainApp(
+              userViewModelFactory = userViewModelFactory,
+              noteViewModelFactory = noteViewModelFactory,
+              moduleViewModelFactory = moduleViewModelFactory,
+              itemViewModelFactory = itemViewModelFactory, 
+              ownViewModelFactory = ownViewModelFactory, 
+              avatarViewModelFactory = avatarViewModelFactory)
         }
     }
 }
@@ -55,6 +71,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainApp(
     userViewModelFactory: UserViewModelFactory,
+    noteViewModelFactory: NoteViewModelFactory,
+    moduleViewModelFactory: ModuleViewModelFactory,
     itemViewModelFactory: ItemViewModelFactory,
     ownViewModelFactory: OwnViewModelFactory,
     avatarViewModelFactory: AvatarViewModelFactory
@@ -64,9 +82,16 @@ fun MainApp(
     NoteTakerTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+            color = MaterialTheme.colorScheme.background,
         ) {
-            NavGraph(navController = navController, userViewModelFactory = userViewModelFactory, itemViewModelFactory = itemViewModelFactory, ownViewModelFactory = ownViewModelFactory, avatarViewModelFactory = avatarViewModelFactory)
+            NavGraph(
+              navController = navController, 
+              userViewModelFactory = userViewModelFactory,
+              noteViewModelFactory = noteViewModelFactory,
+              moduleViewModelFactory = moduleViewModelFactory,
+              itemViewModelFactory = itemViewModelFactory, 
+              ownViewModelFactory = ownViewModelFactory, 
+              avatarViewModelFactory = avatarViewModelFactory)
         }
     }
 }

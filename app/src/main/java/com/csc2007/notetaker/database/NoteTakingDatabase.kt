@@ -8,7 +8,11 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.csc2007.notetaker.database.dao.AvatarDao
 import com.csc2007.notetaker.database.dao.ItemDao
 import com.csc2007.notetaker.database.dao.OwnDao
+import com.csc2007.notetaker.database.dao.ModuleDao
+import com.csc2007.notetaker.database.dao.NoteDao
 import com.csc2007.notetaker.database.dao.UserDao
+import com.csc2007.notetaker.database.entity.Module
+import com.csc2007.notetaker.database.entity.Note
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,6 +24,8 @@ abstract class NoteTakingDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
     abstract fun ownDao(): OwnDao
     abstract fun avatarDao(): AvatarDao
+    abstract fun noteDao(): NoteDao
+    abstract fun moduleDao(): ModuleDao
 
     companion object {
         @Volatile

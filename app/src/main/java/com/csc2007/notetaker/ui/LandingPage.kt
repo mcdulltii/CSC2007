@@ -36,6 +36,7 @@ fun LandingPage(
 
         Button(
             onClick = { navController.navigate("login_screen") },
+            colors = ButtonDefaults.buttonColors(containerColor = colors.primaryColor),
             modifier = Modifier.width(380.dp)) {
             Text(
                 text = "Login",
