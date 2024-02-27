@@ -1,6 +1,7 @@
 package com.csc2007.notetaker.ui.avatar
 
 import android.os.Build
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,6 +22,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +44,8 @@ import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Size
 import com.csc2007.notetaker.R
+import com.csc2007.notetaker.database.AvatarItem
+import com.csc2007.notetaker.database.viewmodel.AvatarViewModel
 import com.csc2007.notetaker.database.viewmodel.ItemViewModel
 import com.csc2007.notetaker.database.viewmodel.OwnViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
@@ -54,7 +59,8 @@ fun AvatarEditPage(
     navController: NavController = rememberNavController(),
     userViewModel: UserViewModel = viewModel(),
     itemViewModel: ItemViewModel = viewModel(),
-    ownViewModel: OwnViewModel = viewModel()
+    ownViewModel: OwnViewModel = viewModel(),
+    avatarViewModel: AvatarViewModel = viewModel()
 ) {
 
     // Get current logged in user's details
@@ -65,9 +71,17 @@ fun AvatarEditPage(
     ownViewModel.getOwnedItems(userId = id.value)
     val ownedItems by ownViewModel.ownedItems.collectAsState()
 
+    // Get current logged in user's avatar
+    avatarViewModel.getUserAvatar(userId = id.value)
+    val avatarImageString = remember { mutableStateOf("") }
+    avatarViewModel.getUserAvatarImage()
+    avatarImageString.value = avatarViewModel.avatarImageString.collectAsState().value
+
+    val selectedTab = remember { mutableStateOf("hat") }
+
     val context = LocalContext.current
     val imageLoader = ImageLoader.Builder(context)
-        .components{
+        .components {
             if (Build.VERSION.SDK_INT >= 28) {
                 add(ImageDecoderDecoder.Factory())
             } else {
@@ -76,36 +90,45 @@ fun AvatarEditPage(
         }
         .build()
 
+    val avatarResId = context.resources.getIdentifier(
+        avatarImageString.value,
+        "drawable",
+        context.packageName
+    )
+    Log.d("AvatarEditPage", "${avatarImageString}")
 
-//    val hats = listOf(R.drawable.hat_1, R.drawable.hat_1, R.drawable.hat_1, R.drawable.hat_1)
-
-    Column(modifier = modifier){
+    Column(modifier = modifier) {
         TopNavBarText(navController = navController, title = "Edit Avatar")
 
         Image(
-            painter = rememberAsyncImagePainter(ImageRequest.Builder(context).data(data = R.drawable.base_avatar).apply(block = {
-                size(Size.ORIGINAL)
-            }).build(), imageLoader = imageLoader),
+            painter = rememberAsyncImagePainter(
+                ImageRequest.Builder(context).data(data = avatarResId).apply(block = {
+                    size(Size.ORIGINAL)
+                }).build(), imageLoader = imageLoader
+            ),
             contentDescription = "Avatar Image",
             modifier = Modifier
                 .size(250.dp)
-                .align(Alignment.CenterHorizontally))
+                .align(Alignment.CenterHorizontally)
+        )
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Column {
+        Column(
+            modifier = Modifier
+                .height(400.dp)
+                .fillMaxWidth()
+                .clip(shape = RoundedCornerShape(30.dp, 30.dp, 0.dp, 0.dp))
+                .background(color = MaterialTheme.colorScheme.secondaryContainer)
+        ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
-                modifier = Modifier
-                    .height(400.dp)
-                    .clip(shape = RoundedCornerShape(30.dp, 30.dp, 0.dp, 0.dp))
-                    .background(color = MaterialTheme.colorScheme.secondaryContainer),
-                horizontalArrangement = Arrangement.Center) {
-                if (ownedItems !== null) {
-                    items(ownedItems!!) {
-                        item ->
+                horizontalArrangement = Arrangement.Center
+            ) {
+                if (ownedItems != null) {
+                    items(ownedItems!!) { item ->
 
-                        val resID = context.resources.getIdentifier(
+                        val resId = context.resources.getIdentifier(
                             item.image,
                             "drawable",
                             context.packageName
@@ -116,23 +139,26 @@ fun AvatarEditPage(
                             contentAlignment = Alignment.Center
                         ) {
                             FloatingActionButton(
-                                onClick = { /*TODO*/ },) {
+                                onClick = {
+                                    avatarViewModel.equipItem(userId = id.value, item.itemId, item.type)
+                                },
+                            ) {
                                 Image(
-                                    painter = painterResource(id = resID),
+                                    painter = painterResource(id = resId),
                                     contentDescription = "Avatar Image",
                                     modifier = Modifier
                                         .padding(16.dp)
                                         .size(50.dp)
-                                        .align(Alignment.Center))
+                                        .align(Alignment.Center)
+                                )
                             }
                         }
                     }
                 }
-
             }
-
-            AvatarBottomNavBar()
         }
+
+        AvatarBottomNavBar()
     }
 }
 

@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.csc2007.notetaker.database.Avatar
 import com.csc2007.notetaker.database.User
 import kotlinx.coroutines.flow.Flow
 
@@ -20,6 +21,9 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(user: User)
 
+    @Query("SELECT * FROM user_table ORDER BY id DESC LIMIT 1")
+    suspend fun getLastUser(): User
+
     @Query("SELECT * FROM user_table WHERE id = :id")
     suspend fun getUserById(id: Int): User
 
@@ -34,4 +38,7 @@ interface UserDao {
 
     @Query("DELETE FROM user_table")
     suspend fun deleteAll()
+
+    @Query("INSERT INTO avatar_table (userId) VALUES (:userId)")
+    suspend fun createNewAvatar(userId: Int)
 }

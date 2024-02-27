@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
 import com.csc2007.notetaker.database.NoteTakingApp
+import com.csc2007.notetaker.database.viewmodel.AvatarViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.ItemViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.OwnViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
@@ -38,8 +39,12 @@ class MainActivity : ComponentActivity() {
             (application as NoteTakingApp).ownRepository
         )
 
+        val avatarViewModelFactory = AvatarViewModelFactory(
+            (application as NoteTakingApp).avatarRepository
+        )
+
         setContent {
-            MainApp(userViewModelFactory = userViewModelFactory, itemViewModelFactory = itemViewModelFactory, ownViewModelFactory = ownViewModelFactory)
+            MainApp(userViewModelFactory = userViewModelFactory, itemViewModelFactory = itemViewModelFactory, ownViewModelFactory = ownViewModelFactory, avatarViewModelFactory = avatarViewModelFactory)
         }
     }
 }
@@ -51,7 +56,8 @@ class MainActivity : ComponentActivity() {
 fun MainApp(
     userViewModelFactory: UserViewModelFactory,
     itemViewModelFactory: ItemViewModelFactory,
-    ownViewModelFactory: OwnViewModelFactory
+    ownViewModelFactory: OwnViewModelFactory,
+    avatarViewModelFactory: AvatarViewModelFactory
 ) {
     val navController = rememberNavController()
 
@@ -60,7 +66,7 @@ fun MainApp(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            NavGraph(navController = navController, userViewModelFactory = userViewModelFactory, itemViewModelFactory = itemViewModelFactory, ownViewModelFactory = ownViewModelFactory)
+            NavGraph(navController = navController, userViewModelFactory = userViewModelFactory, itemViewModelFactory = itemViewModelFactory, ownViewModelFactory = ownViewModelFactory, avatarViewModelFactory = avatarViewModelFactory)
         }
     }
 }

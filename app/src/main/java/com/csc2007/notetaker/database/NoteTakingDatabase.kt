@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.csc2007.notetaker.database.dao.AvatarDao
 import com.csc2007.notetaker.database.dao.ItemDao
 import com.csc2007.notetaker.database.dao.OwnDao
 import com.csc2007.notetaker.database.dao.UserDao
@@ -12,12 +13,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [User::class, Item::class, Own::class], version = 5)
+@Database(entities = [User::class, Item::class, Own::class, Avatar::class], version = 7)
 abstract class NoteTakingDatabase : RoomDatabase() {
 
     abstract fun userDao() : UserDao
     abstract fun itemDao(): ItemDao
     abstract fun ownDao(): OwnDao
+    abstract fun avatarDao(): AvatarDao
 
     companion object {
         @Volatile

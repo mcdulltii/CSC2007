@@ -91,6 +91,9 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
         viewModelScope.launch {
             val user = User(email = email, userName = username, password = hashString(password))
             repository.insert(user)
+
+            val insertedUser = repository.getLastUser()
+            repository.createNewAvatar(insertedUser.id)
         }
     }
 }

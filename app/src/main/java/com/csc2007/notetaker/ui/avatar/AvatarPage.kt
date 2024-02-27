@@ -25,11 +25,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.ImageLoader
@@ -39,6 +43,8 @@ import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Size
 import com.csc2007.notetaker.R
+import com.csc2007.notetaker.database.viewmodel.AvatarViewModel
+import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.util.Screens
@@ -47,8 +53,20 @@ import com.csc2007.notetaker.ui.util.Screens
 @Composable
 fun AvatarPage(
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    userViewModel: UserViewModel = viewModel(),
+    avatarViewModel: AvatarViewModel = viewModel()
     ) {
+
+    // Get current logged in user's details
+    val loggedInUser = userViewModel.loggedInUser.collectAsState().value
+    val id = remember { mutableStateOf(if (loggedInUser !== null) loggedInUser.id else 0) }
+
+    // Get current logged in user's avatar
+    avatarViewModel.getUserAvatar(userId = id.value)
+    val avatarImageString = remember { mutableStateOf("") }
+    avatarViewModel.getUserAvatarImage()
+    avatarImageString.value = avatarViewModel.avatarImageString.collectAsState().value
 
     val context = LocalContext.current
     val imageLoader = ImageLoader.Builder(context)
@@ -60,6 +78,12 @@ fun AvatarPage(
             }
         }
         .build()
+
+    val avatarResId = context.resources.getIdentifier(
+        avatarImageString.value,
+        "drawable",
+        context.packageName
+    )
 
     Column(
         modifier = modifier,
@@ -78,7 +102,7 @@ fun AvatarPage(
                 contentAlignment = Alignment.TopEnd
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter(ImageRequest.Builder(context).data(data = R.drawable.base_avatar).apply(block = {
+                    painter = rememberAsyncImagePainter(ImageRequest.Builder(context).data(data = avatarResId).apply(block = {
                         size(Size.ORIGINAL)
                     }).build(), imageLoader = imageLoader),
                     contentDescription = "Avatar Image",

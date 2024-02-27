@@ -37,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.csc2007.notetaker.R
+import com.csc2007.notetaker.database.viewmodel.AvatarViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.TopNavBar
@@ -45,7 +46,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun SignUpPage(
     modifier: Modifier = Modifier,
-    viewModel: UserViewModel = viewModel(),
+    userViewModel: UserViewModel = viewModel(),
+    avatarViewModel: AvatarViewModel = viewModel(),
     navController: NavController = rememberNavController(),
 ) {
 
@@ -121,7 +123,7 @@ fun SignUpPage(
 
                 Button(
                     onClick = {
-                        result = RegisterUser(email, username, password, confirmPassword, viewModel)
+                        result = RegisterUser(email, username, password, confirmPassword, userViewModel, avatarViewModel)
                     },
                     enabled = email.value.isNotBlank() && username.value.isNotBlank() && password.value.isNotBlank() && confirmPassword.value.isNotBlank()
                 ) {
@@ -173,7 +175,8 @@ private fun RegisterUser(
     username: MutableState<String>,
     password: MutableState<String>,
     confirmPassword: MutableState<String>,
-    viewModel: UserViewModel) : String {
+    userViewModel: UserViewModel,
+    avatarViewModel: AvatarViewModel) : String {
 
     if (email.value.isEmpty() or username.value.isEmpty() or password.value.isEmpty() or confirmPassword.value.isEmpty()) {
         return "Invalid input"
@@ -187,7 +190,7 @@ private fun RegisterUser(
         return "Password mismatch"
     }
 
-    viewModel.register(email.value, username.value, password.value)
+    userViewModel.register(email.value, username.value, password.value)
 
     return "Successfully created user account"
 }

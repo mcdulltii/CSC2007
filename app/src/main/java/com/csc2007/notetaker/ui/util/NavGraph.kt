@@ -13,6 +13,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import coil.annotation.ExperimentalCoilApi
+import com.csc2007.notetaker.database.viewmodel.AvatarViewModel
+import com.csc2007.notetaker.database.viewmodel.AvatarViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.ItemViewModel
 import com.csc2007.notetaker.database.viewmodel.ItemViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.OwnViewModel
@@ -90,12 +92,13 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
 @ExperimentalCoroutinesApi
 @ExperimentalPermissionsApi
 @Composable
-fun NavGraph(navController: NavHostController, userViewModelFactory: UserViewModelFactory, itemViewModelFactory: ItemViewModelFactory, ownViewModelFactory: OwnViewModelFactory) {
+fun NavGraph(navController: NavHostController, userViewModelFactory: UserViewModelFactory, itemViewModelFactory: ItemViewModelFactory, ownViewModelFactory: OwnViewModelFactory, avatarViewModelFactory: AvatarViewModelFactory) {
 
     val pomodoroTimerViewModel = PomodoroTimerViewModel()
     val userViewModel : UserViewModel = viewModel(factory = userViewModelFactory)
     val itemViewModel: ItemViewModel = viewModel(factory = itemViewModelFactory)
     val ownViewModel: OwnViewModel = viewModel(factory = ownViewModelFactory)
+    val avatarViewModel: AvatarViewModel = viewModel(factory = avatarViewModelFactory)
 
     itemViewModel.deleteAll()
     itemViewModel.insert(id = 1, name = "Penguin Hat", type = "Hat", rarity = "Rare", image = "hat_1")
@@ -114,7 +117,7 @@ fun NavGraph(navController: NavHostController, userViewModelFactory: UserViewMod
         }
 
         composable(Screens.SignUpScreen.route) {
-            SignUpPage(viewModel = userViewModel, navController = navController)
+            SignUpPage(userViewModel = userViewModel, avatarViewModel = avatarViewModel, navController = navController)
         }
 
         composable(Screens.LoginScreen.route) {
@@ -146,11 +149,11 @@ fun NavGraph(navController: NavHostController, userViewModelFactory: UserViewMod
         }
 
         composable(Screens.AvatarScreen.route) {
-            AvatarPage(navController = navController)
+            AvatarPage(navController = navController, userViewModel = userViewModel, avatarViewModel = avatarViewModel)
         }
 
         composable(Screens.AvatarEditScreen.route) {
-            AvatarEditPage(navController = navController, userViewModel = userViewModel, itemViewModel = itemViewModel, ownViewModel = ownViewModel)
+            AvatarEditPage(navController = navController, userViewModel = userViewModel, itemViewModel = itemViewModel, ownViewModel = ownViewModel, avatarViewModel = avatarViewModel)
         }
 
         composable(Screens.AvatarShopScreen.route) {
