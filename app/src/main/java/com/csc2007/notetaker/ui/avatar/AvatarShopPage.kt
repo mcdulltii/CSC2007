@@ -1,6 +1,5 @@
 package com.csc2007.notetaker.ui.avatar
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -70,7 +69,7 @@ fun AvatarShopPage(
 
     val items by itemViewModel.allItems.collectAsState()
 
-    var randomItem = remember { mutableStateOf<Item?>(null) }
+    val randomItem = remember { mutableStateOf<Item?>(null) }
 
     // Get current logged in user's details
     val loggedInUser = userViewModel.loggedInUser.collectAsState().value

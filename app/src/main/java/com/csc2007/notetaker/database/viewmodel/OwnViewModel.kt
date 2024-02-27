@@ -6,11 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.csc2007.notetaker.database.Own
 import com.csc2007.notetaker.database.OwnItem
 import com.csc2007.notetaker.database.repository.OwnRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class OwnViewModel(private val repository: OwnRepository): ViewModel() {
 

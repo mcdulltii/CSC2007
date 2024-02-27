@@ -13,7 +13,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import coil.annotation.ExperimentalCoilApi
-import com.csc2007.notetaker.database.Item
 import com.csc2007.notetaker.database.viewmodel.ItemViewModel
 import com.csc2007.notetaker.database.viewmodel.ItemViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.OwnViewModel
