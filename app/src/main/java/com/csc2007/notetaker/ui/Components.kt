@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Headset
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +38,13 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.csc2007.notetaker.ui.util.Screens
+import compose.icons.AllIcons
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Regular
+import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.Glasses
+import compose.icons.fontawesomeicons.solid.ShoePrints
+import compose.icons.fontawesomeicons.solid.Tshirt
 
 
 @Composable
@@ -108,6 +116,56 @@ fun TopNavBarText(navController: NavController = rememberNavController(), title:
                 )
         },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),)
+}
+
+@Composable
+fun AvatarBottomNavBar() {
+    BottomAppBar {
+        NavigationBarItem(
+            onClick = { /*TODO*/ },
+            label = {
+                    Text(text = "Hat")
+            },
+            selected = false,
+            icon = { Icon(Icons.Filled.Headset, contentDescription = "Hat Icon") }
+        )
+
+        NavigationBarItem(
+            onClick = { /*TODO*/ },
+            label = {
+                Text(text = "Accessory")
+            },
+            selected = false,
+            icon = { Icon(FontAwesomeIcons.Solid.Glasses, contentDescription = "Glasses Icon", modifier = Modifier.size(24.dp)) }
+        )
+
+        NavigationBarItem(
+            onClick = { /*TODO*/ },
+            label = {
+                Text(text = "Shirt")
+            },
+            selected = false,
+            icon = { Icon(FontAwesomeIcons.Solid.Tshirt, contentDescription = "Shirt Icon", modifier = Modifier.size(24.dp)) }
+        )
+
+        NavigationBarItem(
+            onClick = { /*TODO*/ },
+            label = {
+                Text(text = "Pants")
+            },
+            selected = false,
+            icon = { Icon(FontAwesomeIcons.Solid.Tshirt, contentDescription = "Shorts Icon", modifier = Modifier.size(24.dp)) }
+        )
+
+        NavigationBarItem(
+            onClick = { /*TODO*/ },
+            label = {
+                Text(text = "Shoes")
+            },
+            selected = false,
+            icon = { Icon(FontAwesomeIcons.Solid.ShoePrints, contentDescription = "Shoes Icon", modifier = Modifier.size(24.dp)) }
+        )
+    }
 }
 
 @Composable

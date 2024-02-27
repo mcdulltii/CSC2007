@@ -3,6 +3,7 @@ package com.csc2007.notetaker.database.repository
 import androidx.annotation.WorkerThread
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import com.csc2007.notetaker.database.Avatar
 import com.csc2007.notetaker.database.User
 import com.csc2007.notetaker.database.dao.UserDao
 import kotlinx.coroutines.Dispatchers
@@ -27,17 +28,37 @@ class UsersRepository(private val userDao: UserDao, private val dataStore: DataS
         userDao.insert(user)
     }
 
-    @Suppress("RedudantSuspendModifier")
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun getLastUser(): User {
+        return withContext(Dispatchers.IO) {
+            userDao.getLastUser()
+        }
+    }
+
+    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun updateEmailAndUserName(email: String, username: String, id: Int) {
         userDao.updateEmailAndUserName(email, username, id)
     }
 
-    @Suppress("RedudantSuspendModifier")
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun updatePassword(password: ByteArray, id: Int) {
+        userDao.updatePassword(password, id)
+    }
+
+    @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun getUserById(id: Int): User {
         return withContext(Dispatchers.IO) {
             userDao.getUserById(id)
         }
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun createNewAvatar(userId: Int) {
+        userDao.createNewAvatar(userId)
     }
 }

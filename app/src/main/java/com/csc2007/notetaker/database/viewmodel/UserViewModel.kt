@@ -54,6 +54,13 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
         }
     }
 
+    fun logout() {
+        _loggedIn.value = null
+        _loggedInUser.value = null
+        _loggedInUserEmail.value = ""
+        _loggedInUserUsername.value = ""
+    }
+
 
     private fun getUserById(id: Int) {
         viewModelScope.launch {
@@ -74,10 +81,19 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
         }
     }
 
+    fun updatePassword(password: String, id: Int) {
+        viewModelScope.launch {
+            repository.updatePassword(password = hashString(password), id = id)
+        }
+    }
+
     fun register(email: String, username: String, password: String) {
         viewModelScope.launch {
             val user = User(email = email, userName = username, password = hashString(password))
             repository.insert(user)
+
+            val insertedUser = repository.getLastUser()
+            repository.createNewAvatar(insertedUser.id)
         }
     }
 }

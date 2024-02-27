@@ -11,6 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
 import com.csc2007.notetaker.database.NoteTakingApp
+import com.csc2007.notetaker.database.viewmodel.AvatarViewModelFactory
+import com.csc2007.notetaker.database.viewmodel.ItemViewModelFactory
+import com.csc2007.notetaker.database.viewmodel.OwnViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.module.ModuleViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.note.NoteViewModelFactory
@@ -26,8 +29,20 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val viewModelFactory = UserViewModelFactory(
-            (application as NoteTakingApp).repository
+        val userViewModelFactory = UserViewModelFactory(
+            (application as NoteTakingApp).userRepository
+        )
+
+        val itemViewModelFactory = ItemViewModelFactory(
+            (application as NoteTakingApp).itemRepository
+        )
+
+        val ownViewModelFactory = OwnViewModelFactory(
+            (application as NoteTakingApp).ownRepository
+        )
+
+        val avatarViewModelFactory = AvatarViewModelFactory(
+            (application as NoteTakingApp).avatarRepository
         )
 
         val noteViewModelFactory =
@@ -40,10 +55,12 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MainApp(
-                viewModelFactory = viewModelFactory,
-                noteViewModelFactory = noteViewModelFactory,
-                moduleViewModelFactory = moduleViewModelFactory
-            )
+              userViewModelFactory = userViewModelFactory,
+              noteViewModelFactory = noteViewModelFactory,
+              moduleViewModelFactory = moduleViewModelFactory,
+              itemViewModelFactory = itemViewModelFactory, 
+              ownViewModelFactory = ownViewModelFactory, 
+              avatarViewModelFactory = avatarViewModelFactory)
         }
     }
 }
@@ -53,9 +70,12 @@ class MainActivity : ComponentActivity() {
 @ExperimentalPermissionsApi
 @Composable
 fun MainApp(
-    viewModelFactory: UserViewModelFactory,
+    userViewModelFactory: UserViewModelFactory,
     noteViewModelFactory: NoteViewModelFactory,
-    moduleViewModelFactory: ModuleViewModelFactory
+    moduleViewModelFactory: ModuleViewModelFactory,
+    itemViewModelFactory: ItemViewModelFactory,
+    ownViewModelFactory: OwnViewModelFactory,
+    avatarViewModelFactory: AvatarViewModelFactory
 ) {
     val navController = rememberNavController()
 
@@ -65,11 +85,13 @@ fun MainApp(
             color = MaterialTheme.colorScheme.background,
         ) {
             NavGraph(
-                navController = navController,
-                viewModelFactory = viewModelFactory,
-                noteViewModelFactory = noteViewModelFactory,
-                moduleViewModelFactory = moduleViewModelFactory
-            )
+              navController = navController, 
+              userViewModelFactory = userViewModelFactory,
+              noteViewModelFactory = noteViewModelFactory,
+              moduleViewModelFactory = moduleViewModelFactory,
+              itemViewModelFactory = itemViewModelFactory, 
+              ownViewModelFactory = ownViewModelFactory, 
+              avatarViewModelFactory = avatarViewModelFactory)
         }
     }
 }

@@ -16,10 +16,10 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.Font
@@ -43,10 +43,7 @@ import com.csc2007.notetaker.ui.util.Screens
 fun LoginPage(
     modifier: Modifier = Modifier,
     viewModel: UserViewModel = viewModel(),
-    navController: NavController = rememberNavController(),
-    email: MutableState<String> = mutableStateOf(""),
-    password: MutableState<String> = mutableStateOf(""),
-    loggedIn: MutableState<Boolean?> = mutableStateOf(false)
+    navController: NavController = rememberNavController()
 ) {
 
     val ibmPlexFamily = FontFamily(
@@ -55,8 +52,10 @@ fun LoginPage(
 
     val loggedInState by viewModel.loggedIn.collectAsState()
 
+    val email = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
+
     if (loggedInState == true) {
-        loggedIn.value = loggedInState
         navController.navigate("pomodoro_screen")
     }
 

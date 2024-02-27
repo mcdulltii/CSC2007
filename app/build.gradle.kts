@@ -64,6 +64,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.18.0")
     implementation(platform("androidx.compose:compose-bom:2023.08.00"))
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("io.coil-kt:coil-gif:2.4.0")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
@@ -77,7 +78,7 @@ dependencies {
     val compose_version = "1.6.1"
     implementation("androidx.compose.ui:ui:${compose_version}")
     implementation("androidx.compose.ui:ui-tooling-preview:${compose_version}")
-    implementation("androidx.compose.material:material-icons-extended:$compose_version")
+    implementation("androidx.compose.material:material-icons-extended")
 
     val camerax_version = "1.3.1"
     implementation("androidx.camera:camera-core:${camerax_version}")
@@ -109,4 +110,7 @@ dependencies {
 
     // Icon Pack from Composable-Icon-Pack library
     implementation("br.com.devsrsouza.compose.icons:font-awesome:1.1.0")
+
+    // Lottie Animation
+    implementation("com.airbnb.android:lottie-compose:5.2.0")
 }

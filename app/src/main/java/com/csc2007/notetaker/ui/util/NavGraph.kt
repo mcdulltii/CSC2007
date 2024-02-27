@@ -21,6 +21,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
+import com.csc2007.notetaker.database.viewmodel.AvatarViewModel
+import com.csc2007.notetaker.database.viewmodel.AvatarViewModelFactory
+import com.csc2007.notetaker.database.viewmodel.ItemViewModel
+import com.csc2007.notetaker.database.viewmodel.ItemViewModelFactory
+import com.csc2007.notetaker.database.viewmodel.OwnViewModel
+import com.csc2007.notetaker.database.viewmodel.OwnViewModelFactory
 import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.viewmodel.PomodoroTimerViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
@@ -30,7 +36,9 @@ import com.csc2007.notetaker.database.viewmodel.module.ModuleViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.note.NoteViewModel
 import com.csc2007.notetaker.database.viewmodel.note.NoteViewModelFactory
 import com.csc2007.notetaker.ui.LandingPage
+import com.csc2007.notetaker.ui.avatar.AvatarEditPage
 import com.csc2007.notetaker.ui.avatar.AvatarPage
+import com.csc2007.notetaker.ui.avatar.AvatarShopPage
 import com.csc2007.notetaker.ui.camera.CameraPage
 import com.csc2007.notetaker.ui.chat.ChatPage
 import com.csc2007.notetaker.ui.chat.Chatter
@@ -45,6 +53,7 @@ import com.csc2007.notetaker.ui.note.pages.NotePage
 import com.csc2007.notetaker.ui.note.pages.NotesPage
 import com.csc2007.notetaker.ui.pomodoro.PomodoroPage
 import com.csc2007.notetaker.ui.settings.AccountSettingsPage
+import com.csc2007.notetaker.ui.settings.ChangePasswordPage
 import com.csc2007.notetaker.ui.settings.NotificationsSettingsPage
 import com.csc2007.notetaker.ui.settings.PomodoroSettingsPage
 import com.csc2007.notetaker.ui.settings.SettingsPage
@@ -100,9 +109,14 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
     object SettingsScreen :
         Screens(route = "settings_screen", icon = Icons.Default.Settings, title = "Settings")
 
-    object PomodoroSettingsScreen : Screens(route = "pomodoro_settings_screen")
-    object AccountSettingsScreen : Screens(route = "account_settings_screen")
-    object NotificationsSettingsScreen : Screens(route = "notifications_settings_screen")
+    object PomodoroSettingsScreen: Screens(route = "pomodoro_settings_screen")
+    object AccountSettingsScreen: Screens(route = "account_settings_screen")
+    object ChangePasswordScreen: Screens(route = "change_password_screen")
+    object NotificationsSettingsScreen: Screens(route = "notifications_settings_screen")
+
+    object AvatarShopScreen: Screens(route = "avatar_shop_screen")
+
+    object AvatarEditScreen: Screens(route = "avatar_edit_screen")
 
 }
 
@@ -111,27 +125,33 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
 @ExperimentalPermissionsApi
 @Composable
 fun NavGraph(
-    navController: NavHostController,
-    viewModelFactory: UserViewModelFactory,
+    navController: NavHostController, 
+    userViewModelFactory: UserViewModelFactory,
     noteViewModelFactory: NoteViewModelFactory,
-    moduleViewModelFactory: ModuleViewModelFactory
-) {
-
-    val userName = remember { mutableStateOf("") }
-    val email = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
-    val confirmPassword = remember { mutableStateOf("") }
-    val loggedIn = remember { mutableStateOf<Boolean?>(false) }
+    moduleViewModelFactory: ModuleViewModelFactory,
+    itemViewModelFactory: ItemViewModelFactory, 
+    ownViewModelFactory: OwnViewModelFactory, 
+    avatarViewModelFactory: AvatarViewModelFactory) {
 
     val pomodoroTimerViewModel = PomodoroTimerViewModel()
-    val userViewModel: UserViewModel = viewModel(factory = viewModelFactory)
-
+    val userViewModel : UserViewModel = viewModel(factory = userViewModelFactory)
+    val itemViewModel: ItemViewModel = viewModel(factory = itemViewModelFactory)
+    val ownViewModel: OwnViewModel = viewModel(factory = ownViewModelFactory)
+    val avatarViewModel: AvatarViewModel = viewModel(factory = avatarViewModelFactory)
+    
     val noteViewModel: NoteViewModel = viewModel(factory = noteViewModelFactory)
     val noteState by noteViewModel.state.collectAsState()
 
     val moduleViewModel: ModuleViewModel = viewModel(factory = moduleViewModelFactory)
     val moduleState by moduleViewModel.state.collectAsState()
 
+    itemViewModel.deleteAll()
+    itemViewModel.insert(id = 1, name = "Penguin Hat", type = "Hat", rarity = "Rare", image = "hat_1")
+    itemViewModel.insert(id = 2, name = "Santa Boy Hat", type = "Hat", rarity = "Epic", image = "santa_boy_hat")
+    itemViewModel.insert(id = 3, name = "Janus Wig", type = "Hat", rarity = "Legendary", image = "janus_wig")
+
+    ownViewModel.deleteAll()
+    
     // sample chatter
     val privateChat = remember{ mutableStateOf<Chatter>(
         Chatter(id = 999,
@@ -150,6 +170,17 @@ fun NavGraph(
         }
 
         composable(Screens.SignUpScreen.route) {
+            SignUpPage(
+              userViewModel = userViewModel, 
+              avatarViewModel = avatarViewModel, 
+              navController = navController)
+        }
+
+        composable(Screens.LoginScreen.route) {
+            LoginPage(
+              viewModel = userViewModel, 
+              navController = navController)
+
             SignUpPage(
                 viewModel = userViewModel,
                 navController = navController,
@@ -251,7 +282,15 @@ fun NavGraph(
         }
 
         composable(Screens.AvatarScreen.route) {
-            AvatarPage(navController = navController)
+            AvatarPage(navController = navController, userViewModel = userViewModel, avatarViewModel = avatarViewModel)
+        }
+
+        composable(Screens.AvatarEditScreen.route) {
+            AvatarEditPage(navController = navController, userViewModel = userViewModel, itemViewModel = itemViewModel, ownViewModel = ownViewModel, avatarViewModel = avatarViewModel)
+        }
+
+        composable(Screens.AvatarShopScreen.route) {
+            AvatarShopPage(navController = navController, userViewModel = userViewModel, itemViewModel = itemViewModel, ownViewModel = ownViewModel)
         }
 
         composable(Screens.SettingsScreen.route) {
@@ -267,6 +306,10 @@ fun NavGraph(
 
         composable(Screens.AccountSettingsScreen.route) {
             AccountSettingsPage(navController = navController, viewModel = userViewModel)
+        }
+
+        composable(Screens.ChangePasswordScreen.route) {
+            ChangePasswordPage(navController = navController, viewModel = userViewModel)
         }
 
         composable(Screens.NotificationsSettingsScreen.route) {
