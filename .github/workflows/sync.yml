@@ -23,8 +23,8 @@ jobs:
           git remote update
           git reset --hard
           git clean -f
-          git pull origin ${{ env.ORIGINAL_REPO_NAME }}/master --allow-unrelated-histories
-          git merge origin ${{ env.ORIGINAL_REPO_NAME }}/master
+          git pull ${{ env.ORIGINAL_REPO_NAME }} master --allow-unrelated-histories
+          git merge ${{ env.ORIGINAL_REPO_NAME }} master
           git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
