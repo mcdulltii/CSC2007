@@ -1,0 +1,29 @@
+name: Sync Repos
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v2
+
+      - name: Push to destination repository
+        run: |
+          git config --global user.email "mcdulltii@gmail.com"
+          git config --global user.name "mcdulltii"
+          git clone https://${{ secrets.PAT }}@github.com/inf2007/inf2007-team25-2024.git
+          cd inf2007-team25-2024
+          git remote add ${{ env.ORIGINAL_REPO_NAME }} https://${{ secrets.PAT }}@github.com/${{ env.ORG_NAME }}/${{ env.ORIGINAL_REPO_NAME }}.git
+          git remote update
+          git merge ${{ env.ORIGINAL_REPO_NAME }}/master
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+          ORIGINAL_REPO_NAME: ${{ github.event.repository.name }}
+          ORG_NAME: mcdulltii
