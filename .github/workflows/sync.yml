@@ -18,12 +18,11 @@ jobs:
           git config --global user.email "mcdulltii@gmail.com"
           git config --global user.name "mcdulltii"
           git clone https://${{ secrets.PAT }}@github.com/inf2007/inf2007-team25-2024.git
+          git clone https://${{ secrets.PAT }}@github.com/${{ env.ORG_NAME }}/${{ env.ORIGINAL_REPO_NAME }}.git
           cd inf2007-team25-2024
-          git remote add ${{ env.ORIGINAL_REPO_NAME }} https://${{ secrets.PAT }}@github.com/${{ env.ORG_NAME }}/${{ env.ORIGINAL_REPO_NAME }}.git
-          git remote update
-          git rm -rf .
-          git config pull.rebase true
-          git pull ${{ env.ORIGINAL_REPO_NAME }} master
+          cp ../${{ env.ORIGINAL_REPO_NAME }}/* . -rf
+          git add .
+          git commit -m "Sync from source"
           git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
