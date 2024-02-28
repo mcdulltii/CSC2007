@@ -22,8 +22,7 @@ jobs:
           git remote add ${{ env.ORIGINAL_REPO_NAME }} https://${{ secrets.PAT }}@github.com/${{ env.ORG_NAME }}/${{ env.ORIGINAL_REPO_NAME }}.git
           git remote update
           git reset --hard
-          git clean -f
-          git config pull.rebase true
+          git clean -fdX
           git pull ${{ env.ORIGINAL_REPO_NAME }} master
           git push origin main
         env:
