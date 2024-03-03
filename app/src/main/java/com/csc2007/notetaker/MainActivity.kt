@@ -20,6 +20,9 @@ import com.csc2007.notetaker.database.viewmodel.note.NoteViewModelFactory
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.util.NavGraph
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoilApi
@@ -54,6 +57,9 @@ class MainActivity : ComponentActivity() {
             applicationContext
         )
 
+        val firestore_db = Firebase.firestore
+        // val ChatRoomViewModelFactory = ChatRoomViewModelFactory()
+        // val ChatMessageViewModelFactory = ChatMessageViewModelFactory()
         setContent {
             MainApp(
               userViewModelFactory = userViewModelFactory,
@@ -61,7 +67,11 @@ class MainActivity : ComponentActivity() {
               moduleViewModelFactory = moduleViewModelFactory,
               itemViewModelFactory = itemViewModelFactory, 
               ownViewModelFactory = ownViewModelFactory, 
-              avatarViewModelFactory = avatarViewModelFactory)
+              avatarViewModelFactory = avatarViewModelFactory,
+                firestore_db = firestore_db)
+//            ,
+//            ChatRoomViewModelFactory = ChatRoomViewModelFactory,
+//            ChatMessageViewModelFactory = ChatMessageViewModelFactory
         }
     }
 }
@@ -76,7 +86,8 @@ fun MainApp(
     moduleViewModelFactory: ModuleViewModelFactory,
     itemViewModelFactory: ItemViewModelFactory,
     ownViewModelFactory: OwnViewModelFactory,
-    avatarViewModelFactory: AvatarViewModelFactory
+    avatarViewModelFactory: AvatarViewModelFactory,
+    firestore_db : FirebaseFirestore
 ) {
     val navController = rememberNavController()
 
@@ -92,7 +103,11 @@ fun MainApp(
               moduleViewModelFactory = moduleViewModelFactory,
               itemViewModelFactory = itemViewModelFactory, 
               ownViewModelFactory = ownViewModelFactory, 
-              avatarViewModelFactory = avatarViewModelFactory)
+              avatarViewModelFactory = avatarViewModelFactory,
+              firestore_db = firestore_db
+//            ChatRoomViewModelFactory = ChatRoomViewModelFactory,
+//            ChatMessageViewModelFactory = ChatMessageViewModelFactory
+            )
         }
     }
 }

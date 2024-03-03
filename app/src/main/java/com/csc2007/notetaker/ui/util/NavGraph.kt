@@ -59,6 +59,7 @@ import com.csc2007.notetaker.ui.settings.PomodoroSettingsPage
 import com.csc2007.notetaker.ui.settings.SettingsPage
 import com.csc2007.notetaker.ui.signup.SignUpPage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.firebase.firestore.FirebaseFirestore
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.Solid
@@ -124,7 +125,8 @@ fun NavGraph(
     moduleViewModelFactory: ModuleViewModelFactory,
     itemViewModelFactory: ItemViewModelFactory, 
     ownViewModelFactory: OwnViewModelFactory, 
-    avatarViewModelFactory: AvatarViewModelFactory) {
+    avatarViewModelFactory: AvatarViewModelFactory,
+    firestore_db : FirebaseFirestore) {
 
     val pomodoroTimerViewModel = PomodoroTimerViewModel()
     val userViewModel : UserViewModel = viewModel(factory = userViewModelFactory)
@@ -235,13 +237,13 @@ fun NavGraph(
         }
 
         composable(Screens.ChatScreen.route) {
-            ChatPage(navController = navController, viewModel = userViewModel, select_chat = privateChat)
+            ChatPage(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, select_chat = privateChat)
         }
 
         composable(Screens.PrivateChatScreen.route) {
             val user by userViewModel.loggedInUser.collectAsState()
             val userId = user?.id
-            PrivateChatPage(navController = navController, viewModel = userViewModel, selected_chatter = privateChat.value, userId = userId!!)
+            PrivateChatPage(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, selected_chatter = privateChat.value, userId = userId!!)
         }
 
         composable(Screens.PomodoroScreen.route) {

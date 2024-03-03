@@ -36,9 +36,11 @@ import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.TopSearchBar
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun ChatPage(navController: NavHostController,
+             firestore_db: FirebaseFirestore,
              viewModel: UserViewModel = viewModel(),
              select_chat: MutableState<Chatter>)
 {
