@@ -8,6 +8,9 @@ sealed interface NoteEvent {
 
     data class DeleteNote(val note: Note) : NoteEvent
 
+    data class DeleteAllNotes(val moduleId: Int) : NoteEvent
+
+
     data class SaveNote(val title: String, val content: String, val moduleId: Int) : NoteEvent
 
     data class SearchNote(val query: String) : NoteEvent

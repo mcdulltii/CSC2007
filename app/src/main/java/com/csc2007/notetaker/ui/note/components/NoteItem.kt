@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -72,7 +71,7 @@ fun NoteItem(
     moduleId: Int
 ) {
 
-    val firstChar = notes[index].title.first()
+    val firstChar = if (notes[index].title.isNotEmpty()) notes[index].title.first() else 'N'
     val title = notes[index].title
     val content = notes[index].content
     val id = notes[index].id

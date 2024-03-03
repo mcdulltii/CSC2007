@@ -2,10 +2,12 @@ package com.csc2007.notetaker.ui.module.components
 
 
 import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,7 +21,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +42,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.csc2007.notetaker.database.viewmodel.module.ModuleEvent
 import com.csc2007.notetaker.database.viewmodel.module.ModuleState
+import com.csc2007.notetaker.database.viewmodel.note.NoteEvent
 import com.csc2007.notetaker.ui.note.util.formatDate
 import com.csc2007.notetaker.ui.util.Screens
 
@@ -61,6 +66,7 @@ fun CircularIconWithLetter(letter: Char) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ModuleItem(
     state: ModuleState,
@@ -72,17 +78,18 @@ fun ModuleItem(
     val context = LocalContext.current // Get the current context
     val filesDir = context.filesDir // Access filesDir from the context
 
-    val firstChar = state.modules[index].title.first()
+    // Ensure title is not empty before accessing first character; provide default if empty
     val title = state.modules[index].title
+    val firstChar = if (title.isNotEmpty()) title.first() else 'N' // 'N' as a default placeholder
+
     val imageName = state.modules[index].imagePath
     val imageUri =
-        if (imageName.isNotEmpty()) "file://${filesDir}/$imageName.png" else null // Handle empty paths
-    val moduleId = state.modules[index].id
+        if (imageName.isNotEmpty()) "file://$filesDir/$imageName" else null // Ensure to handle empty paths correctly
 
+    val moduleId = state.modules[index].id
     val formattedDateAdded = formatDate(state.modules[index].dateCreated)
 
-    var showMenu by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf(false) } // State to control visibility of confirmation dialog
+    var showDialog by remember { mutableStateOf(false) }
 
 
     Box(
@@ -91,11 +98,16 @@ fun ModuleItem(
             .height(100.dp)
             .background(Color(0xFFF2F3F9), shape = RoundedCornerShape(10.dp))
             .border(1.dp, Color.Gray, shape = RoundedCornerShape(10.dp))
-            .clickable {
-                Log.d("Module ID", moduleId.toString())
-                navController.navigate(Screens.NotesScreen.route + "/" + moduleId)
+            .combinedClickable(
+                onClick = {
+                    navController.navigate(Screens.NotesScreen.route + "/" + moduleId)
+                },
+                onLongClick = {
+                    showDialog = !showDialog
+                }
+            )
 
-            },
+        ,
         contentAlignment = Alignment.TopStart
     ) {
         Column() {
@@ -135,11 +147,32 @@ fun ModuleItem(
                         .fillMaxHeight()
                         .width(100.dp) // Increased width to match the height for a square aspect
                 )
-
             }
-
         }
+    }
 
-
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Confirm Delete") },
+            text = { Text(text = "Are you sure you want to delete this item?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDialog = false
+                        onEvent(ModuleEvent.DeleteModule(module = state.modules[index]))
+                    }
+                ) {
+                    Text("DELETE", color = Color.Red)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDialog = false }
+                ) {
+                    Text("CANCEL")
+                }
+            }
+        )
     }
 }

@@ -42,21 +42,15 @@ fun NotePage(navController: NavHostController, state: NoteState, onEvent: (NoteE
     Scaffold(
         topBar = {
             if (title != null) {
-                NoteAppBarWithBackButton(navController = navController, title = title)
+                NoteAppBarWithBackButton(
+                    navController = navController,
+                    title = title,
+                    onClickDelete = { onEvent(NoteEvent.DeleteNote(note = note)) },
+                )
             }
         },
-        floatingActionButton = {
-            ExpandableFloatingActionButton(
 
-                isExpanded = isExpanded,
-                onExpand = { isExpanded = !isExpanded },
-                onClickToAddManually = {
-                    navController.navigate(Screens.AddNoteScreen.route + "/$moduleId/$id")
-                }
-                )
-
-        },
-    ) { paddingValues ->
+        ) { paddingValues ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()

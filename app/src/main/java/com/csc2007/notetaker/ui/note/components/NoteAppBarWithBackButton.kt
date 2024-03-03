@@ -10,9 +10,14 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteAppBarWithBackButton(navController: NavController, title: String) {
+fun NoteAppBarWithBackButton(
+    navController: NavController,
+    title: String,
+    onClickDelete: () -> Unit = {},
+    onClickShare: () -> Unit = {}
+) {
     var showMenu by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf(false) } // State to control visibility of confirmation dialog
+    var showDialog by remember { mutableStateOf(false) }
 
     TopAppBar(
         title = { Text(text = title, color = Color.Black) },
@@ -74,6 +79,7 @@ fun NoteAppBarWithBackButton(navController: NavController, title: String) {
             confirmButton = {
                 TextButton(
                     onClick = {
+                        onClickDelete
                         showDialog = false
                         // TODO: Add your delete logic here
                     }

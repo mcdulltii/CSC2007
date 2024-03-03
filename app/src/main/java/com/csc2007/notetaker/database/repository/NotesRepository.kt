@@ -33,4 +33,12 @@ class NotesRepository(private val noteDao: NoteDao) {
         }
     }
 
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun deleteALlNote(moduleId: Int) {
+        withContext(Dispatchers.IO) {
+            noteDao.deleteAllNotes(moduleId)
+        }
+    }
+
 }

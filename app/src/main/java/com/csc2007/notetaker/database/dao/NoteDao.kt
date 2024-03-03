@@ -20,6 +20,10 @@ interface NoteDao {
     @Query("SELECT * FROM note_table")
     fun getAllNotes(): Flow<List<Note>>
 
+    @Query("DELETE FROM note_table WHERE moduleId = :moduleId")
+    suspend fun deleteAllNotes(moduleId: Int)
+
+
     @Query("SELECT * FROM note_table ORDER BY title ASC")
     fun getNotesOrderedByASCTitle(): Flow<List<Note>>
 
