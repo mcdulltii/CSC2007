@@ -243,7 +243,7 @@ fun NavGraph(
         composable(Screens.PrivateChatScreen.route) {
             val user by userViewModel.loggedInUser.collectAsState()
             val userId = user?.id
-            PrivateChatPage(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, selected_chatter = privateChat.value, userId = userId!!)
+            PrivateChatPage(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, room_name = privateChat.value, userId = userId!!)
         }
 
         composable(Screens.PomodoroScreen.route) {
