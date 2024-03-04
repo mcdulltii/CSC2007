@@ -33,7 +33,6 @@ import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.module.ModuleViewModel
 import com.csc2007.notetaker.database.viewmodel.module.ModuleViewModelFactory
-import com.csc2007.notetaker.database.viewmodel.note.NoteState
 import com.csc2007.notetaker.database.viewmodel.note.NoteViewModel
 import com.csc2007.notetaker.database.viewmodel.note.NoteViewModelFactory
 import com.csc2007.notetaker.ui.LandingPage
@@ -166,7 +165,7 @@ fun NavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = Screens.ModulesScreen.route
+        startDestination = Screens.LandingScreen.route
     ) {
 
         composable(Screens.LandingScreen.route) {
