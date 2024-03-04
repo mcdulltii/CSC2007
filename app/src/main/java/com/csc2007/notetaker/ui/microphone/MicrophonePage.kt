@@ -30,16 +30,22 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.csc2007.notetaker.database.viewmodel.note.NoteEvent
+import com.csc2007.notetaker.database.viewmodel.note.NoteState
 
 @Composable
 fun MicrophonePage(
     navController: NavHostController = rememberNavController(),
-    voiceToTextParser: VoiceToTextParser
+    voiceToTextParser: VoiceToTextParser,
+    onEvent: (NoteEvent) -> Unit = {},
+    noteState: NoteState
 ) {
     val context = LocalContext.current
     val microphonePermission = Manifest.permission.RECORD_AUDIO
     var isMicrophonePermissionGranted by remember { mutableStateOf(false) }
     val state by voiceToTextParser.state.collectAsState()
+
+    val moduleId = navController.currentBackStackEntry?.arguments?.getInt("moduleId") ?: -1
 
     val microphoneLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -69,6 +75,19 @@ fun MicrophonePage(
                 } else {
                     if (state.isSpeaking) {
                         voiceToTextParser.stopListening()
+
+                        noteState.title.value = "Default Title"
+                        noteState.content.value = state.spokenText.toString().ifEmpty { "No text recognized" }
+                        noteState.moduleId.value = moduleId
+
+                        onEvent(
+                            NoteEvent.SaveNote(
+                                title = noteState.title.value,
+                                content =  noteState.content.value,
+                                moduleId = noteState.moduleId.value,
+                            )
+                        )
+                        navController.popBackStack()
                     } else {
                         voiceToTextParser.startListening()
                     }
