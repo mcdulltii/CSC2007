@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
 
         val moduleViewModelFactory = ModuleViewModelFactory(
             (application as NoteTakingApp).moduleRepository,
-            applicationContext
+            applicationContext, (application as NoteTakingApp).noteRepository
         )
 
         setContent {

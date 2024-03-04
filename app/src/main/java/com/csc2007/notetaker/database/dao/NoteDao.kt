@@ -3,6 +3,7 @@ package com.csc2007.notetaker.database.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
+import androidx.room.Update
 import androidx.room.Upsert
 import com.csc2007.notetaker.database.Note
 import kotlinx.coroutines.flow.Flow
@@ -14,11 +15,17 @@ interface NoteDao {
     @Upsert
     suspend fun upsertNote(note: Note)
 
+    @Update
+    suspend fun updateNote(note: Note)
+
     @Delete
     suspend fun deleteNote(note: Note)
 
     @Query("SELECT * FROM note_table")
     fun getAllNotes(): Flow<List<Note>>
+
+    @Query("DELETE FROM note_table WHERE moduleId = :moduleId")
+    suspend fun deleteAllNotes(moduleId: Int)
 
     @Query("SELECT * FROM note_table ORDER BY title ASC")
     fun getNotesOrderedByASCTitle(): Flow<List<Note>>

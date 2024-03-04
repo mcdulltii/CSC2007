@@ -25,14 +25,18 @@ fun ExpandableFloatingActionButton(
     isExpanded: Boolean,
     onExpand: () -> Unit,
     onClickToAddManually: () -> Unit = {},
+    onClickToAddAudio: () -> Unit = {},
+    onClickToCamera: () -> Unit = {}
 
 ) {
     Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(20.dp)) {
         // The buttons that will appear when the FAB is expanded
         AnimatedVisibility(visible = isExpanded, enter = fadeIn() + expandVertically()) {
             Column {
+
+
                 FloatingActionButton(
-                    onClick = {},
+                    onClick = onClickToAddAudio,
                     containerColor = Color(0xFF84AAAF)
                 ) {
                     Icon(Icons.Filled.Mic, contentDescription = "Audio", tint = Color.White)
@@ -46,7 +50,7 @@ fun ExpandableFloatingActionButton(
                 }
                 Spacer(Modifier.height(8.dp))
                 FloatingActionButton(
-                    onClick = {} ,
+                    onClick = onClickToCamera,
                     containerColor = Color(0xFF465E63)
                 ) {
                     Icon(Icons.Filled.CameraAlt, contentDescription = "Camera", tint = Color.White)
