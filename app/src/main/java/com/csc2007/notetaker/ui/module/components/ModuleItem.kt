@@ -1,12 +1,10 @@
 package com.csc2007.notetaker.ui.module.components
 
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,7 +40,6 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.csc2007.notetaker.database.viewmodel.module.ModuleEvent
 import com.csc2007.notetaker.database.viewmodel.module.ModuleState
-import com.csc2007.notetaker.database.viewmodel.note.NoteEvent
 import com.csc2007.notetaker.ui.note.util.formatDate
 import com.csc2007.notetaker.ui.util.Screens
 
@@ -91,7 +88,6 @@ fun ModuleItem(
 
     var showDialog by remember { mutableStateOf(false) }
 
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -119,8 +115,8 @@ fun ModuleItem(
                         bottom = 10.dp
 
                     )
-                    .fillMaxSize()
-                    , verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically
 
 
             ) { // Reduced overall padding, adjust as needed

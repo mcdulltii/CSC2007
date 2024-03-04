@@ -81,7 +81,6 @@ fun NoteItem(
     var showMenu by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) } // State to control visibility of confirmation dialog
 
-
     Box(
         modifier = Modifier
             .padding(vertical = 5.dp)
@@ -156,11 +155,8 @@ fun NoteItem(
                                 showMenu = false
                             }
                         )
-
                     }
                 }
-
-
             }
             Spacer(Modifier.height(5.dp))
 

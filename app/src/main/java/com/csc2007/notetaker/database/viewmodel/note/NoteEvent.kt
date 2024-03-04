@@ -13,6 +13,8 @@ sealed interface NoteEvent {
 
     data class SaveNote(val title: String, val content: String, val moduleId: Int) : NoteEvent
 
+    data class UpdateNote(val note: Note) : NoteEvent
+
     data class SearchNote(val query: String) : NoteEvent
 
 }

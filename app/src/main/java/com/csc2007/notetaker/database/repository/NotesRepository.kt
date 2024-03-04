@@ -1,8 +1,8 @@
 package com.csc2007.notetaker.database.repository
 
 import androidx.annotation.WorkerThread
-import com.csc2007.notetaker.database.dao.NoteDao
 import com.csc2007.notetaker.database.Note
+import com.csc2007.notetaker.database.dao.NoteDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -38,6 +38,14 @@ class NotesRepository(private val noteDao: NoteDao) {
     suspend fun deleteALlNote(moduleId: Int) {
         withContext(Dispatchers.IO) {
             noteDao.deleteAllNotes(moduleId)
+        }
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun updateNote(note: Note) {
+        withContext(Dispatchers.IO) {
+            noteDao.updateNote(note)
         }
     }
 

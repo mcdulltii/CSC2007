@@ -10,11 +10,11 @@ import com.csc2007.notetaker.database.repository.NotesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 
 class NoteViewModel(private val repository: NotesRepository) : ViewModel() {
@@ -84,6 +84,12 @@ class NoteViewModel(private val repository: NotesRepository) : ViewModel() {
                         title = mutableStateOf(""),
                         content = mutableStateOf("")
                     )
+                }
+            }
+
+            is NoteEvent.UpdateNote -> {
+                viewModelScope.launch {
+                    repository.updateNote(event.note)
                 }
             }
 
