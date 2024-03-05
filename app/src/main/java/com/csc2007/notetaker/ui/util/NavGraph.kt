@@ -194,11 +194,16 @@ fun NavGraph(
             CameraPage(navController = navController, onEvent = noteViewModel::onEvent, state = noteState)
         }
 
-        composable(Screens.MicrophoneScreen.route) {
+        composable(
+            Screens.MicrophoneScreen.route  + "/{moduleId}",
+            arguments = listOf(navArgument(name = "moduleId") { type = NavType.IntType })
+        ) {
             val application = LocalContext.current.applicationContext as Application
             MicrophonePage(
                 navController = navController,
-                voiceToTextParser = VoiceToTextParser(application)
+                voiceToTextParser = VoiceToTextParser(application),
+                onEvent = noteViewModel::onEvent,
+                noteState = noteState
             )
         }
 

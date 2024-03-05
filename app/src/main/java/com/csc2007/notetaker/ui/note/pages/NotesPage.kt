@@ -68,8 +68,7 @@ fun NotesPage(
                     navController.navigate(Screens.CameraScreen.route + "/${moduleId}")
                 },
                 onClickToAddAudio = {
-                    navController.navigate(Screens.MicrophoneScreen.route)
-
+                    navController.navigate(Screens.MicrophoneScreen.route + "/${moduleId}")
                 }
             )
         },
