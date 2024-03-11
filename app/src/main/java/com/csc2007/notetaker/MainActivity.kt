@@ -23,6 +23,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoilApi
@@ -58,17 +59,21 @@ class MainActivity : ComponentActivity() {
         )
 
         val firestore_db = Firebase.firestore
+
+        val firestorage = FirebaseStorage.getInstance()
         // val ChatRoomViewModelFactory = ChatRoomViewModelFactory()
         // val ChatMessageViewModelFactory = ChatMessageViewModelFactory()
         setContent {
             MainApp(
-              userViewModelFactory = userViewModelFactory,
-              noteViewModelFactory = noteViewModelFactory,
-              moduleViewModelFactory = moduleViewModelFactory,
-              itemViewModelFactory = itemViewModelFactory, 
-              ownViewModelFactory = ownViewModelFactory, 
-              avatarViewModelFactory = avatarViewModelFactory,
-                firestore_db = firestore_db)
+                userViewModelFactory = userViewModelFactory,
+                noteViewModelFactory = noteViewModelFactory,
+                moduleViewModelFactory = moduleViewModelFactory,
+                itemViewModelFactory = itemViewModelFactory,
+                ownViewModelFactory = ownViewModelFactory,
+                avatarViewModelFactory = avatarViewModelFactory,
+                firestore_db = firestore_db,
+                firestorage = firestorage
+            )
 //            ,
 //            ChatRoomViewModelFactory = ChatRoomViewModelFactory,
 //            ChatMessageViewModelFactory = ChatMessageViewModelFactory
@@ -87,7 +92,8 @@ fun MainApp(
     itemViewModelFactory: ItemViewModelFactory,
     ownViewModelFactory: OwnViewModelFactory,
     avatarViewModelFactory: AvatarViewModelFactory,
-    firestore_db : FirebaseFirestore
+    firestore_db: FirebaseFirestore,
+    firestorage: FirebaseStorage
 ) {
     val navController = rememberNavController()
 
@@ -97,14 +103,15 @@ fun MainApp(
             color = MaterialTheme.colorScheme.background,
         ) {
             NavGraph(
-              navController = navController, 
-              userViewModelFactory = userViewModelFactory,
-              noteViewModelFactory = noteViewModelFactory,
-              moduleViewModelFactory = moduleViewModelFactory,
-              itemViewModelFactory = itemViewModelFactory, 
-              ownViewModelFactory = ownViewModelFactory, 
-              avatarViewModelFactory = avatarViewModelFactory,
-              firestore_db = firestore_db
+                navController = navController,
+                userViewModelFactory = userViewModelFactory,
+                noteViewModelFactory = noteViewModelFactory,
+                moduleViewModelFactory = moduleViewModelFactory,
+                itemViewModelFactory = itemViewModelFactory,
+                ownViewModelFactory = ownViewModelFactory,
+                avatarViewModelFactory = avatarViewModelFactory,
+                firestore_db = firestore_db,
+                firestorage = firestorage
 //            ChatRoomViewModelFactory = ChatRoomViewModelFactory,
 //            ChatMessageViewModelFactory = ChatMessageViewModelFactory
             )

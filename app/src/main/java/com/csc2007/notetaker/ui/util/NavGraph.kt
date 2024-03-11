@@ -60,6 +60,7 @@ import com.csc2007.notetaker.ui.settings.SettingsPage
 import com.csc2007.notetaker.ui.signup.SignUpPage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.Solid
@@ -126,7 +127,9 @@ fun NavGraph(
     itemViewModelFactory: ItemViewModelFactory, 
     ownViewModelFactory: OwnViewModelFactory, 
     avatarViewModelFactory: AvatarViewModelFactory,
-    firestore_db : FirebaseFirestore) {
+    firestore_db : FirebaseFirestore,
+    firestorage : FirebaseStorage
+) {
 
     val pomodoroTimerViewModel = PomodoroTimerViewModel()
     val userViewModel : UserViewModel = viewModel(factory = userViewModelFactory)
