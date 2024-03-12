@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -143,6 +144,8 @@ fun NavGraph(
     val moduleViewModel: ModuleViewModel = viewModel(factory = moduleViewModelFactory)
     val moduleState by moduleViewModel.state.collectAsState()
 
+    val selectedRoomID = rememberSaveable{ mutableStateOf("")}
+
     // sample chatter
     val privateChat = remember{ mutableStateOf<Chatter>(
         Chatter(id = 999,
@@ -240,14 +243,14 @@ fun NavGraph(
         }
 
         composable(Screens.ChatScreen.route) {
-            ChatPage(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, select_chat = privateChat)
+            ChatPage(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, selectedRoomID = selectedRoomID)
         }
 
         composable(Screens.PrivateChatScreen.route) {
             val user by userViewModel.loggedInUser.collectAsState()
             val userId = user?.id
             PrivateChatPage(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, room_name = privateChat.value, userId = userId!!)
-        }
+        }                                                                                                          /* TODO change to selectedRoom.value */
 
         composable(Screens.PomodoroScreen.route) {
             PomodoroPage(

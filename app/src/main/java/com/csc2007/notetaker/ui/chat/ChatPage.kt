@@ -15,7 +15,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -33,22 +36,36 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.csc2007.notetaker.R
+import com.csc2007.notetaker.database.ChatMessage
+import com.csc2007.notetaker.database.ChatRoom
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
+import com.csc2007.notetaker.database.viewmodel.chat_room.ChatMessageViewModel
+import com.csc2007.notetaker.database.viewmodel.chat_room.ChatRoomViewModel
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.TopSearchBar
+import com.csc2007.notetaker.ui.util.Screens
 import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun ChatPage(navController: NavHostController,
              firestore_db: FirebaseFirestore,
              viewModel: UserViewModel = viewModel(),
-             select_chat: MutableState<Chatter>)
+             selectedRoomID: MutableState<String>)
 {
     val searchQuery = rememberSaveable{mutableStateOf("")}
     val searchIsActive = rememberSaveable{ mutableStateOf(false )}
 
-//    val users by viewModel.allUsers.collectAsState()
+    val username by viewModel.loggedInUserUsername.collectAsState()
+    val email by viewModel.loggedInUserEmail.collectAsState()
 
+    val roomObserver = ChatRoomViewModel(firestore_db = firestore_db, username = username, email = email) // TODO change this to the actual room ID
+//    val users by viewModel.allUsers.collectAsState()
+    val thisUsersRooms = rememberSaveable{mutableStateOf(emptyList<ChatRoom>())}
+
+    // Attach snapshot listener
+    LaunchedEffect(Unit) {
+        roomObserver.getAllRooms(roomsUserIsIn = thisUsersRooms, userEmail = email)
+    }
     val sampleChatters = listOf(
         Chatter(id = 0,
             userName = "Kacie",
@@ -89,7 +106,7 @@ fun ChatPage(navController: NavHostController,
             TopSearchBar(search = searchQuery, isActive = searchIsActive)
             Spacer(modifier = Modifier.padding(6.dp))
 
-            ChatList(chats = sampleChatters, navController = navController, select_chat = select_chat)
+            ChatList(rooms = thisUsersRooms.value, navController = navController, select_room = selectedRoomID)
         }
         Column(verticalArrangement = Arrangement.Bottom)
         {
@@ -100,17 +117,18 @@ fun ChatPage(navController: NavHostController,
 }
 
 @Composable
-fun chatRow(chatter: Chatter, navController: NavHostController, select_chat: MutableState<Chatter>)
+fun chatRow(room: ChatRoom, navController: NavHostController, select_room: MutableState<String>)
 {
     Row(modifier = Modifier
         .padding(8.dp)
         .clickable {
-            select_chat.value = chatter
-            navController.navigate("private_chat_screen")
+            select_room.value = room.roomId!!
+            navController.navigate(Screens.PrivateChatScreen.route)
         })
     {
+            /* TODO Reimplement the image bubble */
         Image(
-            painter = painterResource(id = chatter.imgDrawable),
+            painter = painterResource(id = R.drawable.avatar_placeholder),
             contentDescription = "Profile picture",
             modifier = Modifier
                 .size(60.dp)
@@ -122,7 +140,7 @@ fun chatRow(chatter: Chatter, navController: NavHostController, select_chat: Mut
 
         Column()
         {
-            Text(text = chatter.userName,
+            Text(text = room.room_name!!,
                 fontWeight = FontWeight.Bold)
             Spacer(Modifier.padding(2.dp))
 
@@ -130,10 +148,10 @@ fun chatRow(chatter: Chatter, navController: NavHostController, select_chat: Mut
             {
                 val annotatedString = buildAnnotatedString {
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(chatter.lastSentTo)
+                        append(room.last_sender_user + ": ")
                     }
                     withStyle(style = SpanStyle(fontWeight = FontWeight.ExtraLight)) {
-                        append(chatter.latestText)
+                        append(room.last_message_content)
                     }
                 }
                 Text(text = annotatedString,
@@ -150,11 +168,11 @@ fun chatRow(chatter: Chatter, navController: NavHostController, select_chat: Mut
 }
 
 @Composable
-fun ChatList(chats: List<Chatter>, modifier: Modifier = Modifier, navController: NavHostController, select_chat: MutableState<Chatter>) {
+fun ChatList(rooms: List<ChatRoom>, modifier: Modifier = Modifier, navController: NavHostController, select_room: MutableState<String>) {
     LazyColumn(
         modifier = Modifier.testTag("LazyColumn")){
-        items(chats){
-                chat -> chatRow(chat, navController, select_chat)
+        items(rooms){
+                room -> chatRow(room, navController, select_room)
         }
     }
 }
