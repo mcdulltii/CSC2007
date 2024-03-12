@@ -14,12 +14,12 @@ class ChatRoomFileCollection(private val firestorage: FirebaseStorage) {
     val sharedFilesRef: StorageReference = storageRef.child("sharedfiles")
 
     @WorkerThread
-    fun addFile(messageId: String, fileName: String, fileURI: Uri): String {
+    fun addFile(messageId: String, fileName: String, fileByteArr: ByteArray): String {
         val roomSharedFilesRef = sharedFilesRef.child("${messageId}/${fileName}")
         var downloadUrl = ""
 
-        fileURI.let { uri ->
-            roomSharedFilesRef.putFile(uri)
+        fileByteArr.let { fileByte ->
+            roomSharedFilesRef.putBytes(fileByte)
                 .addOnSuccessListener {
                     roomSharedFilesRef.downloadUrl.addOnSuccessListener { downloadUri ->
                         downloadUrl = downloadUri.toString()
