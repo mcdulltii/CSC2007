@@ -13,7 +13,6 @@ import coil.annotation.ExperimentalCoilApi
 import com.csc2007.notetaker.database.NoteTakingApp
 import com.csc2007.notetaker.database.repository.Firestorage_db
 import com.csc2007.notetaker.database.repository.Firestore_db
-
 import com.csc2007.notetaker.database.viewmodel.AvatarViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.ItemViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.OwnViewModelFactory
@@ -23,7 +22,9 @@ import com.csc2007.notetaker.database.viewmodel.note.NoteViewModelFactory
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.util.NavGraph
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -63,7 +64,6 @@ class MainActivity : ComponentActivity() {
         val firestore_db = Firestore_db().get_firestore_db(this)
         val firestorage = Firestorage_db().get_firestorage_db(this)
 
-
         setContent {
             MainApp(
                 userViewModelFactory = userViewModelFactory,
@@ -75,6 +75,9 @@ class MainActivity : ComponentActivity() {
                 firestore_db = firestore_db,
                 firestorage = firestorage
             )
+//            ,
+//            ChatRoomViewModelFactory = ChatRoomViewModelFactory,
+//            ChatMessageViewModelFactory = ChatMessageViewModelFactory
         }
     }
 }
@@ -110,6 +113,8 @@ fun MainApp(
                 avatarViewModelFactory = avatarViewModelFactory,
                 firestore_db = firestore_db,
                 firestorage = firestorage
+//            ChatRoomViewModelFactory = ChatRoomViewModelFactory,
+//            ChatMessageViewModelFactory = ChatMessageViewModelFactory
             )
         }
     }

@@ -50,7 +50,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 fun ChatPage(navController: NavHostController,
              firestore_db: FirebaseFirestore,
              viewModel: UserViewModel = viewModel(),
-             selectedRoomID: MutableState<String>)
+             selectedRoomID: MutableState<String>,
+             selectedRoomName: MutableState<String>)
 {
     val searchQuery = rememberSaveable{mutableStateOf("")}
     val searchIsActive = rememberSaveable{ mutableStateOf(false )}
@@ -66,36 +67,6 @@ fun ChatPage(navController: NavHostController,
     LaunchedEffect(Unit) {
         roomObserver.getAllRooms(roomsUserIsIn = thisUsersRooms, userEmail = email)
     }
-    val sampleChatters = listOf(
-        Chatter(id = 0,
-            userName = "Kacie",
-            lastSentTo = "Sandra Adams",
-            latestText = " - It’s the one week of the year in which you get the chance to take…",
-            imgDrawable = R.drawable.kacie),
-        Chatter(id = 1,
-            userName = "Tommy",
-            lastSentTo = "Ray Neal",
-            latestText = " - Healthy, robust, contracting, healthy, robust and contracting like a lung.",
-            imgDrawable = R.drawable.tommy
-        ),
-        Chatter(id = 2,
-            userName = "Princess",
-            lastSentTo = "Carrie Mann",
-            latestText = " - A wonderful serenity has taken possession of my entire soul, like…",
-            imgDrawable = R.drawable.princess
-        ),
-        Chatter(id = 3,
-            userName = "Magical Girl",
-            lastSentTo = "Lelia Colon",
-            latestText = " - Speaking of which, Peter really wants you to come in on Friday.",
-            imgDrawable = R.drawable.magical_girl
-        ),
-        Chatter(id = 4,
-            userName = "Emperor Of Meow",
-            lastSentTo = "to Trevor, Andrew, Sandra",
-            latestText = " - Images span the screen in ribbons, which expand with ",
-            imgDrawable = R.drawable.emperor_of_meow)
-    )
 
     Column(modifier = Modifier.fillMaxSize())
     {
@@ -106,7 +77,7 @@ fun ChatPage(navController: NavHostController,
             TopSearchBar(search = searchQuery, isActive = searchIsActive)
             Spacer(modifier = Modifier.padding(6.dp))
 
-            ChatList(rooms = thisUsersRooms.value, navController = navController, select_room = selectedRoomID)
+            ChatList(rooms = thisUsersRooms.value, navController = navController, select_room = selectedRoomID, room_name = selectedRoomName, query = searchQuery)
         }
         Column(verticalArrangement = Arrangement.Bottom)
         {
@@ -117,29 +88,30 @@ fun ChatPage(navController: NavHostController,
 }
 
 @Composable
-fun chatRow(room: ChatRoom, navController: NavHostController, select_room: MutableState<String>)
-{
-    Row(modifier = Modifier
-        .padding(8.dp)
-        .clickable {
-            select_room.value = room.roomId!!
-            navController.navigate(Screens.PrivateChatScreen.route)
-        })
-    {
-            /* TODO Reimplement the image bubble */
-        Image(
-            painter = painterResource(id = R.drawable.avatar_placeholder),
-            contentDescription = "Profile picture",
-            modifier = Modifier
-                .size(60.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop,
-        )
+fun chatRow(room: ChatRoom, navController: NavHostController, select_room: MutableState<String>, room_name: MutableState<String>)
+            {
+                Row(modifier = Modifier
+                    .padding(8.dp)
+                    .clickable {
+                        select_room.value = room.roomId!!
+                        room_name.value = room.room_name!!
+                        navController.navigate(Screens.PrivateChatScreen.route)
+                    })
+                {
+                    /* TODO Reimplement the image bubble */
+                    Image(
+                        painter = painterResource(id = R.drawable.avatar_placeholder),
+                        contentDescription = "Profile picture",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop,
+                    )
 
-        Spacer(Modifier.padding(8.dp))
+                    Spacer(Modifier.padding(8.dp))
 
-        Column()
-        {
+                    Column()
+                    {
             Text(text = room.room_name!!,
                 fontWeight = FontWeight.Bold)
             Spacer(Modifier.padding(2.dp))
@@ -168,11 +140,14 @@ fun chatRow(room: ChatRoom, navController: NavHostController, select_room: Mutab
 }
 
 @Composable
-fun ChatList(rooms: List<ChatRoom>, modifier: Modifier = Modifier, navController: NavHostController, select_room: MutableState<String>) {
-    LazyColumn(
-        modifier = Modifier.testTag("LazyColumn")){
-        items(rooms){
-                room -> chatRow(room, navController, select_room)
+fun ChatList(rooms: List<ChatRoom>, modifier: Modifier = Modifier, navController: NavHostController, select_room: MutableState<String>, room_name: MutableState<String>, query: MutableState<String>) {
+    LazyColumn(modifier = modifier.testTag("LazyColumn")) {
+        items(rooms) { room ->
+            if (query.value.isEmpty()) {
+                chatRow(room, navController, select_room, room_name = room_name)
+            } else if (room.room_name?.contains(query.value, ignoreCase = true) == true) {
+                chatRow(room, navController, select_room, room_name = room_name)
+            }
         }
     }
 }

@@ -3,14 +3,16 @@ package com.csc2007.notetaker.database.viewmodel.chat_room
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import com.csc2007.notetaker.database.ChatMessage
+import com.csc2007.notetaker.database.ChatRoom
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import java.sql.Timestamp
 
 class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private val RoomId: String = "")
 {
-    private val ChatMessageCollRef: String = "ChatMessages"
-
+    private val ChatRoomCollRef: String = "Rooms"
+    private val ChatMessageCollRef: String = "Rooms/${RoomId}/ChatMessages"
     // READ TODO make sure the room ID matches the query for all the chatters
     fun getMessagesFromRoom(messages_in_room: MutableState<List<ChatMessage>>){
         val messages = mutableListOf<ChatMessage>()
@@ -29,6 +31,13 @@ class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private 
                     var id: String?
 
                     id = doc.id
+
+                    doc.getTimestamp("time_stamp").let{
+                        val firebaseTimestamp = it
+                        val millisecondsSinceEpoch = firebaseTimestamp?.seconds?.times(1000)?.plus(firebaseTimestamp.nanoseconds / 1000000)
+                        time_stamp = Timestamp(millisecondsSinceEpoch!!)
+                    }
+
                     doc.getString("sender_user")?.let {
                         sender_user = it
                     }
@@ -39,15 +48,6 @@ class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private 
                         content = it
                     }
 
-                    /* TODO Figure out how to parse the time_stamp back to Timestamp object in Kotlin zzzz */
-//                    doc.getString("time_stamp")?.let { timeStampString ->
-//                        // Parse timeStampString to Date
-//                        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-//                        val date = dateFormat.parse(timeStampString)
-//
-//                        // Convert Date to Timestamp
-//                        time_stamp = date?.let { Timestamp(it.time) }
-//                    }
                     val newMessage = ChatMessage(message_id = id, sender_user = sender_user, sender_email = sender_email, content = content, time_stamp = time_stamp, image = null)
 
                     // Add the new message to the list if it's not already present
@@ -70,6 +70,31 @@ class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private 
             .collection(ChatMessageCollRef)
             .document()
             .set(message)
+            .addOnSuccessListener {
+                Log.d(
+                    "Sucessfully insert",
+                    "DocumentSnapshot successfully written!"
+                )
+            }
+            .addOnFailureListener { e ->
+                Log.w(
+                    "Failed to insert",
+                    "Error writing document",
+                    e
+                )
+            }
+    }
+
+    fun updateLastSent(room_id: String, content: String, time_stamp: Timestamp, user: String)
+    {
+        firestore_db
+            .collection(ChatRoomCollRef)
+            .document(room_id)
+            .set(hashMapOf(
+                "last_message_content" to content,
+                "last_sent_message_time" to time_stamp,
+                "last_sender_user" to user
+            ), SetOptions.merge())
             .addOnSuccessListener {
                 Log.d(
                     "Sucessfully insert",

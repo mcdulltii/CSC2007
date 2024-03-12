@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachFile
@@ -48,7 +49,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.ChatMessage
+import com.csc2007.notetaker.database.ChatRoom
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.database.viewmodel.chat_room.ChatMessageViewModel
 import com.csc2007.notetaker.ui.TopNavBarText
@@ -57,10 +60,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.sql.Timestamp
 
 @Composable
-fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, firestore_db: FirebaseFirestore, room_name: Chatter, userId: Int)
+fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, firestore_db: FirebaseFirestore, roomName: String, roomId: String)
 {
     // Init viewModel observer for this chat
-    val chatObserver = ChatMessageViewModel(firestore_db = firestore_db, RoomId = "") // TODO change this to the actual room ID
+    val chatObserver = ChatMessageViewModel(firestore_db = firestore_db, RoomId = roomId) // TODO change this to the actual room ID
 
     // Init messages state
     val messages_in_room = remember{ mutableStateOf(emptyList<ChatMessage>()) }
@@ -83,7 +86,7 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
 
         Column(modifier = Modifier.weight(1f))
         {
-            TopNavBarText(navController = navController, title = room_name.userName, imageDisplay = room_name.imgDrawable, modifier = Modifier.fillMaxWidth()) // Remember to include the image at the right
+            TopNavBarText(navController = navController, title = roomName, imageDisplay = R.drawable.avatar_placeholder, modifier = Modifier.fillMaxWidth()) // Remember to include the image at the right
             messageList(messages = messages_in_room.value, myEmail = email, navController = navController, listState = listState)
         }
 
@@ -93,7 +96,7 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
             Spacer(Modifier.padding(8.dp))
 
             // add logic checks for even if input is empty but theres an image/file attached to allow sending
-            inputBar(label = "Text message", userInput = userInput, username = username, myEmail = email, modifier = Modifier.weight(0.6f), chatObserver = chatObserver)
+            inputBar(label = "Text message", userInput = userInput, username = username, myEmail = email, modifier = Modifier.weight(0.6f), chatObserver = chatObserver, room_id = roomId)
 
             Box(modifier = Modifier
                 .size(60.dp)
@@ -202,11 +205,11 @@ fun messageRow(message: ChatMessage, myEmail: String, navController: NavHostCont
     {
         if(message.sender_email != myEmail)
         {
-//            Image(
-//                painter = painterResource(id = message.from.imgDrawable),
-//                contentDescription = "profile picture",
-//                modifier = Modifier.padding(5.dp)
-//            )
+            Image(
+                painter = painterResource(id = R.drawable.avatar_placeholder),
+                contentDescription = "profile picture",
+                modifier = Modifier.padding(5.dp).size(50.dp).clip(CircleShape)
+            )
         }
 
         Column(modifier = Modifier.fillMaxWidth(),
@@ -251,7 +254,7 @@ fun messageList(messages: List<ChatMessage>, myEmail: String, navController: Nav
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun inputBar(modifier: Modifier = Modifier, username: String, myEmail: String, label: String, userInput: MutableState<String>, chatObserver: ChatMessageViewModel)
+fun inputBar(modifier: Modifier = Modifier, username: String, myEmail: String, label: String, userInput: MutableState<String>, chatObserver: ChatMessageViewModel, room_id: String)
 {
         TextField(
         value = userInput.value,
@@ -290,7 +293,7 @@ fun inputBar(modifier: Modifier = Modifier, username: String, myEmail: String, l
                             image = null
                         )
                         chatObserver.insert(message = message)
-
+                        chatObserver.updateLastSent(room_id = room_id, content = userInput.value, time_stamp = currentTimeStamp, user = username)
                         Log.d("messages", "Message being sent, ${userInput.value}")
                         userInput.value = "" // clear user input
                         Log.d("messages", "Clearing the userInput to send new message")

@@ -8,6 +8,7 @@ import com.csc2007.notetaker.database.ChatRoom
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import java.net.URI
+import java.sql.Time
 import java.sql.Timestamp
 
 
@@ -20,7 +21,7 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
     fun getAllRooms(roomsUserIsIn: MutableState<List<ChatRoom>>, userEmail: String){
         /* TODO implement the logic for this using firestore_db */
         val rooms = mutableListOf<ChatRoom>()
-        val docRef = firestore_db.collection(ChatRoomCollRef)/*.whereArrayContains(user_list, userEmail)*/
+        val docRef = firestore_db.collection(ChatRoomCollRef).whereArrayContains(user_list, userEmail)
             .addSnapshotListener { value, e ->
                 if (e != null) {
                     Log.w("observer", "Listen failed.", e)
@@ -37,7 +38,12 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
 
                     id = doc.id
                     user_list = doc.get("user_list") as? List<String>
-                    time_stamp = doc.get("last_sent_message_time") as? Timestamp
+
+                    doc.getTimestamp("last_sent_message_time").let{
+                        val firebaseTimestamp = it
+                        val millisecondsSinceEpoch = firebaseTimestamp?.seconds?.times(1000)?.plus(firebaseTimestamp.nanoseconds / 1000000)
+                        time_stamp = Timestamp(millisecondsSinceEpoch!!)
+                    }
                     doc.getString("last_message_content")?.let {
                         last_message_content = it
                     }
@@ -47,19 +53,7 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
                     doc.getString("room_name")?.let{
                         room_name = it
                     }
-//                    doc.getString("user_list")?.let{
-//                        user_list = it as List<String>
-//                    }
 
-                    /* TODO Figure out how to parse the time_stamp back to Timestamp object in Kotlin zzzz */
-//                    doc.getString("time_stamp")?.let { timeStampString ->
-//                        // Parse timeStampString to Date
-//                        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-//                        val date = dateFormat.parse(timeStampString)
-//
-//                        // Convert Date to Timestamp
-//                        time_stamp = date?.let { Timestamp(it.time) }
-//                    }
                     val newRoom = ChatRoom(roomId = id, last_message_content = last_message_content, last_sender_user = last_sender_user, room_name = room_name, last_sent_message_time = time_stamp, memberList = user_list, room_profile_picture = image_link)
 
                     // Add the new message to the list if it's not already present
