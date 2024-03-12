@@ -1,6 +1,5 @@
 package com.csc2007.notetaker.database.repository
 
-import android.net.Uri
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.google.firebase.storage.FirebaseStorage
@@ -14,8 +13,9 @@ class ChatRoomFileCollection(private val firestorage: FirebaseStorage) {
     val sharedFilesRef: StorageReference = storageRef.child("sharedfiles")
 
     @WorkerThread
-    fun addFile(messageId: String, fileName: String, fileByteArr: ByteArray): String {
-        val roomSharedFilesRef = sharedFilesRef.child("${messageId}/${fileName}")
+    fun addFile(roomId: String, fileName: String, fileByteArr: ByteArray): String {
+        val roomSharedFilesRef =
+            sharedFilesRef.child("${roomId}/${System.currentTimeMillis()}/${fileName}")
         var downloadUrl = ""
 
         fileByteArr.let { fileByte ->
