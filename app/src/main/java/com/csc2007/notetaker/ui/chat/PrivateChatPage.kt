@@ -292,7 +292,7 @@ fun inputBar(modifier: Modifier = Modifier, username: String, myEmail: String, l
                             content = userInput.value,
                             image = null
                         )
-                        chatObserver.insert(message = message)
+                        chatObserver.insert(message = message, room_id = room_id)
                         chatObserver.updateLastSent(room_id = room_id, content = userInput.value, time_stamp = currentTimeStamp, user = username)
                         Log.d("messages", "Message being sent, ${userInput.value}")
                         userInput.value = "" // clear user input

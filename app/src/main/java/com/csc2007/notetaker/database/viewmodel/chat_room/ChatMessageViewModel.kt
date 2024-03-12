@@ -63,11 +63,11 @@ class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private 
             }
     }
 
-    fun insert(message: ChatMessage)
+    fun insert(message: ChatMessage,room_id: String)
     {
         // TODO: initialize(?) a room specific model to store the latest message for this room specific
         firestore_db
-            .collection(ChatMessageCollRef)
+            .collection("Rooms/${room_id}/ChatMessages")
             .document()
             .set(message)
             .addOnSuccessListener {
