@@ -13,7 +13,7 @@ class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private 
 {
     private val ChatRoomCollRef: String = "Rooms"
     private val ChatMessageCollRef: String = "Rooms/${RoomId}/ChatMessages"
-    // READ TODO make sure the room ID matches the query for all the chatters
+
     fun getMessagesFromRoom(messages_in_room: MutableState<List<ChatMessage>>){
         val messages = mutableListOf<ChatMessage>()
         val docRef = firestore_db.collection(ChatMessageCollRef).orderBy("time_stamp", Query.Direction.ASCENDING)
@@ -50,16 +50,15 @@ class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private 
 
                     val newMessage = ChatMessage(message_id = id, sender_user = sender_user, sender_email = sender_email, content = content, time_stamp = time_stamp, image = null)
 
-                    // Add the new message to the list if it's not already present
-                    if (!messages.contains(newMessage)) {
-                        messages.add(newMessage)
-                    }
+                    messages.add(newMessage)
                 }
 
                 // Update messages state with only the new messages
                 messages_in_room.value = messages.toList()
                 Log.d("observer", "Currently there are ${messages.size} many messages")
 
+                // Clear pipeline
+                messages.removeAll(messages)
             }
     }
 

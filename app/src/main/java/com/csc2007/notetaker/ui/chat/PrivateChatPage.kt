@@ -20,11 +20,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.GroupAdd
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -45,18 +53,24 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.ChatMessage
 import com.csc2007.notetaker.database.ChatRoom
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.database.viewmodel.chat_room.ChatMessageViewModel
+import com.csc2007.notetaker.database.viewmodel.chat_room.ChatRoomViewModel
 import com.csc2007.notetaker.ui.TopNavBarText
 import com.csc2007.notetaker.ui.colors
+import com.csc2007.notetaker.ui.util.Screens
 import com.google.firebase.firestore.FirebaseFirestore
+import java.net.URI
 import java.sql.Timestamp
 
 @Composable
@@ -64,7 +78,7 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
 {
     // Init viewModel observer for this chat
     val chatObserver = ChatMessageViewModel(firestore_db = firestore_db, RoomId = roomId) // TODO change this to the actual room ID
-
+    val roomObserver = ChatRoomViewModel(firestore_db = firestore_db)
     // Init messages state
     val messages_in_room = remember{ mutableStateOf(emptyList<ChatMessage>()) }
     // not sure what happens if change to different room, hopefully only renders the room specific ones. Should be fine though
@@ -78,7 +92,6 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
     // Init this pages' inputs and auxiliary viewModel observers
     val username by viewModel.loggedInUserUsername.collectAsState()
     val email by viewModel.loggedInUserEmail.collectAsState()
-
     val userInput = rememberSaveable{ mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize())
@@ -86,8 +99,15 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
 
         Column(modifier = Modifier.weight(1f))
         {
-            TopNavBarText(navController = navController, title = roomName, imageDisplay = R.drawable.avatar_placeholder, modifier = Modifier.fillMaxWidth()) // Remember to include the image at the right
+            TopNavBarText(navController = navController,
+                title = roomName,
+                imageDisplay = R.drawable.avatar_placeholder,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navController.navigate(Screens.EditChatRoomScreen.route) },
+            ) // Remember to include the image at the right
             messageList(messages = messages_in_room.value, myEmail = email, navController = navController, listState = listState)
+
         }
 
         Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(4.dp))
@@ -102,8 +122,9 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
                 .size(60.dp)
                 .padding(end = 0.dp)
                 .clickable {
-                           // use camera gallery(?) idk
-                           /* TODO  handle file upload and image upload */},
+                    // use camera gallery(?) idk
+                    /* TODO  handle file upload and image upload */
+                },
                 contentAlignment = Alignment.Center)
             {
                 Icon(
@@ -208,7 +229,10 @@ fun messageRow(message: ChatMessage, myEmail: String, navController: NavHostCont
             Image(
                 painter = painterResource(id = R.drawable.avatar_placeholder),
                 contentDescription = "profile picture",
-                modifier = Modifier.padding(5.dp).size(50.dp).clip(CircleShape)
+                modifier = Modifier
+                    .padding(5.dp)
+                    .size(50.dp)
+                    .clip(CircleShape)
             )
         }
 
@@ -293,7 +317,12 @@ fun inputBar(modifier: Modifier = Modifier, username: String, myEmail: String, l
                             image = null
                         )
                         chatObserver.insert(message = message, room_id = room_id)
-                        chatObserver.updateLastSent(room_id = room_id, content = userInput.value, time_stamp = currentTimeStamp, user = username)
+                        chatObserver.updateLastSent(
+                            room_id = room_id,
+                            content = userInput.value,
+                            time_stamp = currentTimeStamp,
+                            user = username
+                        )
                         Log.d("messages", "Message being sent, ${userInput.value}")
                         userInput.value = "" // clear user input
                         Log.d("messages", "Clearing the userInput to send new message")
@@ -302,6 +331,8 @@ fun inputBar(modifier: Modifier = Modifier, username: String, myEmail: String, l
         }
     )
 }
+
+
 
 @Composable
 fun calculateMaxWidth(percentage: Float): Dp {

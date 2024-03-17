@@ -43,6 +43,7 @@ import com.csc2007.notetaker.ui.avatar.AvatarShopPage
 import com.csc2007.notetaker.ui.camera.CameraPage
 import com.csc2007.notetaker.ui.chat.ChatPage
 import com.csc2007.notetaker.ui.chat.Chatter
+import com.csc2007.notetaker.ui.chat.EditRoom
 import com.csc2007.notetaker.ui.chat.PrivateChatPage
 import com.csc2007.notetaker.ui.login.LoginPage
 import com.csc2007.notetaker.ui.microphone.MicrophonePage
@@ -96,6 +97,9 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
 
     object PrivateChatScreen :
         Screens(route = "private_chat_screen", icon = Icons.Default.ChatBubbleOutline, title = "Private Chat")
+
+    object EditChatRoomScreen:
+            Screens(route = "edit_chat_room_screen", icon = Icons.Default.ChatBubbleOutline, title = "Edit Room")
 
     object PomodoroScreen :
         Screens(route = "pomodoro_screen", icon = Icons.Default.AccessTime, title = "Pomodoro")
@@ -253,6 +257,11 @@ fun NavGraph(
             val userId = user?.id
             PrivateChatPage(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, roomName = selectedRoomName.value, roomId = selectedRoomID.value)
         }                                                                                                          /* TODO change to selectedRoom.value */
+
+        composable(Screens.EditChatRoomScreen.route)
+        {
+            EditRoom(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, roomName = selectedRoomName, roomId = selectedRoomID.value)
+        }
 
 
         composable(Screens.PomodoroScreen.route) {

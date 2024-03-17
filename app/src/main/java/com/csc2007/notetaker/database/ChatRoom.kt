@@ -10,5 +10,5 @@ data class ChatRoom(
     val last_sent_message_time: Timestamp?,
     val room_profile_picture: URI?, // TODO: not sure, will check again
     val roomId: String?,
-    val memberList: List<String>?
+    val user_list: List<String>?
 )

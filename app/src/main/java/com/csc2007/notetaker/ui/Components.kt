@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.csc2007.notetaker.database.ChatRoom
 import com.csc2007.notetaker.ui.util.Screens
 import compose.icons.AllIcons
 import compose.icons.FontAwesomeIcons
@@ -120,9 +121,9 @@ fun TopNavBarText(navController: NavController = rememberNavController(), title:
                         painter = painterResource(id = imageDisplay),
                         contentDescription = "profile picture",
                         modifier = Modifier
-                            .size(60.dp)
+                            .size(45.dp)
                             .clip(CircleShape),
-                        contentScale = ContentScale.Crop, // Optional: adjust content scale as needed
+                        contentScale = ContentScale.Crop,
                     )
                 }
         },
