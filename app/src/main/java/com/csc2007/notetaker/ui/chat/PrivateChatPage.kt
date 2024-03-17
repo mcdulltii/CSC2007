@@ -1,9 +1,11 @@
 package com.csc2007.notetaker.ui.chat
 
 import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +31,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.GroupAdd
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -58,6 +61,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.csc2007.notetaker.R
@@ -83,8 +87,8 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
     val messages_in_room = remember{ mutableStateOf(emptyList<ChatMessage>()) }
     // not sure what happens if change to different room, hopefully only renders the room specific ones. Should be fine though
     val listState = rememberLazyListState()
+    val currentlyEditingMessageId = rememberSaveable{ mutableStateOf("")}
 
-    // Attach snapshot listener
     LaunchedEffect(Unit) {
         chatObserver.getMessagesFromRoom(messages_in_room = messages_in_room)
     }
@@ -106,7 +110,7 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
                     .fillMaxWidth()
                     .clickable { navController.navigate(Screens.EditChatRoomScreen.route) },
             ) // Remember to include the image at the right
-            messageList(messages = messages_in_room.value, myEmail = email, navController = navController, listState = listState)
+            messageList(messages = messages_in_room.value, myEmail = email, navController = navController, listState = listState, userInput = userInput, messageIdToEdit = currentlyEditingMessageId, chatObserver = chatObserver)
 
         }
 
@@ -116,7 +120,7 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
             Spacer(Modifier.padding(8.dp))
 
             // add logic checks for even if input is empty but theres an image/file attached to allow sending
-            inputBar(label = "Text message", userInput = userInput, username = username, myEmail = email, modifier = Modifier.weight(0.6f), chatObserver = chatObserver, room_id = roomId)
+            inputBar(label = "Text message", userInput = userInput, username = username, myEmail = email, modifier = Modifier.weight(0.6f), chatObserver = chatObserver, room_id = roomId, editing_message_id = currentlyEditingMessageId)
 
             Box(modifier = Modifier
                 .size(60.dp)
@@ -139,8 +143,9 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
 }
 
 @Composable
-fun TextBubble(text: String, sender_email: String, my_email: String)
+fun TextBubble(text: String, sender_email: String, my_email: String, message: ChatMessage, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
 {
+    val showDialog = rememberSaveable{ mutableStateOf(false)}
     val backgroundColor =
         if(sender_email == my_email) colors.primaryColor
         else MaterialTheme.colorScheme.secondary
@@ -152,9 +157,14 @@ fun TextBubble(text: String, sender_email: String, my_email: String)
 
     Box(
         modifier = Modifier
+            .clickable {
+                showDialog.value = true
+            }
             .widthIn(max = maxWidth)
             .padding(8.dp)
-            .background(backgroundColor, shape = RoundedCornerShape(25.dp))
+            .background(
+                backgroundColor, shape = RoundedCornerShape(25.dp)
+            )
     ) {
         Text(
             text = text,
@@ -163,8 +173,56 @@ fun TextBubble(text: String, sender_email: String, my_email: String)
             textAlign = TextAlign.Center
         )
     }
+
+    showEditOrDelete(showDialog = showDialog, message = message, messageIdToEdit = messageIdToEdit, userInput = userInput, chatObserver = chatObserver)
 }
 
+@Composable
+fun showEditOrDelete(showDialog: MutableState<Boolean>, message: ChatMessage, messageIdToEdit: MutableState<String>, userInput: MutableState<String>, chatObserver: ChatMessageViewModel)
+{
+    if (showDialog.value) {
+        Dialog(
+            onDismissRequest = { showDialog.value = false }
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Edit or Delete Message?",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Yellow
+                )
+                Row()
+                {
+                    Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red, contentColor = Color.White),
+                        modifier = Modifier.padding(8.dp),
+                        onClick = {
+                            chatObserver.delete(message.message_id!!) // Just clear after deleting
+                            showDialog.value = false
+                        }
+                    ) {
+                        Text(text = "Delete")
+                    }
+
+                    Button(
+
+                        modifier = Modifier.padding(8.dp),
+                        onClick = {
+                            messageIdToEdit.value = message.message_id!!
+                            userInput.value = message.content!!
+                            showDialog.value = false
+                        }
+                    ) {
+                        Text(text = "Edit")
+                    }
+                }
+            }
+        }
+    }
+}
 @Composable
 fun ImageBubble(drawableId: Int, navController: NavHostController)
 {
@@ -218,7 +276,7 @@ fun enlargeImage(image: Int, showOverlay: MutableState<Boolean>, navController: 
 }
 
 @Composable
-fun messageRow(message: ChatMessage, myEmail: String, navController: NavHostController)
+fun messageRow(message: ChatMessage, myEmail: String, navController: NavHostController, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
 {
     /* TODO re-implement the profile pictures once the database modeling has been done */
     Row(modifier = Modifier.fillMaxWidth(),
@@ -239,23 +297,22 @@ fun messageRow(message: ChatMessage, myEmail: String, navController: NavHostCont
         Column(modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = if(message.sender_email == myEmail) Alignment.End else Alignment.Start)
         {
+            // TODO change this section to render the pdf file instead, to keep it simple, it shouldn't be editable, but just deleteable
 //            if(message.imageContent != null)
 //            {
 //                ImageBubble(drawableId = message.imageContent, navController = navController)
 //            }
             if(message.content != null)
             {
-                TextBubble(text = message.content, sender_email = message.sender_email!!, my_email = myEmail)
+                TextBubble(text = message.content, sender_email = message.sender_email!!, my_email = myEmail, message = message, userInput = userInput, messageIdToEdit = messageIdToEdit, chatObserver = chatObserver)
             }
         }
 
     }
-
-
 }
 
 @Composable
-fun messageList(messages: List<ChatMessage>, myEmail: String, navController: NavHostController, listState: LazyListState)
+fun messageList(messages: List<ChatMessage>, myEmail: String, navController: NavHostController, listState: LazyListState, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
 {
 
     LazyColumn(
@@ -263,7 +320,7 @@ fun messageList(messages: List<ChatMessage>, myEmail: String, navController: Nav
         modifier = Modifier.testTag("LazyColumn")
     ) {
         items(messages) { message ->
-            messageRow(message, myEmail, navController)
+            messageRow(message, myEmail, navController, userInput, messageIdToEdit, chatObserver = chatObserver)
         }
     }
 
@@ -278,7 +335,7 @@ fun messageList(messages: List<ChatMessage>, myEmail: String, navController: Nav
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun inputBar(modifier: Modifier = Modifier, username: String, myEmail: String, label: String, userInput: MutableState<String>, chatObserver: ChatMessageViewModel, room_id: String)
+fun inputBar(modifier: Modifier = Modifier, username: String, myEmail: String, label: String, userInput: MutableState<String>, chatObserver: ChatMessageViewModel, room_id: String, editing_message_id: MutableState<String>)
 {
         TextField(
         value = userInput.value,
@@ -316,14 +373,28 @@ fun inputBar(modifier: Modifier = Modifier, username: String, myEmail: String, l
                             content = userInput.value,
                             image = null
                         )
-                        chatObserver.insert(message = message, room_id = room_id)
-                        chatObserver.updateLastSent(
-                            room_id = room_id,
-                            content = userInput.value,
-                            time_stamp = currentTimeStamp,
-                            user = username
-                        )
+                        if(editing_message_id.value.isNotEmpty())
+                        {
+                            chatObserver.update(updatedMessage = userInput.value, message_id = editing_message_id.value)
+                            chatObserver.updateLastSent(
+                                room_id = room_id,
+                                content = "${username} edited a message",
+                                time_stamp = currentTimeStamp,
+                                user = "System"
+                            )
+                        }
+                        else{
+                            chatObserver.insert(message = message, room_id = room_id)
+                            chatObserver.updateLastSent(
+                                room_id = room_id,
+                                content = userInput.value,
+                                time_stamp = currentTimeStamp,
+                                user = username
+                            )
+                        }
+
                         Log.d("messages", "Message being sent, ${userInput.value}")
+                        editing_message_id.value = "" // Clear the currently editing message_id if any
                         userInput.value = "" // clear user input
                         Log.d("messages", "Clearing the userInput to send new message")
                     }

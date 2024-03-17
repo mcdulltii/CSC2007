@@ -62,7 +62,14 @@ class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private 
             }
     }
 
-    fun insert(message: ChatMessage,room_id: String)
+    fun delete(messageId: String)
+    {
+        firestore_db.collection(ChatMessageCollRef).document(messageId)
+            .delete()
+            .addOnSuccessListener { Log.d("Deleting Room Passed", "DocumentSnapshot successfully deleted!") }
+            .addOnFailureListener { e -> Log.w("Deleting Room Failed", "Error deleting document", e) }
+    }
+    fun insert(message: ChatMessage, room_id: String)
     {
         // TODO: initialize(?) a room specific model to store the latest message for this room specific
         firestore_db
@@ -78,6 +85,29 @@ class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private 
             .addOnFailureListener { e ->
                 Log.w(
                     "Failed to insert",
+                    "Error writing document",
+                    e
+                )
+            }
+    }
+
+    fun update(updatedMessage: String, message_id: String)
+    {
+        firestore_db
+            .collection(ChatMessageCollRef)
+            .document(message_id)
+            .set(hashMapOf(
+                "content" to updatedMessage
+            ), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d(
+                    "Sucessfully updated message",
+                    "DocumentSnapshot successfully written!"
+                )
+            }
+            .addOnFailureListener { e ->
+                Log.w(
+                    "Failed to update",
                     "Error writing document",
                     e
                 )

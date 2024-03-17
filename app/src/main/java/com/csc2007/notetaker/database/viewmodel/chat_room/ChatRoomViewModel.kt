@@ -106,7 +106,6 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
                     "last_message_content" to "Made changes to the room",
                     "last_sent_message_time" to time_stamp,
                     "last_sender_user" to username,
-//                    "user_list" to usersToAdd,
                     "room_name" to newName
                 ),
                 SetOptions.merge()
@@ -118,7 +117,13 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
                 Log.w("Failed to update", "Error updating document", e)
             }
     }
-
+    fun deleteRoom(roomId: String)
+    {
+        firestore_db.collection(ChatRoomCollRef).document(roomId)
+            .delete()
+            .addOnSuccessListener { Log.d("Deleting Room Passed", "DocumentSnapshot successfully deleted!") }
+            .addOnFailureListener { e -> Log.w("Deleting Room Failed", "Error deleting document", e) }
+    }
     fun createRoom(room: ChatRoom) {
         firestore_db
             .collection(ChatRoomCollRef)

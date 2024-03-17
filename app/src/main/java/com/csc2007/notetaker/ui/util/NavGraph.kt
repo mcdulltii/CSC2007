@@ -42,7 +42,6 @@ import com.csc2007.notetaker.ui.avatar.AvatarPage
 import com.csc2007.notetaker.ui.avatar.AvatarShopPage
 import com.csc2007.notetaker.ui.camera.CameraPage
 import com.csc2007.notetaker.ui.chat.ChatPage
-import com.csc2007.notetaker.ui.chat.Chatter
 import com.csc2007.notetaker.ui.chat.EditRoom
 import com.csc2007.notetaker.ui.chat.PrivateChatPage
 import com.csc2007.notetaker.ui.login.LoginPage
@@ -151,16 +150,6 @@ fun NavGraph(
 
     val selectedRoomID = rememberSaveable{ mutableStateOf("")}
     val selectedRoomName = rememberSaveable{ mutableStateOf("")}
-
-    // sample chatter
-    val privateChat = remember{ mutableStateOf<Chatter>(
-        Chatter(id = 999,
-            userName = "Kacie",
-            lastSentTo = "Sandra Adams",
-            latestText = " - It's the one week of the year in which you get the chance to take…",
-            imgDrawable = R.drawable.kacie)
-        )
-    }
 
     NavHost(
         navController = navController,

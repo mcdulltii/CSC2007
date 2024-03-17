@@ -80,9 +80,10 @@ fun ChatPage(navController: NavHostController,
     val email by viewModel.loggedInUserEmail.collectAsState()
 
     val roomObserver = ChatRoomViewModel(firestore_db = firestore_db, username = username, email = email) // TODO change this to the actual room ID
-//    val users by viewModel.allUsers.collectAsState()
+
     val thisUsersRooms = rememberSaveable{mutableStateOf(emptyList<ChatRoom>())}
     val showDialog = rememberSaveable{mutableStateOf(false)}
+
     // Attach snapshot listener
     LaunchedEffect(Unit) {
         roomObserver.getAllRooms(roomsUserIsIn = thisUsersRooms, userEmail = email)
@@ -248,9 +249,10 @@ fun CreateRoomDialog(
                         onClick = { showDialog.value = false },
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
-                        Text(text = "Cancel", color = Color.DarkGray)
+                        Text(text = "Cancel", color = Color.White)
                     }
                     Button(
+                        enabled = roomNameState.value.isNotEmpty(),
                         onClick = {
                             if(roomNameState.value.isNotEmpty())
                             {
@@ -294,39 +296,4 @@ fun showDialog(message: String) {
     )
 }
 
-data class Chatter(
-    val id: Int = 0,
-    val userName: String = "Kacie",
-    val lastSentTo: String = "Sandra Adams - ",
-    val latestText: String = "It’s the one week of the year in which you get the chance to take…",
-    val imgDrawable: Int = R.drawable.kacie
-)
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun searchBar(modifier: Modifier = Modifier, label: String, searchInput: MutableState<String>)
-//{
-//    TextField(
-//        value = searchInput.value,
-//        onValueChange = { searchInput.value = it },
-//        singleLine = true,
-//        modifier = Modifier
-//            .padding(8.dp)
-//            .fillMaxWidth(),
-//        label = {Text(label)},
-//        leadingIcon = {
-//            Icon(
-//                imageVector = Icons.Default.Search,
-//                contentDescription = "Search",
-//                tint = MaterialTheme.colorScheme.primary // change to our color scheme
-//            )
-//        },
-//        maxLines = 1,
-//        shape = RoundedCornerShape(8.dp),
-//        colors = TextFieldDefaults.textFieldColors(
-//            unfocusedIndicatorColor = Color.Transparent,
-//            cursorColor = MaterialTheme.colorScheme.primary // change to our color scheme
-//        )
-//    )
-//}
 
