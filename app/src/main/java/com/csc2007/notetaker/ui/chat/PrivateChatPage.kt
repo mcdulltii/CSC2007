@@ -173,8 +173,10 @@ fun TextBubble(text: String, sender_email: String, my_email: String, message: Ch
             textAlign = TextAlign.Center
         )
     }
-
-    showEditOrDelete(showDialog = showDialog, message = message, messageIdToEdit = messageIdToEdit, userInput = userInput, chatObserver = chatObserver)
+    if(sender_email == my_email)
+    {
+        showEditOrDelete(showDialog = showDialog, message = message, messageIdToEdit = messageIdToEdit, userInput = userInput, chatObserver = chatObserver)
+    }
 }
 
 @Composable
