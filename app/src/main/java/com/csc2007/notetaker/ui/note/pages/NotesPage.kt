@@ -62,8 +62,14 @@ fun NotesPage(
                 onClickToAddManually = {
                     state.title.value = ""
                     state.content.value = ""
-                    navController.navigate(Screens.AddNoteScreen.route + "/" + moduleId)
+                    navController.navigate(Screens.AddNoteScreen.route + "/${moduleId}")
                 },
+                onClickToCamera = {
+                    navController.navigate(Screens.CameraScreen.route + "/${moduleId}")
+                },
+                onClickToAddAudio = {
+                    navController.navigate(Screens.MicrophoneScreen.route + "/${moduleId}")
+                }
             )
         },
         topBar = {
@@ -90,7 +96,14 @@ fun NotesPage(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(notes.size) { index ->
-                    NoteItem(state = state, index = index, onEvent = onEvent, navController = navController, notes = notes, moduleId = moduleId)
+                    NoteItem(
+                        state = state,
+                        index = index,
+                        onEvent = onEvent,
+                        navController = navController,
+                        notes = notes,
+                        moduleId = moduleId
+                    )
                 }
             }
         }

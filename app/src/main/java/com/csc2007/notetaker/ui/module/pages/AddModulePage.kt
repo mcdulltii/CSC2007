@@ -1,6 +1,8 @@
 package com.csc2007.notetaker.ui.module.pages
 
 import android.annotation.SuppressLint
+import android.content.ContentResolver
+import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -35,6 +38,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -57,12 +62,23 @@ fun AddModulePage(
 
     var moduleTitle = remember { mutableStateOf("") }
 
-
     val imageUriStr = rememberSaveable {
         mutableStateOf("")
     }
 
-    val painter = rememberAsyncImagePainter(imageUriStr.value.ifEmpty { R.drawable.notetaker_logo })
+    val context: Context = LocalContext.current
+
+    val defaultImageUri: Uri = Uri.parse(
+        ContentResolver.SCHEME_ANDROID_RESOURCE +
+                "://" + context.resources.getResourcePackageName(R.drawable.notetaker_logo) +
+                '/' + context.resources.getResourceTypeName(R.drawable.notetaker_logo) +
+                '/' + context.resources.getResourceEntryName(R.drawable.notetaker_logo)
+    )
+
+
+    val painter =
+        rememberAsyncImagePainter(model = imageUriStr.value)
+
 
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -70,15 +86,14 @@ fun AddModulePage(
         }
 
     fun onSaveModuleClicked() {
-        val imageUri = if (imageUriStr.value.isNotEmpty()) Uri.parse(imageUriStr.value) else null
+        val imageUri =
+            if (imageUriStr.value.isNotEmpty()) Uri.parse(imageUriStr.value) else defaultImageUri
 
         imageUri?.let { ModuleEvent.SaveModule(moduleTitle.value, it) }
             ?.let { onEvent(it) }
 
         navController.navigateUp()
     }
-
-
 
     Scaffold(
         topBar = {
@@ -94,7 +109,7 @@ fun AddModulePage(
                     // Back button
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
-                            Icons.Filled.ArrowBack, // Using a Material icon for back arrow
+                            Icons.AutoMirrored.Filled.ArrowBack, // Using a Material icon for back arrow
                             contentDescription = "Back"
                         )
                     }
@@ -102,8 +117,6 @@ fun AddModulePage(
             )
 
         },
-
-
 
         ) {
 

@@ -2,22 +2,28 @@ package com.csc2007.notetaker.ui.camera
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -35,6 +41,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
+import com.csc2007.notetaker.database.viewmodel.module.ModuleEvent
+import com.csc2007.notetaker.database.viewmodel.module.ModuleState
+import com.csc2007.notetaker.database.viewmodel.note.NoteEvent
+import com.csc2007.notetaker.database.viewmodel.note.NoteState
 import com.csc2007.notetaker.ui.gallery.GallerySelect
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.mlkit.vision.common.InputImage
@@ -49,10 +59,19 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Composable
 fun CameraPage(
     navController: NavHostController = rememberNavController(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onEvent: (NoteEvent) -> Unit = {},
+    state: NoteState
 ) {
     var imageUri by remember { mutableStateOf(EMPTY_IMAGE_URI) }
     var cameraSelector = remember { mutableStateOf(CameraSelector.DEFAULT_BACK_CAMERA) }
+
+    val moduleId = navController.currentBackStackEntry?.arguments?.getInt("moduleId") ?: -1
+
+    var recognizedText = remember { mutableStateOf<String?>(null) }
+    val titleText = remember { mutableStateOf("") }
+
+
 
     Column(
         modifier = modifier.fillMaxHeight(),
@@ -76,7 +95,20 @@ fun CameraPage(
                         painter = rememberAsyncImagePainter(imageUri),
                         contentDescription = "Captured image"
                     )
-                    val recognizedText = ocrImage(LocalContext.current, imageUri)
+                    recognizedText = ocrImage(LocalContext.current, imageUri)
+
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Text("Title", fontSize = 25.sp)
+                        TextField(modifier = Modifier
+                            .fillMaxWidth()
+                            , value = titleText.value ?: "",
+                            onValueChange = { titleText.value = it },
+                            textStyle = LocalTextStyle.current.copy(fontSize = 16.sp),
+                            maxLines = 1,
+                            placeholder = { Text("Enter a title...")}
+                        )
+                    }
+
                     TextField(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -88,16 +120,42 @@ fun CameraPage(
                         maxLines = Int.MAX_VALUE
                     )
                 }
-                FloatingActionButton(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp),
-                    onClick = {
-                        imageUri = EMPTY_IMAGE_URI
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+                    Column {
+                        FloatingActionButton(
+                            modifier = Modifier
+                                .padding(16.dp),
+                            onClick = {
+                                state.title.value = titleText.value.ifEmpty { "Default Title" }
+                                state.content.value = recognizedText.value ?: ""
+                                state.moduleId.value = moduleId
+
+                                onEvent(
+                                    NoteEvent.SaveNote(
+                                        title = state.title.value,
+                                        content =  state.content.value,
+                                        moduleId = state.moduleId.value,
+                                    )
+                                )
+                                navController.popBackStack()
+                            }
+                        ) {
+                            Icon(imageVector = Icons.Default.Add, contentDescription = "Add or Submit")
+                        }
+                        Spacer(Modifier.height(16.dp)) // Space between the two FABs
+                        FloatingActionButton(
+                            modifier = Modifier
+                                .padding(16.dp),
+                            onClick = {
+                                // This is your existing action to "Remove image"
+                                imageUri = EMPTY_IMAGE_URI
+                            }
+                        ) {
+                            Icon(imageVector = Icons.Default.Delete, contentDescription = "Remove image")
+                        }
                     }
-                ) {
-                    Icon(imageVector = Icons.Default.Delete, contentDescription = "Remove image")
                 }
+
             }
         } else {
             var showGallerySelect by remember { mutableStateOf(false) }
@@ -115,11 +173,12 @@ fun CameraPage(
                         modifier = modifier,
                         cameraSelector = cameraSelector,
                         onImageRotate = {
-                            cameraSelector.value = if (cameraSelector.value == CameraSelector.DEFAULT_BACK_CAMERA) {
-                                CameraSelector.DEFAULT_FRONT_CAMERA
-                            } else {
-                                CameraSelector.DEFAULT_BACK_CAMERA
-                            }
+                            cameraSelector.value =
+                                if (cameraSelector.value == CameraSelector.DEFAULT_BACK_CAMERA) {
+                                    CameraSelector.DEFAULT_FRONT_CAMERA
+                                } else {
+                                    CameraSelector.DEFAULT_BACK_CAMERA
+                                }
                         },
                         onImageFile = { file ->
                             imageUri = file.toUri()

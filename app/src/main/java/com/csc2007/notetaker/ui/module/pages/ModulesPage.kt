@@ -10,8 +10,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,13 +59,22 @@ fun ModulesPage(
                     .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(state.modules.size) { index ->
-                    ModuleItem(
-                        state = state,
-                        index = index,
-                        onEvent = onEvent,
-                        navController = navController
-                    )
+                if (state.modules.isNotEmpty()) {
+                    items(state.modules.size) { index ->
+                        ModuleItem(
+                            state = state,
+                                    onEvent = onEvent,
+                            navController = navController,
+                            index = index
+                        )
+                    }
+                } else {
+                    item {
+                        Text(
+                            text = "No modules yet.",
+                            modifier = Modifier.padding(16.dp),
+                        )
+                    }
                 }
             }
 

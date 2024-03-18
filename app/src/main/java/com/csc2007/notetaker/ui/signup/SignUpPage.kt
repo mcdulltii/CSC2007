@@ -21,7 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,11 +56,11 @@ fun SignUpPage(
         Font(R.font.ibm_plex_mono_bold, FontWeight.Bold)
     )
 
-    val email = remember { mutableStateOf("") }
-    val username = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
-    val confirmPassword = remember { mutableStateOf("") }
-    var result by remember { mutableStateOf<String?>(null) }
+    val email = rememberSaveable { mutableStateOf("") }
+    val username = rememberSaveable { mutableStateOf("") }
+    val password = rememberSaveable { mutableStateOf("") }
+    val confirmPassword = rememberSaveable { mutableStateOf("") }
+    var result by rememberSaveable { mutableStateOf<String?>(null) }
 
     Column(
         modifier = modifier
@@ -144,7 +144,7 @@ fun SignUpPage(
                         textDecoration = TextDecoration.Underline,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
-                        modifier = Modifier.clickable { navController.navigate("login_screen") })
+                        modifier = Modifier.clickable { navController.navigate(Screens.LoginScreen.route) })
                 }
 
                 if (result != null) {

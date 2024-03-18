@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -29,18 +30,6 @@ fun AddNotePage(navController: NavHostController, state: NoteState, onEvent: (No
     val snackbarHostState = remember { SnackbarHostState() }
 
     val moduleId = navController.currentBackStackEntry?.arguments?.getInt("moduleId") ?: -1
-//    val id = navController.currentBackStackEntry?.arguments?.getInt("id") ?: -1
-
-//    val note = state.notes.find { it.id == id }
-//    val title = note?.title ?: ""
-//    val content = note?.content ?: ""
-
-//    state.title.value = title
-//    state.content.value = content
-
-//    Log.d("title in add note", title)
-//
-//    Log.d("ModuleId from AddNote", moduleId.toString())
 
     Scaffold(
         snackbarHost = { CustomSnackbarHost(snackbarHostState = snackbarHostState) },
@@ -60,14 +49,17 @@ fun AddNotePage(navController: NavHostController, state: NoteState, onEvent: (No
                     )
                     navController.popBackStack()
                 }
-            }) {
+            },
+
+
+            ) {
                 Icon(imageVector = Icons.Rounded.Check, contentDescription = "Save notes")
             }
         },
         topBar = {
             IconButton(onClick = { navController.navigateUp() }) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
                     tint = Color.Black
                 )
