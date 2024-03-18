@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
@@ -75,6 +77,8 @@ fun AvatarShopPage(
     val loggedInUser = userViewModel.loggedInUser.collectAsState().value
     val id = remember { mutableStateOf(if (loggedInUser !== null) loggedInUser.id else 0 ) }
 
+    val scrollState = rememberScrollState()
+
     LaunchedEffect(key1 = progress) {
         if (progress == 0.01f) {
             isPlaying = true
@@ -85,7 +89,7 @@ fun AvatarShopPage(
         }
     }
     Column(
-        modifier = modifier,
+        modifier = modifier.verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopNavBarText(navController = navController, title = "Avatar Shop")
@@ -107,7 +111,8 @@ fun AvatarShopPage(
             }
 
         }) {
-            Text(text = "Purchase for 500 Coins")
+            Text(
+                text = "Purchase for 500 Coins")
         }
 
         Spacer(modifier = Modifier.weight(1f))

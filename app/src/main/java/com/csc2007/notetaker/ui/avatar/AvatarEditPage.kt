@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -97,7 +99,10 @@ fun AvatarEditPage(
     )
     Log.d("AvatarEditPage", "${avatarImageString}")
 
-    Column(modifier = modifier) {
+
+    val scrollState = rememberScrollState()
+
+    Column(modifier = modifier.verticalScroll(scrollState)) {
         TopNavBarText(navController = navController, title = "Edit Avatar")
 
         Image(

@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -28,7 +30,9 @@ fun NotificationsSettingsPage(modifier: Modifier = Modifier, navController: NavC
 
     var notifications = remember { mutableStateOf(false) }
 
-    Column(modifier = modifier) {
+    val scrollState = rememberScrollState()
+
+    Column(modifier = modifier.verticalScroll(scrollState)) {
 
         TopNavBarText(navController = navController, title = "Notifications")
 

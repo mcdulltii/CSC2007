@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Settings
@@ -67,10 +69,12 @@ fun PomodoroPage(
 
     var selectedTimer = rememberSaveable { mutableStateOf("Pomodoro") }
 
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).verticalScroll(scrollState),
             verticalArrangement = Arrangement.Center
         ) {
             Card(
