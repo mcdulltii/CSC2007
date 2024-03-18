@@ -88,14 +88,25 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
     object AddNoteScreen : Screens(route = "add_note_screen")
     object AddModuleScreen : Screens(route = "add_module_screen")
 
+    object EditNoteScreen : Screens(route = "edit_note_screen")
+
+
     object ModulesScreen :
-        Screens(route = "modules_screen", icon = FontAwesomeIcons.Regular.StickyNote, title = "Modules")
+        Screens(
+            route = "modules_screen",
+            icon = FontAwesomeIcons.Regular.StickyNote,
+            title = "Modules"
+        )
 
     object ChatScreen :
         Screens(route = "chat_screen", icon = Icons.Default.ChatBubbleOutline, title = "Chat")
 
     object PrivateChatScreen :
-        Screens(route = "private_chat_screen", icon = Icons.Default.ChatBubbleOutline, title = "Private Chat")
+        Screens(
+            route = "private_chat_screen",
+            icon = Icons.Default.ChatBubbleOutline,
+            title = "Private Chat"
+        )
 
     object EditChatRoomScreen:
             Screens(route = "edit_chat_room_screen", icon = Icons.Default.ChatBubbleOutline, title = "Edit Room")
@@ -109,13 +120,13 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
     object SettingsScreen :
         Screens(route = "settings_screen", icon = Icons.Default.Settings, title = "Settings")
 
-    object PomodoroSettingsScreen: Screens(route = "pomodoro_settings_screen")
-    object AccountSettingsScreen: Screens(route = "account_settings_screen")
-    object ChangePasswordScreen: Screens(route = "change_password_screen")
-    object NotificationsSettingsScreen: Screens(route = "notifications_settings_screen")
+    object PomodoroSettingsScreen : Screens(route = "pomodoro_settings_screen")
+    object AccountSettingsScreen : Screens(route = "account_settings_screen")
+    object ChangePasswordScreen : Screens(route = "change_password_screen")
+    object NotificationsSettingsScreen : Screens(route = "notifications_settings_screen")
 
-    object AvatarShopScreen: Screens(route = "avatar_shop_screen")
-    object AvatarEditScreen: Screens(route = "avatar_edit_screen")
+    object AvatarShopScreen : Screens(route = "avatar_shop_screen")
+    object AvatarEditScreen : Screens(route = "avatar_edit_screen")
 
 }
 
@@ -124,7 +135,7 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
 @ExperimentalPermissionsApi
 @Composable
 fun NavGraph(
-    navController: NavHostController, 
+    navController: NavHostController,
     userViewModelFactory: UserViewModelFactory,
     noteViewModelFactory: NoteViewModelFactory,
     moduleViewModelFactory: ModuleViewModelFactory,
@@ -136,20 +147,20 @@ fun NavGraph(
 ) {
 
     val pomodoroTimerViewModel = PomodoroTimerViewModel()
-    val userViewModel : UserViewModel = viewModel(factory = userViewModelFactory)
+    val userViewModel: UserViewModel = viewModel(factory = userViewModelFactory)
     val itemViewModel: ItemViewModel = viewModel(factory = itemViewModelFactory)
     val ownViewModel: OwnViewModel = viewModel(factory = ownViewModelFactory)
     val avatarViewModel: AvatarViewModel = viewModel(factory = avatarViewModelFactory)
-    
+
     val noteViewModel: NoteViewModel = viewModel(factory = noteViewModelFactory)
     val noteState by noteViewModel.state.collectAsState()
 
     val moduleViewModel: ModuleViewModel = viewModel(factory = moduleViewModelFactory)
     val moduleState by moduleViewModel.state.collectAsState()
 
-
     val selectedRoomID = rememberSaveable{ mutableStateOf("")}
     val selectedRoomName = rememberSaveable{ mutableStateOf("")}
+
 
     NavHost(
         navController = navController,
@@ -162,9 +173,10 @@ fun NavGraph(
 
         composable(Screens.SignUpScreen.route) {
             SignUpPage(
-              userViewModel = userViewModel, 
-              avatarViewModel = avatarViewModel, 
-              navController = navController)
+                userViewModel = userViewModel,
+                avatarViewModel = avatarViewModel,
+                navController = navController
+            )
         }
 
         composable(Screens.LoginScreen.route) {
@@ -174,15 +186,23 @@ fun NavGraph(
             )
         }
 
-        composable(Screens.CameraScreen.route) {
-            CameraPage(navController = navController)
+        composable(
+            Screens.CameraScreen.route + "/{moduleId}",
+            arguments = listOf(navArgument(name = "moduleId") { type = NavType.IntType })
+        ) {
+            CameraPage(navController = navController, onEvent = noteViewModel::onEvent, state = noteState)
         }
 
-        composable(Screens.MicrophoneScreen.route) {
+        composable(
+            Screens.MicrophoneScreen.route  + "/{moduleId}",
+            arguments = listOf(navArgument(name = "moduleId") { type = NavType.IntType })
+        ) {
             val application = LocalContext.current.applicationContext as Application
             MicrophonePage(
                 navController = navController,
-                voiceToTextParser = VoiceToTextParser(application)
+                voiceToTextParser = VoiceToTextParser(application),
+                onEvent = noteViewModel::onEvent,
+                noteState = noteState
             )
         }
 
@@ -198,9 +218,20 @@ fun NavGraph(
         }
 
         composable(
-            Screens.AddNoteScreen.route + "/{moduleId}",
+            Screens.EditNoteScreen.route + "/{moduleId}",
             arguments = listOf(navArgument(name = "moduleId") { type = NavType.IntType }
             )
+        ) {
+            NotePage(
+                navController = navController,
+                state = noteState,
+                onEvent = noteViewModel::onEvent
+            )
+        }
+
+        composable(
+            Screens.AddNoteScreen.route + "/{moduleId}",
+            arguments = listOf(navArgument(name = "moduleId") { type = NavType.IntType })
         ) {
             AddNotePage(
                 navController = navController,
@@ -261,15 +292,30 @@ fun NavGraph(
         }
 
         composable(Screens.AvatarScreen.route) {
-            AvatarPage(navController = navController, userViewModel = userViewModel, avatarViewModel = avatarViewModel)
+            AvatarPage(
+                navController = navController,
+                userViewModel = userViewModel,
+                avatarViewModel = avatarViewModel
+            )
         }
 
         composable(Screens.AvatarEditScreen.route) {
-            AvatarEditPage(navController = navController, userViewModel = userViewModel, itemViewModel = itemViewModel, ownViewModel = ownViewModel, avatarViewModel = avatarViewModel)
+            AvatarEditPage(
+                navController = navController,
+                userViewModel = userViewModel,
+                itemViewModel = itemViewModel,
+                ownViewModel = ownViewModel,
+                avatarViewModel = avatarViewModel
+            )
         }
 
         composable(Screens.AvatarShopScreen.route) {
-            AvatarShopPage(navController = navController, userViewModel = userViewModel, itemViewModel = itemViewModel, ownViewModel = ownViewModel)
+            AvatarShopPage(
+                navController = navController,
+                userViewModel = userViewModel,
+                itemViewModel = itemViewModel,
+                ownViewModel = ownViewModel
+            )
         }
 
         composable(Screens.SettingsScreen.route) {

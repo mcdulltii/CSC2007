@@ -19,13 +19,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.graphics.BitmapFactory
 import android.net.Uri
+import com.csc2007.notetaker.database.repository.NotesRepository
+import com.csc2007.notetaker.database.viewmodel.note.NoteEvent
 
 
-
-class ModuleViewModel(private val repository: ModulesRepository, private val appContext: Context) : ViewModel() {
+class ModuleViewModel(private val repository: ModulesRepository, private val appContext: Context,private val notesRepository: NotesRepository) : ViewModel() {
 
     private val _state = MutableStateFlow(ModuleState())
-//    val state: StateFlow<ModuleState> = _state.asStateFlow()
 
     private var _sortType = MutableStateFlow(SortType.ASC_DATE_ADDED)
 
@@ -58,7 +58,7 @@ class ModuleViewModel(private val repository: ModulesRepository, private val app
     fun onEvent(event: ModuleEvent) {
         when (event) {
             is ModuleEvent.SaveModule -> saveModuleWithImage(event.title, event.imageUri)
-            is ModuleEvent.DeleteModule -> TODO()
+            is ModuleEvent.DeleteModule -> deleteModule(event.module)
             is ModuleEvent.SearchModule -> _searchQuery.value = event.query
             is ModuleEvent.SortModules -> {
                 _sortType.value = event.sortType
@@ -66,7 +66,15 @@ class ModuleViewModel(private val repository: ModulesRepository, private val app
         }
     }
 
-    fun saveModuleWithImage(title: String, imageUri: Uri) {
+    private fun deleteModule(module: Module) {
+        _state.value = ModuleState(isSaving = false, saveSuccess = true)
+        viewModelScope.launch {
+            repository.deleteModule(module)
+            notesRepository.deleteALlNote(moduleId = module.id)
+        }
+    }
+
+    private fun saveModuleWithImage(title: String, imageUri: Uri) {
         viewModelScope.launch {
             _state.value = ModuleState(isSaving = true)
             try {
@@ -89,27 +97,6 @@ class ModuleViewModel(private val repository: ModulesRepository, private val app
         }
     }
 
-
-//    private fun saveEntityWithImage(title: String, bitmap: Bitmap, content: String) {
-//        viewModelScope.launch {
-//            _state.value = ModuleState(isSaving = true)
-//
-//            try {
-//                val filename = "image_${System.currentTimeMillis()}"
-//                val imagePath = withContext(Dispatchers.IO) {
-//                    saveImageToInternalStorage(appContext, bitmap, filename)
-//                }
-//
-//                val module = Module(title = title, dateCreated = System.currentTimeMillis(),content = content, imagePath = imagePath )
-//
-//                repository.upsertModule(module)
-//
-//                _state.value = ModuleState(isSaving = false, saveSuccess = true)
-//            } catch (e: Exception) {
-//                _state.value = ModuleState(isSaving = false, saveSuccess = false)
-//            }
-//        }
-//    }
 
     private suspend fun saveImageToInternalStorage(context: Context, bitmap: Bitmap, filename: String): String {
         context.openFileOutput("$filename.png", Context.MODE_PRIVATE).use { fos ->
@@ -145,11 +132,11 @@ class ModuleViewModel(private val repository: ModulesRepository, private val app
     }
 }
 
-class ModuleViewModelFactory(private val repository: ModulesRepository, private val context: Context) : ViewModelProvider.Factory {
+class ModuleViewModelFactory(private val repository: ModulesRepository, private val context: Context, private val notesRepository: NotesRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ModuleViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return ModuleViewModel(repository, context) as T
+            return ModuleViewModel(repository, context, notesRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -117,4 +117,7 @@ dependencies {
 
     // Lottie Animation
     implementation("com.airbnb.android:lottie-compose:5.2.0")
+
+    // Summarization
+    implementation("com.github.shubham0204:Text2Summary-Android:alpha-05")
 }

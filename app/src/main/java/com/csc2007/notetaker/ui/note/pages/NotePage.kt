@@ -2,7 +2,6 @@ package com.csc2007.notetaker.ui.note.pages
 
 
 import NoteAppBarWithBackButton
-import ExpandableFloatingActionButton
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -21,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.csc2007.notetaker.database.viewmodel.note.NoteEvent
 import com.csc2007.notetaker.database.viewmodel.note.NoteState
-import com.csc2007.notetaker.ui.util.Screens
+import com.ml.quaterion.text2summary.Text2Summary
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -42,21 +41,28 @@ fun NotePage(navController: NavHostController, state: NoteState, onEvent: (NoteE
     Scaffold(
         topBar = {
             if (title != null) {
-                NoteAppBarWithBackButton(navController = navController, title = title)
+                NoteAppBarWithBackButton(
+                    navController = navController,
+                    title = title,
+                    onClickDelete = {
+                        onEvent(NoteEvent.DeleteNote(note = note))
+                        navController.popBackStack()
+                    },
+                    onClickSummary = {
+                        if (content != null) {
+                            val callback = object : Text2Summary.SummaryCallback {
+                                override fun onSummaryProduced(summary: String) {
+                                    onEvent(NoteEvent.UpdateNote(note.copy(content = summary)))
+                                }
+                            }
+                            Text2Summary.summarizeAsync(content, 0.7f, callback)
+                        }
+                    }
+                )
             }
         },
-        floatingActionButton = {
-            ExpandableFloatingActionButton(
 
-                isExpanded = isExpanded,
-                onExpand = { isExpanded = !isExpanded },
-                onClickToAddManually = {
-                    navController.navigate(Screens.AddNoteScreen.route + "/$moduleId/$id")
-                }
-                )
-
-        },
-    ) { paddingValues ->
+        ) { paddingValues ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()

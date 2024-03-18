@@ -8,7 +8,7 @@ import com.csc2007.notetaker.database.viewmodel.note.SortType
 
 data class ModuleState(
     val modules: List<Module> = emptyList(),
-    val title: MutableState<String> = mutableStateOf(""),
+    var title: MutableState<String> = mutableStateOf(""),
     val sortType: SortType = SortType.ASC_TITLE,
     val searchQuery: String = "",
     val isSaving: Boolean = false,

@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
 
         val moduleViewModelFactory = ModuleViewModelFactory(
             (application as NoteTakingApp).moduleRepository,
-            applicationContext
+            applicationContext, (application as NoteTakingApp).noteRepository
         )
 
 //        val firestore_db = Firebase.firestore // idk why it says Firestore_db can't resolve sometimes, extremely weird
