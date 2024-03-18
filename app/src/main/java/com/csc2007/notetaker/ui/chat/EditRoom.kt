@@ -78,65 +78,68 @@ fun EditRoom(
         Column(
             modifier = Modifier.weight(1f),
         ) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center)
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically)
             {
-                Text("Editing: ${roomName.value}", maxLines = 1, modifier = Modifier.padding(8.dp), fontSize = 20.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                Text("Editing: ${roomName.value}", maxLines = 1, modifier = Modifier.padding(16.dp), fontSize = 20.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
             }
             // Room name edit field
-            Text("Edit Room Name:", modifier = Modifier.padding(8.dp))
+            Row(horizontalArrangement = Arrangement.Center)
+            {
+                Text("Edit Room\n Name:", modifier = Modifier.padding(16.dp, 8.dp))
+                TextField(
+                    value = roomNameState.value,
+                    onValueChange = { roomNameState.value = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp, 8.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { Log.d("Room Creation", "User entered a name") }
+                    ),
+                    maxLines = 1
+                )
+            }
 
-            TextField(
-                value = roomNameState.value,
-                onValueChange = { roomNameState.value = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = { Log.d("Room Creation", "User entered a name") }
-                ),
-                maxLines = 1
-            )
-
-            Spacer(modifier = Modifier.padding(16.dp))
+            Spacer(modifier = Modifier.padding(2.dp))
 
             // People's Emails to add
-            Text("Invite people via Address:", modifier = Modifier.padding(8.dp))
-
-            Column(modifier = Modifier.padding(8.dp)) {
-                // Add email field
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                ) {
-                    TextField(
-                        value = emailToAdd.value,
-                        onValueChange = { emailToAdd.value = it },
-                        modifier = Modifier.weight(1f),
-                        maxLines = 1
-                    )
-                    IconButton(onClick = {
-                        if (emailToAdd.value.isNotBlank() && emailToAdd.value !in usersToAdd.value) {
-                            usersToAdd.value.add(emailToAdd.value)
-                            Log.d("add email", "Added ${emailToAdd.value}")
-                            emailToAdd.value = ""
+            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically){
+                Text("Invite people \nvia Email:", modifier = Modifier.padding(16.dp, 8.dp))
+                Column(modifier = Modifier.padding(8.dp)) {
+                    // Add email field
+                    Row() {
+                        TextField(
+                            value = emailToAdd.value,
+                            onValueChange = { emailToAdd.value = it },
+                            modifier = Modifier.weight(1f)
+                                .fillMaxWidth()
+                                .padding()
+                                .clip(RoundedCornerShape(8.dp)),
+                            maxLines = 1
+                        )
+                        IconButton(onClick = {
+                            if (emailToAdd.value.isNotBlank() && emailToAdd.value !in usersToAdd.value) {
+                                usersToAdd.value.add(emailToAdd.value)
+                                Log.d("add email", "Added ${emailToAdd.value}")
+                                emailToAdd.value = ""
+                            }
+                        }) {
+                            Icon(Icons.Filled.AddCircleOutline, contentDescription = "Add Email")
                         }
-                    }) {
-                        Icon(Icons.Filled.AddCircleOutline, contentDescription = "Add Email")
                     }
+                    // Added emails
                 }
-                // Added emails
-                emailList(usersToAdd = usersToAdd.value, emailToAdd)
             }
+            EmailList(usersToAdd = usersToAdd.value, emailToAdd)
+
         }
 
         Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(4.dp))
         {
-            displayActionButtons(
+            DisplayActionButtons(
                 navController = navController,
                 roomNameState = roomNameState,
                 roomName = roomName,
@@ -152,7 +155,7 @@ fun EditRoom(
 
 
 @Composable
-fun emailList(usersToAdd: MutableList<String>, emailToAdd: MutableState<String>) {
+fun EmailList(usersToAdd: MutableList<String>, emailToAdd: MutableState<String>) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -167,7 +170,7 @@ fun emailList(usersToAdd: MutableList<String>, emailToAdd: MutableState<String>)
                     // force a recomposition?
                     emailToAdd.value = " "
                     emailToAdd.value = ""
-                    Log.d("tag", "Attempting to delete ${email}")
+                    Log.d("tag", "Attempting to delete $email")
                 }) {
                     Icon(Icons.Filled.Close, contentDescription = "Delete Email")
                 }
@@ -177,7 +180,7 @@ fun emailList(usersToAdd: MutableList<String>, emailToAdd: MutableState<String>)
 }
 
 @Composable
-fun displayActionButtons(navController: NavController,
+fun DisplayActionButtons(navController: NavController,
                          roomNameState: MutableState<String>,
                          roomName: MutableState<String>,
                          roomObserver: ChatRoomViewModel,
@@ -188,7 +191,7 @@ fun displayActionButtons(navController: NavController,
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(2.dp),
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.Center
     ) {
