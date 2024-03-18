@@ -135,29 +135,29 @@ fun ChatPage(navController: NavHostController,
 
 @Composable
 fun chatRow(room: ChatRoom, navController: NavHostController, select_room: MutableState<String>, room_name: MutableState<String>)
-            {
-                Row(modifier = Modifier
-                    .padding(8.dp)
-                    .clickable {
-                        select_room.value = room.roomId!!
-                        room_name.value = room.room_name!!
-                        navController.navigate(Screens.PrivateChatScreen.route)
-                    })
-                {
-                    /* TODO Reimplement the image bubble */
-                    Image(
-                        painter = painterResource(id = R.drawable.avatar_placeholder),
-                        contentDescription = "Profile picture",
-                        modifier = Modifier
-                            .size(60.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop,
-                    )
+{
+    Row(modifier = Modifier
+        .padding(8.dp)
+        .clickable {
+            select_room.value = room.roomId!!
+            room_name.value = room.room_name!!
+            navController.navigate(Screens.PrivateChatScreen.route)
+        })
+    {
+        /* TODO Reimplement the image bubble */
+        Image(
+            painter = painterResource(id = R.drawable.avatar_placeholder),
+            contentDescription = "Profile picture",
+            modifier = Modifier
+                .size(60.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop,
+        )
 
-                    Spacer(Modifier.padding(8.dp))
+        Spacer(Modifier.padding(8.dp))
 
-                    Column()
-                    {
+        Column()
+        {
             Text(text = room.room_name!!,
                 fontWeight = FontWeight.Bold)
             Spacer(Modifier.padding(2.dp))

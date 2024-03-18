@@ -75,9 +75,6 @@ class MainActivity : ComponentActivity() {
                 firestore_db = firestore_db,
                 firestorage = firestorage
             )
-//            ,
-//            ChatRoomViewModelFactory = ChatRoomViewModelFactory,
-//            ChatMessageViewModelFactory = ChatMessageViewModelFactory
         }
     }
 }
@@ -113,8 +110,6 @@ fun MainApp(
                 avatarViewModelFactory = avatarViewModelFactory,
                 firestore_db = firestore_db,
                 firestorage = firestorage
-//            ChatRoomViewModelFactory = ChatRoomViewModelFactory,
-//            ChatMessageViewModelFactory = ChatMessageViewModelFactory
             )
         }
     }

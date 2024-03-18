@@ -109,7 +109,7 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
         )
 
     object EditChatRoomScreen:
-            Screens(route = "edit_chat_room_screen", icon = Icons.Default.ChatBubbleOutline, title = "Edit Room")
+        Screens(route = "edit_chat_room_screen", icon = Icons.Default.ChatBubbleOutline, title = "Edit Room")
 
     object PomodoroScreen :
         Screens(route = "pomodoro_screen", icon = Icons.Default.AccessTime, title = "Pomodoro")
