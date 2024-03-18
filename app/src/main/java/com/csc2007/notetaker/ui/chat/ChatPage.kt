@@ -134,7 +134,7 @@ fun ChatPage(navController: NavHostController,
 }
 
 @Composable
-fun chatRow(room: ChatRoom, navController: NavHostController, select_room: MutableState<String>, room_name: MutableState<String>)
+fun ChatRow(room: ChatRoom, navController: NavHostController, select_room: MutableState<String>, room_name: MutableState<String>)
 {
     Row(modifier = Modifier
         .padding(8.dp)
@@ -190,9 +190,9 @@ fun ChatList(rooms: List<ChatRoom>, modifier: Modifier = Modifier, navController
     LazyColumn(modifier = modifier.testTag("LazyColumn").padding(bottom = 80.dp)) {
         items(rooms) { room ->
             if (query.value.isEmpty()) {
-                chatRow(room, navController, select_room, room_name = room_name)
+                ChatRow(room, navController, select_room, room_name = room_name)
             } else if (room.room_name?.contains(query.value, ignoreCase = true) == true) {
-                chatRow(room, navController, select_room, room_name = room_name)
+                ChatRow(room, navController, select_room, room_name = room_name)
             }
         }
     }
@@ -283,7 +283,7 @@ fun CreateRoomDialog(
 }
 
 @Composable
-fun showDialog(message: String) {
+fun ShowDialog(message: String) {
     AlertDialog(
         onDismissRequest = {},
         title = { Text(text = "Success") },

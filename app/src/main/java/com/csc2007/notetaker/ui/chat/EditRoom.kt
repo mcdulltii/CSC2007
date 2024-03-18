@@ -80,17 +80,17 @@ fun EditRoom(
         ) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center)
             {
-                Text("Editing: ${roomName.value}", maxLines = 1, modifier = Modifier.padding(8.dp), fontSize = 20.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                Text("Editing: ${roomName.value}", maxLines = 1, modifier = Modifier.padding(16.dp), fontSize = 20.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
             }
             // Room name edit field
-            Text("Edit Room Name:", modifier = Modifier.padding(8.dp))
+            Text("Edit Room Name:", modifier = Modifier.padding(16.dp, 8.dp))
 
             TextField(
                 value = roomNameState.value,
                 onValueChange = { roomNameState.value = it },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(16.dp, 8.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done
@@ -104,7 +104,7 @@ fun EditRoom(
             Spacer(modifier = Modifier.padding(16.dp))
 
             // People's Emails to add
-            Text("Invite people via Address:", modifier = Modifier.padding(8.dp))
+            Text("Invite people via Email:", modifier = Modifier.padding(16.dp, 8.dp))
 
             Column(modifier = Modifier.padding(8.dp)) {
                 // Add email field
@@ -130,13 +130,13 @@ fun EditRoom(
                     }
                 }
                 // Added emails
-                emailList(usersToAdd = usersToAdd.value, emailToAdd)
+                EmailList(usersToAdd = usersToAdd.value, emailToAdd)
             }
         }
 
         Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(4.dp))
         {
-            displayActionButtons(
+            DisplayActionButtons(
                 navController = navController,
                 roomNameState = roomNameState,
                 roomName = roomName,
@@ -152,7 +152,7 @@ fun EditRoom(
 
 
 @Composable
-fun emailList(usersToAdd: MutableList<String>, emailToAdd: MutableState<String>) {
+fun EmailList(usersToAdd: MutableList<String>, emailToAdd: MutableState<String>) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -167,7 +167,7 @@ fun emailList(usersToAdd: MutableList<String>, emailToAdd: MutableState<String>)
                     // force a recomposition?
                     emailToAdd.value = " "
                     emailToAdd.value = ""
-                    Log.d("tag", "Attempting to delete ${email}")
+                    Log.d("tag", "Attempting to delete $email")
                 }) {
                     Icon(Icons.Filled.Close, contentDescription = "Delete Email")
                 }
@@ -177,7 +177,7 @@ fun emailList(usersToAdd: MutableList<String>, emailToAdd: MutableState<String>)
 }
 
 @Composable
-fun displayActionButtons(navController: NavController,
+fun DisplayActionButtons(navController: NavController,
                          roomNameState: MutableState<String>,
                          roomName: MutableState<String>,
                          roomObserver: ChatRoomViewModel,

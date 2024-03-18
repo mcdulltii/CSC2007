@@ -110,7 +110,7 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
                     .fillMaxWidth()
                     .clickable { navController.navigate(Screens.EditChatRoomScreen.route) },
             ) // Remember to include the image at the right
-            messageList(messages = messages_in_room.value, myEmail = email, navController = navController, listState = listState, userInput = userInput, messageIdToEdit = currentlyEditingMessageId, chatObserver = chatObserver)
+            MessageList(messages = messages_in_room.value, myEmail = email, navController = navController, listState = listState, userInput = userInput, messageIdToEdit = currentlyEditingMessageId, chatObserver = chatObserver)
 
         }
 
@@ -120,7 +120,7 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
             Spacer(Modifier.padding(8.dp))
 
             // add logic checks for even if input is empty but theres an image/file attached to allow sending
-            inputBar(label = "Text message", userInput = userInput, username = username, myEmail = email, modifier = Modifier.weight(0.6f), chatObserver = chatObserver, room_id = roomId, editing_message_id = currentlyEditingMessageId)
+            InputBar(label = "Text message", userInput = userInput, username = username, myEmail = email, modifier = Modifier.weight(0.6f), chatObserver = chatObserver, room_id = roomId, editing_message_id = currentlyEditingMessageId)
 
             Box(modifier = Modifier
                 .size(60.dp)
@@ -175,12 +175,12 @@ fun TextBubble(text: String, sender_email: String, my_email: String, message: Ch
     }
     if(sender_email == my_email)
     {
-        showEditOrDelete(showDialog = showDialog, message = message, messageIdToEdit = messageIdToEdit, userInput = userInput, chatObserver = chatObserver)
+        ShowEditOrDelete(showDialog = showDialog, message = message, messageIdToEdit = messageIdToEdit, userInput = userInput, chatObserver = chatObserver)
     }
 }
 
 @Composable
-fun showEditOrDelete(showDialog: MutableState<Boolean>, message: ChatMessage, messageIdToEdit: MutableState<String>, userInput: MutableState<String>, chatObserver: ChatMessageViewModel)
+fun ShowEditOrDelete(showDialog: MutableState<Boolean>, message: ChatMessage, messageIdToEdit: MutableState<String>, userInput: MutableState<String>, chatObserver: ChatMessageViewModel)
 {
     if (showDialog.value) {
         Dialog(
@@ -249,13 +249,13 @@ fun ImageBubble(drawableId: Int, navController: NavHostController)
         )
         if(showOverlay.value) // bugged lmao
         {
-            enlargeImage(image = drawableId, showOverlay = showOverlay, navController = navController)
+            EnlargeImage(image = drawableId, showOverlay = showOverlay, navController = navController)
         }
     }
 }
 
 @Composable
-fun enlargeImage(image: Int, showOverlay: MutableState<Boolean>, navController: NavHostController)
+fun EnlargeImage(image: Int, showOverlay: MutableState<Boolean>, navController: NavHostController)
 {
     Box(
         modifier = Modifier
@@ -278,7 +278,7 @@ fun enlargeImage(image: Int, showOverlay: MutableState<Boolean>, navController: 
 }
 
 @Composable
-fun messageRow(message: ChatMessage, myEmail: String, navController: NavHostController, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
+fun MessageRow(message: ChatMessage, myEmail: String, navController: NavHostController, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
 {
     /* TODO re-implement the profile pictures once the database modeling has been done */
     Row(modifier = Modifier.fillMaxWidth(),
@@ -314,7 +314,7 @@ fun messageRow(message: ChatMessage, myEmail: String, navController: NavHostCont
 }
 
 @Composable
-fun messageList(messages: List<ChatMessage>, myEmail: String, navController: NavHostController, listState: LazyListState, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
+fun MessageList(messages: List<ChatMessage>, myEmail: String, navController: NavHostController, listState: LazyListState, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
 {
 
     LazyColumn(
@@ -322,7 +322,7 @@ fun messageList(messages: List<ChatMessage>, myEmail: String, navController: Nav
         modifier = Modifier.testTag("LazyColumn")
     ) {
         items(messages) { message ->
-            messageRow(message, myEmail, navController, userInput, messageIdToEdit, chatObserver = chatObserver)
+            MessageRow(message, myEmail, navController, userInput, messageIdToEdit, chatObserver = chatObserver)
         }
     }
 
@@ -337,7 +337,7 @@ fun messageList(messages: List<ChatMessage>, myEmail: String, navController: Nav
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun inputBar(modifier: Modifier = Modifier, username: String, myEmail: String, label: String, userInput: MutableState<String>, chatObserver: ChatMessageViewModel, room_id: String, editing_message_id: MutableState<String>)
+fun InputBar(modifier: Modifier = Modifier, username: String, myEmail: String, label: String, userInput: MutableState<String>, chatObserver: ChatMessageViewModel, room_id: String, editing_message_id: MutableState<String>)
 {
         TextField(
         value = userInput.value,
@@ -380,7 +380,7 @@ fun inputBar(modifier: Modifier = Modifier, username: String, myEmail: String, l
                             chatObserver.update(updatedMessage = userInput.value, message_id = editing_message_id.value)
                             chatObserver.updateLastSent(
                                 room_id = room_id,
-                                content = "${username} edited a message",
+                                content = "$username edited a message",
                                 time_stamp = currentTimeStamp,
                                 user = "System"
                             )
