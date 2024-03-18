@@ -203,7 +203,7 @@ fun CreateRoomButton(showDialog: MutableState<Boolean>, email: String, roomObser
     FloatingActionButton(
         onClick = { showDialog.value = true },
         modifier = Modifier
-            .padding(16.dp)
+            .padding(0.dp, 16.dp)
     ) {
         Icon(Icons.Filled.GroupAdd, contentDescription = "Create new room")
     }
