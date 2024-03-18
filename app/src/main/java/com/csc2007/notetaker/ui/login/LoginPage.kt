@@ -19,7 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.Font
@@ -52,11 +52,11 @@ fun LoginPage(
 
     val loggedInState by userViewModel.loggedIn.collectAsState()
 
-    val email = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
+    val email = rememberSaveable { mutableStateOf("") }
+    val password = rememberSaveable { mutableStateOf("") }
 
     if (loggedInState == true) {
-        navController.navigate("pomodoro_screen")
+        navController.navigate(Screens.ChatScreen.route)
     }
 
     Column(modifier = modifier) {
@@ -120,7 +120,7 @@ fun LoginPage(
                         textDecoration = TextDecoration.Underline,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
-                        modifier = Modifier.clickable { navController.navigate("signup_screen") })
+                        modifier = Modifier.clickable { navController.navigate(Screens.SignUpScreen.route) })
                 }
 
                 if (loggedInState == false) {

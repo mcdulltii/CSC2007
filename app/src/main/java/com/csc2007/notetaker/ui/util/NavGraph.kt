@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,7 +42,7 @@ import com.csc2007.notetaker.ui.avatar.AvatarPage
 import com.csc2007.notetaker.ui.avatar.AvatarShopPage
 import com.csc2007.notetaker.ui.camera.CameraPage
 import com.csc2007.notetaker.ui.chat.ChatPage
-import com.csc2007.notetaker.ui.chat.Chatter
+import com.csc2007.notetaker.ui.chat.EditRoom
 import com.csc2007.notetaker.ui.chat.PrivateChatPage
 import com.csc2007.notetaker.ui.login.LoginPage
 import com.csc2007.notetaker.ui.microphone.MicrophonePage
@@ -59,6 +60,8 @@ import com.csc2007.notetaker.ui.settings.PomodoroSettingsPage
 import com.csc2007.notetaker.ui.settings.SettingsPage
 import com.csc2007.notetaker.ui.signup.SignUpPage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.Solid
@@ -105,6 +108,9 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
             title = "Private Chat"
         )
 
+    object EditChatRoomScreen:
+        Screens(route = "edit_chat_room_screen", icon = Icons.Default.ChatBubbleOutline, title = "Edit Room")
+
     object PomodoroScreen :
         Screens(route = "pomodoro_screen", icon = Icons.Default.AccessTime, title = "Pomodoro")
 
@@ -133,9 +139,11 @@ fun NavGraph(
     userViewModelFactory: UserViewModelFactory,
     noteViewModelFactory: NoteViewModelFactory,
     moduleViewModelFactory: ModuleViewModelFactory,
-    itemViewModelFactory: ItemViewModelFactory,
-    ownViewModelFactory: OwnViewModelFactory,
-    avatarViewModelFactory: AvatarViewModelFactory
+    itemViewModelFactory: ItemViewModelFactory, 
+    ownViewModelFactory: OwnViewModelFactory, 
+    avatarViewModelFactory: AvatarViewModelFactory,
+    firestore_db : FirebaseFirestore,
+    firestorage : FirebaseStorage
 ) {
 
     val pomodoroTimerViewModel = PomodoroTimerViewModel()
@@ -150,18 +158,9 @@ fun NavGraph(
     val moduleViewModel: ModuleViewModel = viewModel(factory = moduleViewModelFactory)
     val moduleState by moduleViewModel.state.collectAsState()
 
-    // sample chatter
-    val privateChat = remember {
-        mutableStateOf<Chatter>(
-            Chatter(
-                id = 999,
-                userName = "Kacie",
-                lastSentTo = "Sandra Adams",
-                latestText = " - It's the one week of the year in which you get the chance to take…",
-                imgDrawable = R.drawable.kacie
-            )
-        )
-    }
+    val selectedRoomID = rememberSaveable{ mutableStateOf("")}
+    val selectedRoomName = rememberSaveable{ mutableStateOf("")}
+
 
     NavHost(
         navController = navController,
@@ -270,23 +269,20 @@ fun NavGraph(
         }
 
         composable(Screens.ChatScreen.route) {
-            ChatPage(
-                navController = navController,
-                viewModel = userViewModel,
-                select_chat = privateChat
-            )
+            ChatPage(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, selectedRoomID = selectedRoomID, selectedRoomName = selectedRoomName)
         }
 
         composable(Screens.PrivateChatScreen.route) {
             val user by userViewModel.loggedInUser.collectAsState()
             val userId = user?.id
-            PrivateChatPage(
-                navController = navController,
-                viewModel = userViewModel,
-                selected_chatter = privateChat.value,
-                userId = userId!!
-            )
+            PrivateChatPage(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, roomName = selectedRoomName.value, roomId = selectedRoomID.value)
+        }                                                                                                          /* TODO change to selectedRoom.value */
+
+        composable(Screens.EditChatRoomScreen.route)
+        {
+            EditRoom(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, roomName = selectedRoomName, roomId = selectedRoomID.value)
         }
+
 
         composable(Screens.PomodoroScreen.route) {
             PomodoroPage(

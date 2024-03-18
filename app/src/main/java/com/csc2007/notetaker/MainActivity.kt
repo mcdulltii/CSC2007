@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
 import com.csc2007.notetaker.database.NoteTakingApp
+import com.csc2007.notetaker.database.repository.Firestorage_db
+import com.csc2007.notetaker.database.repository.Firestore_db
 import com.csc2007.notetaker.database.viewmodel.AvatarViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.ItemViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.OwnViewModelFactory
@@ -20,6 +22,10 @@ import com.csc2007.notetaker.database.viewmodel.note.NoteViewModelFactory
 import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.util.NavGraph
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoilApi
@@ -54,14 +60,21 @@ class MainActivity : ComponentActivity() {
             applicationContext, (application as NoteTakingApp).noteRepository
         )
 
+//        val firestore_db = Firebase.firestore // idk why it says Firestore_db can't resolve sometimes, extremely weird
+        val firestore_db = Firestore_db().get_firestore_db(this)
+        val firestorage = Firestorage_db().get_firestorage_db(this)
+
         setContent {
             MainApp(
-              userViewModelFactory = userViewModelFactory,
-              noteViewModelFactory = noteViewModelFactory,
-              moduleViewModelFactory = moduleViewModelFactory,
-              itemViewModelFactory = itemViewModelFactory, 
-              ownViewModelFactory = ownViewModelFactory, 
-              avatarViewModelFactory = avatarViewModelFactory)
+                userViewModelFactory = userViewModelFactory,
+                noteViewModelFactory = noteViewModelFactory,
+                moduleViewModelFactory = moduleViewModelFactory,
+                itemViewModelFactory = itemViewModelFactory,
+                ownViewModelFactory = ownViewModelFactory,
+                avatarViewModelFactory = avatarViewModelFactory,
+                firestore_db = firestore_db,
+                firestorage = firestorage
+            )
         }
     }
 }
@@ -76,7 +89,9 @@ fun MainApp(
     moduleViewModelFactory: ModuleViewModelFactory,
     itemViewModelFactory: ItemViewModelFactory,
     ownViewModelFactory: OwnViewModelFactory,
-    avatarViewModelFactory: AvatarViewModelFactory
+    avatarViewModelFactory: AvatarViewModelFactory,
+    firestore_db: FirebaseFirestore,
+    firestorage: FirebaseStorage
 ) {
     val navController = rememberNavController()
 
@@ -86,13 +101,16 @@ fun MainApp(
             color = MaterialTheme.colorScheme.background,
         ) {
             NavGraph(
-              navController = navController, 
-              userViewModelFactory = userViewModelFactory,
-              noteViewModelFactory = noteViewModelFactory,
-              moduleViewModelFactory = moduleViewModelFactory,
-              itemViewModelFactory = itemViewModelFactory, 
-              ownViewModelFactory = ownViewModelFactory, 
-              avatarViewModelFactory = avatarViewModelFactory)
+                navController = navController,
+                userViewModelFactory = userViewModelFactory,
+                noteViewModelFactory = noteViewModelFactory,
+                moduleViewModelFactory = moduleViewModelFactory,
+                itemViewModelFactory = itemViewModelFactory,
+                ownViewModelFactory = ownViewModelFactory,
+                avatarViewModelFactory = avatarViewModelFactory,
+                firestore_db = firestore_db,
+                firestorage = firestorage
+            )
         }
     }
 }

@@ -2,11 +2,14 @@ package com.csc2007.notetaker.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Headset
@@ -29,7 +32,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,6 +42,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.csc2007.notetaker.database.ChatRoom
 import com.csc2007.notetaker.ui.util.Screens
 import compose.icons.AllIcons
 import compose.icons.FontAwesomeIcons
@@ -109,11 +115,17 @@ fun TopNavBarText(navController: NavController = rememberNavController(), title:
         },
         actions = {
             if (imageDisplay != null)
-                Image(
-                    painter = painterResource(id = imageDisplay),
-                    contentDescription = "profile picture",
-                    modifier = Modifier.size(60.dp).padding(end = 16.dp)
-                )
+                Box(modifier = Modifier.padding(6.dp))
+                {
+                    Image(
+                        painter = painterResource(id = imageDisplay),
+                        contentDescription = "profile picture",
+                        modifier = Modifier
+                            .size(45.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop,
+                    )
+                }
         },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),)
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1053116618170",
+    "project_id": "csc2007-notetaker",
+    "storage_bucket": "csc2007-notetaker.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1053116618170:android:a25fbb8e44426e043cb983",
+        "android_client_info": {
+          "package_name": "com.csc2007.notetaker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8MOkjvEo1GfN3QLigF7cc2cJ-YwE1mJM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
