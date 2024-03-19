@@ -32,8 +32,9 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        // PSPDFKit only works on VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -120,4 +121,10 @@ dependencies {
 
     // Summarization
     implementation("com.github.shubham0204:Text2Summary-Android:alpha-05")
+
+    // PSPDFKIT
+    val pspdfkit_version = "2024.1.2"
+    implementation("com.pspdfkit:pspdfkit:$pspdfkit_version")
+    implementation("com.pspdfkit:pspdfkit-ocr:$pspdfkit_version")
+    api("com.pspdfkit:pspdfkit-ocr-english:$pspdfkit_version")
 }

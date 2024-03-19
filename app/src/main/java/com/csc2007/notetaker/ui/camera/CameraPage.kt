@@ -1,8 +1,10 @@
 package com.csc2007.notetaker.ui.camera
 
+import android.content.ContentResolver
 import android.content.Context
 import android.content.res.Configuration
 import android.net.Uri
+import android.webkit.MimeTypeMap
 import androidx.camera.core.CameraSelector
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -50,6 +52,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
+import com.pspdfkit.document.PdfDocumentLoader
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoilApi
@@ -70,14 +73,30 @@ fun CameraPage(
     var recognizedText = rememberSaveable { mutableStateOf<String?>(null) }
     val titleText = rememberSaveable { mutableStateOf("") }
     val scrollState = rememberScrollState()
+
     val orientation = LocalConfiguration.current.orientation
+    val context = LocalContext.current
+    val contentResolver = LocalContext.current.contentResolver
 
     Column(
         modifier = modifier.fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (imageUri != EMPTY_IMAGE_URI) {
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            if (isPdf(contentResolver, imageUri)) {
+                val document = PdfDocumentLoader.openDocument(context, imageUri)
+                val pageIndexes: Set<Int> = (0 until document.pageCount).toSet()
+                val allPagesText = StringBuilder()
+
+                // Iterate through all pages of the document
+                for (pageIndex in pageIndexes) {
+                    // Extract text from the current page
+                    val pageText = document.getPageText(pageIndex)
+                    allPagesText.append(pageText)
+                    allPagesText.append("\n\n")
+                }
+
+                recognizedText.value = allPagesText.toString()
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -88,17 +107,6 @@ fun CameraPage(
                             .fillMaxWidth()
                             .verticalScroll(scrollState)
                     ) {
-                        Image(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(1f)
-                                .padding(16.dp)
-                                .align(Alignment.CenterHorizontally),
-                            painter = rememberAsyncImagePainter(imageUri),
-                            contentDescription = "Captured image"
-                        )
-                        recognizedText = ocrImage(LocalContext.current, imageUri)
-
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text("Title", fontSize = 25.sp)
                             TextField(modifier = Modifier
@@ -121,7 +129,10 @@ fun CameraPage(
                             maxLines = Int.MAX_VALUE
                         )
                     }
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.BottomEnd
+                    ) {
                         Column {
                             FloatingActionButton(
                                 modifier = Modifier
@@ -166,35 +177,32 @@ fun CameraPage(
                     }
                 }
                 LaunchedEffect(Unit) {
-                    scrollState.scrollTo(scrollState.maxValue)
+                    scrollState.scrollTo(0)
                 }
             } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    Row(
+                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxSize()
+                            .padding(16.dp)
                     ) {
-                        Image(
-                            modifier = Modifier
-                                .fillMaxWidth(0.5F)
-                                .aspectRatio(1f),
-                            painter = rememberAsyncImagePainter(imageUri),
-                            contentDescription = "Captured image"
-                        )
-                        recognizedText = ocrImage(LocalContext.current, imageUri)
-
                         Column(
                             modifier = Modifier
-                                .fillMaxWidth(0.7F)
+                                .fillMaxWidth()
+                                .verticalScroll(scrollState)
                         ) {
-                            Column(
+                            Image(
                                 modifier = Modifier
+                                    .fillMaxWidth()
+                                    .aspectRatio(1f)
                                     .padding(16.dp)
-                            ) {
+                                    .align(Alignment.CenterHorizontally),
+                                painter = rememberAsyncImagePainter(imageUri),
+                                contentDescription = "Captured image"
+                            )
+                            recognizedText = ocrImage(LocalContext.current, imageUri)
+
+                            Column(modifier = Modifier.padding(16.dp)) {
                                 Text("Title", fontSize = 25.sp)
                                 TextField(modifier = Modifier
                                     .fillMaxWidth(), value = titleText.value ?: "",
@@ -216,47 +224,149 @@ fun CameraPage(
                                 maxLines = Int.MAX_VALUE
                             )
                         }
-                    }
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
-                        Column {
-                            FloatingActionButton(
-                                modifier = Modifier
-                                    .padding(16.dp),
-                                onClick = {
-                                    if (recognizedText.value != null) {
-                                        state.title.value =
-                                            titleText.value.ifEmpty { "Default Title" }
-                                        state.content.value = recognizedText.value!!
-                                        state.moduleId.value = moduleId
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.BottomEnd
+                        ) {
+                            Column {
+                                FloatingActionButton(
+                                    modifier = Modifier
+                                        .padding(16.dp),
+                                    onClick = {
+                                        if (recognizedText.value != null) {
+                                            state.title.value =
+                                                titleText.value.ifEmpty { "Default Title" }
+                                            state.content.value = recognizedText.value!!
+                                            state.moduleId.value = moduleId
 
-                                        onEvent(
-                                            NoteEvent.SaveNote(
-                                                title = state.title.value,
-                                                content = state.content.value,
-                                                moduleId = state.moduleId.value,
+                                            onEvent(
+                                                NoteEvent.SaveNote(
+                                                    title = state.title.value,
+                                                    content = state.content.value,
+                                                    moduleId = state.moduleId.value,
+                                                )
                                             )
-                                        )
-                                        navController.popBackStack()
+                                            navController.popBackStack()
+                                        }
                                     }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Add or Submit"
+                                    )
                                 }
+                                FloatingActionButton(
+                                    modifier = Modifier
+                                        .padding(16.dp),
+                                    onClick = {
+                                        // This is your existing action to "Remove image"
+                                        imageUri = EMPTY_IMAGE_URI
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Remove image"
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    LaunchedEffect(Unit) {
+                        scrollState.scrollTo(scrollState.maxValue)
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Image(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.5F)
+                                    .aspectRatio(1f),
+                                painter = rememberAsyncImagePainter(imageUri),
+                                contentDescription = "Captured image"
+                            )
+                            recognizedText = ocrImage(LocalContext.current, imageUri)
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.7F)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Add or Submit"
+                                Column(
+                                    modifier = Modifier
+                                        .padding(16.dp)
+                                ) {
+                                    Text("Title", fontSize = 25.sp)
+                                    TextField(modifier = Modifier
+                                        .fillMaxWidth(), value = titleText.value ?: "",
+                                        onValueChange = { titleText.value = it },
+                                        textStyle = LocalTextStyle.current.copy(fontSize = 16.sp),
+                                        maxLines = 1,
+                                        placeholder = { Text("Enter a title...") }
+                                    )
+                                }
+
+                                TextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    value = recognizedText.value ?: "",
+                                    onValueChange = { /* Handle text changes if needed */ },
+                                    textStyle = LocalTextStyle.current.copy(fontSize = 16.sp),
+                                    readOnly = true,
+                                    maxLines = Int.MAX_VALUE
                                 )
                             }
-                            FloatingActionButton(
-                                modifier = Modifier
-                                    .padding(16.dp),
-                                onClick = {
-                                    // This is your existing action to "Remove image"
-                                    imageUri = EMPTY_IMAGE_URI
+                        }
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.BottomEnd
+                        ) {
+                            Column {
+                                FloatingActionButton(
+                                    modifier = Modifier
+                                        .padding(16.dp),
+                                    onClick = {
+                                        if (recognizedText.value != null) {
+                                            state.title.value =
+                                                titleText.value.ifEmpty { "Default Title" }
+                                            state.content.value = recognizedText.value!!
+                                            state.moduleId.value = moduleId
+
+                                            onEvent(
+                                                NoteEvent.SaveNote(
+                                                    title = state.title.value,
+                                                    content = state.content.value,
+                                                    moduleId = state.moduleId.value,
+                                                )
+                                            )
+                                            navController.popBackStack()
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Add or Submit"
+                                    )
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "Remove image"
-                                )
+                                FloatingActionButton(
+                                    modifier = Modifier
+                                        .padding(16.dp),
+                                    onClick = {
+                                        // This is your existing action to "Remove image"
+                                        imageUri = EMPTY_IMAGE_URI
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Remove image"
+                                    )
+                                }
                             }
                         }
                     }
@@ -335,4 +445,17 @@ private fun processTextRecognitionResult(texts: Text): String? {
         }
     }
     return recognizedText.toString().trim()
+}
+
+fun isPdf(contentResolver: ContentResolver, uri: Uri): Boolean {
+    // Get the MIME type of the file
+    val mimeType = contentResolver.getType(uri)
+    return if (mimeType != null) {
+        // Check if the MIME type indicates a PDF
+        mimeType == "application/pdf"
+    } else {
+        // If MIME type is null, check the file extension
+        val fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri.toString())
+        fileExtension.equals("pdf", ignoreCase = true)
+    }
 }
