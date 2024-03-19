@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,9 +46,13 @@ import com.csc2007.notetaker.database.Item
 import com.csc2007.notetaker.database.viewmodel.ItemViewModel
 import com.csc2007.notetaker.database.viewmodel.OwnViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
+import com.csc2007.notetaker.ui.AppTheme
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.NoteTakerTheme
+import com.csc2007.notetaker.ui.Orientation
 import com.csc2007.notetaker.ui.TopNavBarText
+import com.csc2007.notetaker.ui.WindowSizeClass
+import com.csc2007.notetaker.ui.rememberWindowSizeClass
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -56,7 +62,8 @@ fun AvatarShopPage(
     navController: NavController = rememberNavController(),
     userViewModel: UserViewModel = viewModel(),
     itemViewModel: ItemViewModel = viewModel(),
-    ownViewModel: OwnViewModel = viewModel()
+    ownViewModel: OwnViewModel = viewModel(),
+    window: WindowSizeClass = rememberWindowSizeClass()
 ) {
 
     val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.gift_box_2))
@@ -77,8 +84,6 @@ fun AvatarShopPage(
     val loggedInUser = userViewModel.loggedInUser.collectAsState().value
     val id = remember { mutableStateOf(if (loggedInUser !== null) loggedInUser.id else 0 ) }
 
-    val scrollState = rememberScrollState()
-
     LaunchedEffect(key1 = progress) {
         if (progress == 0.01f) {
             isPlaying = true
@@ -88,40 +93,110 @@ fun AvatarShopPage(
             isPlaying = false
         }
     }
-    Column(
-        modifier = modifier.verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        TopNavBarText(navController = navController, title = "Avatar Shop")
-        
-        Box() {
-            LottieAnimation(
-                composition = composition,
-                progress = { progress }
-            )
-        }
 
-        Button(onClick = {
-            isPlaying = true
-            randomItem.value = selectRandomItem(items)
-            ownViewModel.insert(userId = id.value, itemId = randomItem.value!!.id)
-            coroutineScope.launch {
-                delay(1800)
-                itemSnackBarState = true
+    if (AppTheme.orientation == Orientation.Portrait) {
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TopNavBarText(navController = navController, title = "Avatar Shop")
+
+            Box {
+                LottieAnimation(
+                    composition = composition,
+                    progress = { progress },
+                )
             }
 
-        }) {
-            Text(
-                text = "Purchase for 500 Coins")
+            Button(onClick = {
+                isPlaying = true
+                randomItem.value = selectRandomItem(items)
+                ownViewModel.insert(userId = id.value, itemId = randomItem.value!!.id)
+                coroutineScope.launch {
+                    delay(1800)
+                    itemSnackBarState = true
+                }
+
+            }) {
+                Text(
+                    text = "Purchase for 500 Coins")
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            if ((itemSnackBarState) and (randomItem.value != null)) {
+                randomItem.value?.let { ShowItemSnackBar(it) }
+            }
+
+            BottomNavBar(navController = navController)
         }
+    } else {
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight(0.78f)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                TopNavBarText(navController = navController, title = "Avatar Shop")
 
-        Spacer(modifier = Modifier.weight(1f))
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight(1f)
+                            .fillMaxWidth(0.5f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Box() {
+                            LottieAnimation(
+                                composition = composition,
+                                progress = { progress },
+                                modifier = Modifier.size(200.dp),
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+                    }
 
-        if ((itemSnackBarState) and (randomItem.value != null)) {
-            randomItem.value?.let { ShowItemSnackBar(it) }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            onClick = {
+                            isPlaying = true
+                            randomItem.value = selectRandomItem(items)
+                            ownViewModel.insert(userId = id.value, itemId = randomItem.value!!.id)
+                            coroutineScope.launch {
+                                delay(1800)
+                                itemSnackBarState = true
+
+                                delay(3000)
+                                itemSnackBarState = false
+                            }
+                        }) {
+                            Text(
+                                text = "Purchase for 500 Coins")
+                        }
+                    }
+                }
+            }
+            if ((itemSnackBarState) and (randomItem.value != null)) {
+                randomItem.value?.let { ShowItemSnackBar(it) }
+            }
+
+            Row(modifier = Modifier.weight(1f)) {
+                BottomNavBar(navController = navController)
+            }
         }
-
-        BottomNavBar(navController = navController)
     }
 }
 
@@ -142,7 +217,7 @@ private fun ShowItemSnackBar(item: Item) {
     )
 
     Snackbar(
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier.padding(8.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -171,7 +246,8 @@ fun ShowItemSnackBarPreview() {
 @Preview(showBackground = true)
 @Composable
 fun AvatarShopPreview() {
-    NoteTakerTheme {
+    val window = rememberWindowSizeClass()
+    NoteTakerTheme(window) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

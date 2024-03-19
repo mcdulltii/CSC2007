@@ -1,8 +1,11 @@
 package com.csc2007.notetaker.ui.settings
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
@@ -28,121 +31,230 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.csc2007.notetaker.ui.AppTheme
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.NoteTakerTheme
+import com.csc2007.notetaker.ui.Orientation
 import com.csc2007.notetaker.ui.TopNavBarText
 import com.csc2007.notetaker.ui.TopSearchBar
+import com.csc2007.notetaker.ui.WindowSizeClass
+import com.csc2007.notetaker.ui.rememberWindowSizeClass
 import com.csc2007.notetaker.ui.util.Screens
 
 @Composable
 fun SettingsPage(
     modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    window: WindowSizeClass = rememberWindowSizeClass()
 ) {
 
     val scrollState = rememberScrollState()
 
-    Column(modifier = modifier.verticalScroll(scrollState)) {
 
-        TopNavBarText(navController = navController, title = "Settings", navBack = false)
+    if (AppTheme.orientation == Orientation.Portrait) {
+        Column(modifier = modifier) {
+
+            TopNavBarText(navController = navController, title = "Settings", navBack = false)
 
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TopSearchBar()
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TopSearchBar()
 
-            Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(15.dp))
 
-            ListItem(
-                headlineContent = { Text(text = "Account") },
-                trailingContent = {
-                    Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
-                },
-                leadingContent = {
-                    Icon(Icons.Default.PersonOutline, contentDescription = "Account Icon")
-                },
-                modifier = Modifier.clickable { navController.navigate(Screens.AccountSettingsScreen.route) }
-            )
+                ListItem(
+                    headlineContent = { Text(text = "Account") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.PersonOutline, contentDescription = "Account Icon")
+                    },
+                    modifier = Modifier.clickable { navController.navigate(Screens.AccountSettingsScreen.route) }
+                )
 
-            ListItem(
-                headlineContent = { Text(text = "Notifications") },
-                trailingContent = {
-                    Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
-                },
-                leadingContent = {
-                    Icon(Icons.Default.Alarm, contentDescription = "Notification Icon")
-                },
-                modifier = Modifier.clickable { navController.navigate(Screens.NotificationsSettingsScreen.route) }
-            )
+                ListItem(
+                    headlineContent = { Text(text = "Notifications") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.Alarm, contentDescription = "Notification Icon")
+                    },
+                    modifier = Modifier.clickable { navController.navigate(Screens.NotificationsSettingsScreen.route) }
+                )
 
-            ListItem(
-                headlineContent = { Text(text = "Pomodoro") },
-                trailingContent = {
-                    Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
-                },
-                leadingContent = {
-                    Icon(Icons.Default.HourglassBottom, contentDescription = "Pomodoro Icon")
-                },
-                modifier = Modifier.clickable { navController.navigate(Screens.PomodoroSettingsScreen.route) }
-            )
+                ListItem(
+                    headlineContent = { Text(text = "Pomodoro") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.HourglassBottom, contentDescription = "Pomodoro Icon")
+                    },
+                    modifier = Modifier.clickable { navController.navigate(Screens.PomodoroSettingsScreen.route) }
+                )
 
-            ListItem(
-                headlineContent = { Text(text = "Appearance") },
-                trailingContent = {
-                    Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
-                },
-                leadingContent = {
-                    Icon(Icons.Default.RemoveRedEye, contentDescription = "Appearance Icon")
-                },
-                modifier = Modifier.clickable { /** TODO **/ }
-            )
+                ListItem(
+                    headlineContent = { Text(text = "Appearance") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.RemoveRedEye, contentDescription = "Appearance Icon")
+                    },
+                    modifier = Modifier.clickable { /** TODO **/ }
+                )
 
-            ListItem(
-                headlineContent = { Text(text = "Privacy & Security") },
-                trailingContent = {
-                    Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
-                },
-                leadingContent = {
-                    Icon(Icons.Default.Lock, contentDescription = "Privacy & Security Icon")
-                },
-                modifier = Modifier.clickable { /** TODO **/ }
-            )
+                ListItem(
+                    headlineContent = { Text(text = "Privacy & Security") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.Lock, contentDescription = "Privacy & Security Icon")
+                    },
+                    modifier = Modifier.clickable { /** TODO **/ }
+                )
 
-            ListItem(
-                headlineContent = { Text(text = "Help & Support") },
-                trailingContent = {
-                    Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
-                },
-                leadingContent = {
-                    Icon(Icons.Default.Headphones, contentDescription = "Help & Support Icon")
-                },
-                modifier = Modifier.clickable { /** TODO **/ }
-            )
+                ListItem(
+                    headlineContent = { Text(text = "Help & Support") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.Headphones, contentDescription = "Help & Support Icon")
+                    },
+                    modifier = Modifier.clickable { /** TODO **/ }
+                )
 
-            ListItem(
-                headlineContent = { Text(text = "About") },
-                trailingContent = {
-                    Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
-                },
-                leadingContent = {
-                    Icon(Icons.Default.QuestionMark, contentDescription = "About Icon")
-                },
-                modifier = Modifier.clickable { /** TODO **/ }
-            )
+                ListItem(
+                    headlineContent = { Text(text = "About") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.QuestionMark, contentDescription = "About Icon")
+                    },
+                    modifier = Modifier.clickable { /** TODO **/ }
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            BottomNavBar(navController = navController)
+
         }
-        
-        Spacer(modifier = Modifier.weight(1f))
+    } else {
 
-        BottomNavBar(navController = navController)
+        Column(modifier = modifier) {
 
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight(0.78f)
+                    .verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TopNavBarText(navController = navController, title = "Settings", navBack = false)
+
+                TopSearchBar()
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                ListItem(
+                    headlineContent = { Text(text = "Account") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.PersonOutline, contentDescription = "Account Icon")
+                    },
+                    modifier = Modifier.clickable { navController.navigate(Screens.AccountSettingsScreen.route) }
+                )
+
+                ListItem(
+                    headlineContent = { Text(text = "Notifications") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.Alarm, contentDescription = "Notification Icon")
+                    },
+                    modifier = Modifier.clickable { navController.navigate(Screens.NotificationsSettingsScreen.route) }
+                )
+
+                ListItem(
+                    headlineContent = { Text(text = "Pomodoro") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.HourglassBottom, contentDescription = "Pomodoro Icon")
+                    },
+                    modifier = Modifier.clickable { navController.navigate(Screens.PomodoroSettingsScreen.route) }
+                )
+
+                ListItem(
+                    headlineContent = { Text(text = "Appearance") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.RemoveRedEye, contentDescription = "Appearance Icon")
+                    },
+                    modifier = Modifier.clickable { /** TODO **/ }
+                )
+
+                ListItem(
+                    headlineContent = { Text(text = "Privacy & Security") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.Lock, contentDescription = "Privacy & Security Icon")
+                    },
+                    modifier = Modifier.clickable { /** TODO **/ }
+                )
+
+                ListItem(
+                    headlineContent = { Text(text = "Help & Support") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.Headphones, contentDescription = "Help & Support Icon")
+                    },
+                    modifier = Modifier.clickable { /** TODO **/ }
+                )
+
+                ListItem(
+                    headlineContent = { Text(text = "About") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.QuestionMark, contentDescription = "About Icon")
+                    },
+                    modifier = Modifier.clickable { /** TODO **/ }
+                )
+            }
+
+            Row(modifier = Modifier.weight(1f)) {
+                BottomNavBar(navController = navController)
+            }
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun SettingsPagePreview() {
-    NoteTakerTheme {
+
+    val window = rememberWindowSizeClass()
+
+    NoteTakerTheme(window) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

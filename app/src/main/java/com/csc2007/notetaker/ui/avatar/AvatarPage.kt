@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,8 +48,12 @@ import coil.size.Size
 import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.viewmodel.AvatarViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
+import com.csc2007.notetaker.ui.AppTheme
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.NoteTakerTheme
+import com.csc2007.notetaker.ui.Orientation
+import com.csc2007.notetaker.ui.WindowSizeClass
+import com.csc2007.notetaker.ui.rememberWindowSizeClass
 import com.csc2007.notetaker.ui.util.Screens
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +62,8 @@ fun AvatarPage(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     userViewModel: UserViewModel = viewModel(),
-    avatarViewModel: AvatarViewModel = viewModel()
+    avatarViewModel: AvatarViewModel = viewModel(),
+    window: WindowSizeClass = rememberWindowSizeClass()
     ) {
 
     // Get current logged in user's details
@@ -87,67 +93,138 @@ fun AvatarPage(
         context.packageName
     )
 
-    val scrollState = rememberScrollState()
-
-    Column(
-        modifier = modifier.verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-
+    if (AppTheme.orientation == Orientation.Portrait) {
         Column(
-            modifier = Modifier
-                .height(500.dp)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.TopEnd
-            ) {
-                Image(
-                    painter = rememberAsyncImagePainter(ImageRequest.Builder(context).data(data = avatarResId).apply(block = {
-                        size(Size.ORIGINAL)
-                    }).build(), imageLoader = imageLoader),
-                    contentDescription = "Avatar Image",
-                    modifier = Modifier
-                        .size(250.dp)
-                        .align(Alignment.Center))
 
-                CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
-                    FloatingActionButton(onClick = { navController.navigate(Screens.AvatarEditScreen.route) }) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit Icon")
+            Column(
+                modifier = Modifier
+                    .height(500.dp)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.TopEnd
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(ImageRequest.Builder(context).data(data = avatarResId).apply(block = {
+                            size(Size.ORIGINAL)
+                        }).build(), imageLoader = imageLoader),
+                        contentDescription = "Avatar Image",
+                        modifier = Modifier
+                            .size(250.dp)
+                            .align(Alignment.Center))
+
+                    CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+                        FloatingActionButton(onClick = { navController.navigate(Screens.AvatarEditScreen.route) }) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit Icon")
+                        }
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.padding(top = 40.dp, bottom = 20.dp)
+                ) {
+                    Icon(Icons.Default.MonetizationOn, contentDescription = "Money Icon")
+
+                    Text(text = "30,000")
+                }
+
+                ElevatedButton(onClick = {
+                    navController.navigate(Screens.AvatarShopScreen.route)
+                }) {
+                    Text(text = "Shop")
+                }
+            }
+
+
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            BottomNavBar(navController = navController)
+        }
+    } else {
+        Column(modifier = modifier) {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight(0.78f)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .fillMaxHeight(1f),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                            contentAlignment = Alignment.TopEnd
+                        ) {
+                            Image(
+                                painter = rememberAsyncImagePainter(ImageRequest.Builder(context).data(data = avatarResId).apply(block = {
+                                    size(Size.ORIGINAL)
+                                }).build(), imageLoader = imageLoader),
+                                contentDescription = "Avatar Image",
+                                modifier = Modifier
+                                    .size(250.dp)
+                                    .align(Alignment.Center))
+
+                            CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+                                FloatingActionButton(onClick = { navController.navigate(Screens.AvatarEditScreen.route) }) {
+                                    Icon(Icons.Default.Edit, contentDescription = "Edit Icon")
+                                }
+                            }
+                        }
+                    }
+
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(top = 40.dp, bottom = 20.dp)
+                        ) {
+                            Icon(Icons.Default.MonetizationOn, contentDescription = "Money Icon")
+
+                            Text(text = "30,000")
+                        }
+
+                        ElevatedButton(onClick = {
+                            navController.navigate(Screens.AvatarShopScreen.route)
+                        }) {
+                            Text(text = "Shop")
+                        }
                     }
                 }
             }
 
-            Row(
-                modifier = Modifier.padding(top = 40.dp, bottom = 20.dp)
-            ) {
-                Icon(Icons.Default.MonetizationOn, contentDescription = "Money Icon")
 
-                Text(text = "30,000")
-            }
 
-            ElevatedButton(onClick = {
-                navController.navigate(Screens.AvatarShopScreen.route)
-            }) {
-                Text(text = "Shop")
+            Row(modifier = Modifier.weight(1f)) {
+                BottomNavBar(navController = navController)
             }
         }
-
-
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        BottomNavBar(navController = navController)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun AvatarPagePreview() {
-    NoteTakerTheme {
+    val window = rememberWindowSizeClass()
+    NoteTakerTheme(window) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

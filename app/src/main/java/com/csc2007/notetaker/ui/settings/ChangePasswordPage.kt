@@ -1,7 +1,9 @@
 package com.csc2007.notetaker.ui.settings
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,16 +29,21 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
+import com.csc2007.notetaker.ui.AppTheme
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.NoteTakerTheme
+import com.csc2007.notetaker.ui.Orientation
 import com.csc2007.notetaker.ui.TopNavBarText
+import com.csc2007.notetaker.ui.WindowSizeClass
+import com.csc2007.notetaker.ui.rememberWindowSizeClass
 import kotlinx.coroutines.delay
 
 @Composable
 fun ChangePasswordPage(
     modifier: Modifier = Modifier,
     navController: NavController = rememberNavController(),
-    viewModel: UserViewModel = viewModel()
+    viewModel: UserViewModel = viewModel(),
+    window: WindowSizeClass = rememberWindowSizeClass()
 ) {
 
     val loggedInUser = viewModel.loggedInUser.collectAsState().value
@@ -47,52 +54,107 @@ fun ChangePasswordPage(
     val confirmPassword = remember { mutableStateOf("") }
     val result = remember { mutableStateOf<String?>(null) }
 
-    val scrollState = rememberScrollState()
-
-    Column(
-        modifier = modifier.fillMaxSize().verticalScroll(scrollState)
-    ) {
-
-        TopNavBarText(navController = navController, title = "Change Password")
-
+    if (AppTheme.orientation == Orientation.Portrait) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = modifier
+                .fillMaxSize()
         ) {
-            OutlinedTextField(
-                value = password.value,
-                onValueChange = { password.value = it },
-                label = { Text(text = "Password") },
-                modifier = Modifier.fillMaxWidth())
 
-            OutlinedTextField(
-                value = confirmPassword.value,
-                onValueChange = { confirmPassword.value = it },
-                label = { Text(text = "Confirm Password") },
-                modifier = Modifier.fillMaxWidth())
+            TopNavBarText(navController = navController, title = "Change Password")
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                OutlinedTextField(
+                    value = password.value,
+                    onValueChange = { password.value = it },
+                    label = { Text(text = "Password") },
+                    modifier = Modifier.fillMaxWidth())
 
-            Button(onClick = {
-                result.value = ChangePassword(id, password, confirmPassword, viewModel)
-            },
-            modifier = Modifier.fillMaxWidth()) {
-                Text(text = "Change Password")
+                OutlinedTextField(
+                    value = confirmPassword.value,
+                    onValueChange = { confirmPassword.value = it },
+                    label = { Text(text = "Confirm Password") },
+                    modifier = Modifier.fillMaxWidth())
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button(onClick = {
+                    result.value = ChangePassword(id, password, confirmPassword, viewModel)
+                },
+                    modifier = Modifier.fillMaxWidth()) {
+                    Text(text = "Change Password")
+                }
+            }
+
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            if (result.value != null) {
+                ShowSnackBar(msg = result.value!!)
+                LaunchedEffect(Unit) {
+                    delay(2000)
+                    result.value = null
+                }
+            }
+
+            BottomNavBar(navController = navController)
+        }
+    } else {
+
+        Column(modifier = modifier) {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight(0.78f)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                TopNavBarText(navController = navController, title = "Change Password")
+
+                Column(
+                    modifier = Modifier.padding(vertical = 16.dp, horizontal = 40.dp)
+                ) {
+                    OutlinedTextField(
+                        value = password.value,
+                        onValueChange = { password.value = it },
+                        label = { Text(text = "Password") },
+                        modifier = Modifier.fillMaxWidth())
+
+                    OutlinedTextField(
+                        value = confirmPassword.value,
+                        onValueChange = { confirmPassword.value = it },
+                        label = { Text(text = "Confirm Password") },
+                        modifier = Modifier.fillMaxWidth())
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Button(onClick = {
+                        result.value = ChangePassword(id, password, confirmPassword, viewModel)
+                    },
+                        modifier = Modifier.fillMaxWidth()) {
+                        Text(text = "Change Password")
+                    }
+                }
+
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                if (result.value != null) {
+                    ShowSnackBar(msg = result.value!!)
+                    LaunchedEffect(Unit) {
+                        delay(2000)
+                        result.value = null
+                    }
+                }
+            }
+
+            Row(modifier = Modifier.weight(1f)) {
+                BottomNavBar(navController = navController)
             }
         }
-
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        if (result.value != null) {
-            ShowSnackBar(msg = result.value!!)
-            LaunchedEffect(Unit) {
-                delay(2000)
-                result.value = null
-            }
-        }
-
-        BottomNavBar(navController = navController)
     }
+
+
 }
 
 @Composable
@@ -128,7 +190,9 @@ private fun ChangePassword(
 @Preview(showBackground = true)
 @Composable
 fun ChangePasswordPagePreview() {
-    NoteTakerTheme {
+    val window = rememberWindowSizeClass()
+
+    NoteTakerTheme(window) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
