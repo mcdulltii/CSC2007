@@ -1,6 +1,7 @@
 package com.csc2007.notetaker.ui.gallery
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -29,9 +30,18 @@ fun GallerySelect(
     modifier: Modifier = Modifier,
     onImageUri: (Uri) -> Unit = { }
 ) {
+    class GetContentWithMultiFilter:ActivityResultContracts.GetContent() {
+        override fun createIntent(context: Context, input:String):Intent {
+            val inputArray = input.split(";").toTypedArray()
+            val myIntent = super.createIntent(context, "*/*")
+            myIntent.putExtra(Intent.EXTRA_MIME_TYPES, inputArray)
+            return myIntent
+        }
+    }
+
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
+        contract = GetContentWithMultiFilter(),
         onResult = { uri: Uri? ->
             onImageUri(uri ?: EMPTY_IMAGE_URI)
         }
@@ -40,7 +50,7 @@ fun GallerySelect(
     @Composable
     fun LaunchGallery() {
         SideEffect {
-            launcher.launch("image/*")
+            launcher.launch("image/*;application/pdf")
         }
     }
 
@@ -50,7 +60,7 @@ fun GallerySelect(
             rationale = "You want to read from photo gallery, so I'm going to have to ask for permission.",
             permissionNotAvailableContent = {
                 Column(modifier) {
-                    Text("O noes! No Photo Gallery!")
+                    Text("No Photo Gallery found!")
                     Spacer(modifier = Modifier.height(8.dp))
                     Row {
                         Button(
