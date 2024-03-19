@@ -205,7 +205,10 @@ fun ShowEditOrDelete(showDialog: MutableState<Boolean>, message: ChatMessage, me
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red, contentColor = Color.White),
                         modifier = Modifier.padding(8.dp),
                         onClick = {
+                            val currentTimeMillis = System.currentTimeMillis()
+                            val currentTimeStamp = Timestamp(currentTimeMillis)
                             chatObserver.delete(message.message_id!!) // Just clear after deleting
+                            chatObserver.updateLastSent(content ="${message.sender_user!!} deleted a message", time_stamp = currentTimeStamp, user = message.sender_user!!)
                             showDialog.value = false
                         }
                     ) {
@@ -387,7 +390,7 @@ fun InputBar(modifier: Modifier = Modifier, username: String, myEmail: String, l
                         {
                             chatObserver.update(updatedMessage = userInput.value, message_id = editing_message_id.value)
                             chatObserver.updateLastSent(
-                                room_id = room_id,
+//                                room_id = room_id,
                                 content = "$username edited a message",
                                 time_stamp = currentTimeStamp,
                                 user = "System"
@@ -396,7 +399,7 @@ fun InputBar(modifier: Modifier = Modifier, username: String, myEmail: String, l
                         else{
                             chatObserver.insert(message = message, room_id = room_id)
                             chatObserver.updateLastSent(
-                                room_id = room_id,
+//                                room_id = room_id,
                                 content = userInput.value,
                                 time_stamp = currentTimeStamp,
                                 user = username

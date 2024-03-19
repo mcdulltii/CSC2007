@@ -116,11 +116,11 @@ class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private 
             }
     }
 
-    fun updateLastSent(room_id: String, content: String, time_stamp: Timestamp, user: String)
+    fun updateLastSent(content: String, time_stamp: Timestamp, user: String)
     {
         firestore_db
             .collection(ChatRoomCollRef)
-            .document(room_id)
+            .document(RoomId)
             .set(hashMapOf(
                 "last_message_content" to content,
                 "last_sent_message_time" to time_stamp,

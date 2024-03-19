@@ -207,7 +207,8 @@ fun DisplayActionButtons(navController: NavController,
         Button(onClick = { navController.popBackStack() }, modifier = Modifier.padding(end = 8.dp)) {
             Text(text = "Cancel")
         }
-        Button(onClick = {
+        Button(enabled = roomNameState.value.isNotEmpty(),
+            onClick = {
             if (roomNameState.value.isNotEmpty()) {
                 roomName.value = roomNameState.value
                 val currentTimeMillis = System.currentTimeMillis()
