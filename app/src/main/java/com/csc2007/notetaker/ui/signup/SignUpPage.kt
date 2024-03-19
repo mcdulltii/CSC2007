@@ -6,10 +6,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -39,8 +42,12 @@ import androidx.navigation.compose.rememberNavController
 import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.viewmodel.AvatarViewModel
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
+import com.csc2007.notetaker.ui.AppTheme
 import com.csc2007.notetaker.ui.NoteTakerTheme
+import com.csc2007.notetaker.ui.Orientation
 import com.csc2007.notetaker.ui.TopNavBar
+import com.csc2007.notetaker.ui.WindowSizeClass
+import com.csc2007.notetaker.ui.rememberWindowSizeClass
 import com.csc2007.notetaker.ui.util.Screens
 import kotlinx.coroutines.delay
 
@@ -50,6 +57,7 @@ fun SignUpPage(
     userViewModel: UserViewModel = viewModel(),
     avatarViewModel: AvatarViewModel = viewModel(),
     navController: NavController = rememberNavController(),
+    window: WindowSizeClass = rememberWindowSizeClass(),
 ) {
 
     val ibmPlexFamily = FontFamily(
@@ -62,103 +70,207 @@ fun SignUpPage(
     val confirmPassword = rememberSaveable { mutableStateOf("") }
     var result by rememberSaveable { mutableStateOf<String?>(null) }
 
-    Column(
-        modifier = modifier
-    ) {
-
-        TopNavBar(navController = navController, route = Screens.LandingScreen.route)
-
+    if (AppTheme.orientation == Orientation.Portrait) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center) {
+            modifier = modifier
+        ) {
 
-            Text(
-                text = "NOTETAKER.",
-                fontSize = 48.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = ibmPlexFamily)
+            TopNavBar(navController = navController, route = Screens.LandingScreen.route)
 
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
+                verticalArrangement = Arrangement.Center) {
+
                 Text(
-                    text = "Sign Up",
+                    text = "NOTETAKER.",
+                    fontSize = 48.sp,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp,
-                    modifier = Modifier.align(Alignment.Start))
+                    fontFamily = ibmPlexFamily)
 
-                Spacer(modifier = Modifier.height(25.dp))
-
-                OutlinedTextField(
-                    value = email.value,
-                    onValueChange = { email.value = it },
-                    label = { Text(text = "Email") },
-                    modifier = Modifier.fillMaxWidth())
-
-                OutlinedTextField(
-                    value = username.value,
-                    onValueChange = { username.value = it },
-                    label = { Text(text = "Username") },
-                    modifier = Modifier.fillMaxWidth())
-
-                OutlinedTextField(
-                    value = password.value,
-                    onValueChange = { password.value = it },
-                    visualTransformation = PasswordVisualTransformation(),
-                    label = { Text(text = "Password") },
-                    modifier = Modifier.fillMaxWidth())
-
-                OutlinedTextField(
-                    value = confirmPassword.value,
-                    onValueChange = { confirmPassword.value = it },
-                    visualTransformation = PasswordVisualTransformation(),
-                    label = { Text(text = "Confirm Password") },
-                    modifier = Modifier.fillMaxWidth())
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Button(
-                    onClick = {
-                        result = RegisterUser(email, username, password, confirmPassword, userViewModel, avatarViewModel)
-                    },
-                    enabled = email.value.isNotBlank() && username.value.isNotBlank() && password.value.isNotBlank() && confirmPassword.value.isNotBlank()
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Text(text = "Register")
+                    Text(
+                        text = "Sign Up",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        modifier = Modifier.align(Alignment.Start))
+
+                    Spacer(modifier = Modifier.height(25.dp))
+
+                    OutlinedTextField(
+                        value = email.value,
+                        onValueChange = { email.value = it },
+                        label = { Text(text = "Email") },
+                        modifier = Modifier.fillMaxWidth())
+
+                    OutlinedTextField(
+                        value = username.value,
+                        onValueChange = { username.value = it },
+                        label = { Text(text = "Username") },
+                        modifier = Modifier.fillMaxWidth())
+
+                    OutlinedTextField(
+                        value = password.value,
+                        onValueChange = { password.value = it },
+                        visualTransformation = PasswordVisualTransformation(),
+                        label = { Text(text = "Password") },
+                        modifier = Modifier.fillMaxWidth())
+
+                    OutlinedTextField(
+                        value = confirmPassword.value,
+                        onValueChange = { confirmPassword.value = it },
+                        visualTransformation = PasswordVisualTransformation(),
+                        label = { Text(text = "Confirm Password") },
+                        modifier = Modifier.fillMaxWidth())
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Button(
+                        onClick = {
+                            result = RegisterUser(email, username, password, confirmPassword, userViewModel, avatarViewModel)
+                        },
+                        enabled = email.value.isNotBlank() && username.value.isNotBlank() && password.value.isNotBlank() && confirmPassword.value.isNotBlank()
+                    ) {
+                        Text(text = "Register")
+                    }
+
+                    Spacer(modifier = Modifier.height(80.dp))
+
+                    Row {
+                        Text(
+                            text = "Already have an account?",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium)
+                        Text(
+                            text = "Login Here",
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.clickable { navController.navigate(Screens.LoginScreen.route) })
+                    }
+
+                    if (result != null) {
+                        ShowSnackbar(result!!)
+                        if (result!!.contains("Success")) {
+                            LaunchedEffect(Unit) {
+                                delay(1000)
+                                navController.navigate("login_screen")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        Column (
+            modifier = modifier
+        ) {
+            TopNavBar(navController = navController, route = Screens.LandingScreen.route)
+
+
+            Row {
+                Column (
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .fillMaxHeight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = "NOTETAKER.",
+                        fontSize = 48.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = ibmPlexFamily)
                 }
 
-                Spacer(modifier = Modifier.height(80.dp))
-
-                Row {
+                Column (
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 40.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Text(
-                        text = "Already have an account?",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium)
-                    Text(
-                        text = "Login Here",
-                        color = MaterialTheme.colorScheme.primary,
-                        textDecoration = TextDecoration.Underline,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.clickable { navController.navigate(Screens.LoginScreen.route) })
-                }
+                        text = "Sign Up",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        modifier = Modifier.align(Alignment.Start))
 
-                if (result != null) {
-                    ShowSnackbar(result!!)
-                    if (result!!.contains("Success")) {
-                        LaunchedEffect(Unit) {
-                            delay(1000)
-                            navController.navigate("login_screen")
+                    Spacer(modifier = Modifier.height(25.dp))
+
+                    OutlinedTextField(
+                        value = email.value,
+                        onValueChange = { email.value = it },
+                        label = { Text(text = "Email") },
+                        modifier = Modifier.fillMaxWidth())
+
+                    OutlinedTextField(
+                        value = username.value,
+                        onValueChange = { username.value = it },
+                        label = { Text(text = "Username") },
+                        modifier = Modifier.fillMaxWidth())
+
+                    OutlinedTextField(
+                        value = password.value,
+                        onValueChange = { password.value = it },
+                        visualTransformation = PasswordVisualTransformation(),
+                        label = { Text(text = "Password") },
+                        modifier = Modifier.fillMaxWidth())
+
+                    OutlinedTextField(
+                        value = confirmPassword.value,
+                        onValueChange = { confirmPassword.value = it },
+                        visualTransformation = PasswordVisualTransformation(),
+                        label = { Text(text = "Confirm Password") },
+                        modifier = Modifier.fillMaxWidth())
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Button(
+                        onClick = {
+                            result = RegisterUser(email, username, password, confirmPassword, userViewModel, avatarViewModel)
+                        },
+                        enabled = email.value.isNotBlank() && username.value.isNotBlank() && password.value.isNotBlank() && confirmPassword.value.isNotBlank()
+                    ) {
+                        Text(text = "Register")
+                    }
+
+                    Spacer(modifier = Modifier.height(80.dp))
+
+                    Row {
+                        Text(
+                            text = "Already have an account?",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium)
+                        Text(
+                            text = "Login Here",
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.clickable { navController.navigate(Screens.LoginScreen.route) })
+                    }
+
+                    if (result != null) {
+                        ShowSnackbar(result!!)
+                        if (result!!.contains("Success")) {
+                            LaunchedEffect(Unit) {
+                                delay(1000)
+                                navController.navigate("login_screen")
+                            }
                         }
                     }
                 }
             }
         }
     }
+
 }
 
 @Composable
@@ -201,7 +313,9 @@ private fun RegisterUser(
 @Composable
 fun SignUpPagePreview() {
 
-    NoteTakerTheme {
+    val window = rememberWindowSizeClass()
+
+    NoteTakerTheme(window) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

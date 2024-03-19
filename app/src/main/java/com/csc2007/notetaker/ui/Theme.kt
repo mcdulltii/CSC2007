@@ -63,6 +63,7 @@ private val LightColorScheme = lightColorScheme (
 
 @Composable
 fun NoteTakerTheme(
+    windowSizeClass: WindowSizeClass,
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
     content: @Composable() () -> Unit
@@ -85,9 +86,40 @@ fun NoteTakerTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    val orientation = when {
+        windowSizeClass.width.size > windowSizeClass.height.size -> Orientation.Landscape
+        else -> Orientation.Portrait
+    }
+
+    val sizeThatMatters = when(orientation) {
+        Orientation.Portrait -> windowSizeClass.width
+        else -> windowSizeClass.height
+    }
+
+    val dimensions = when(sizeThatMatters) {
+        is WindowSize.Small -> smallDimensions
+        is WindowSize.Compact -> compactDimensions
+        is WindowSize.Medium -> mediumDimensions
+        else -> largeDimensions
+    }
+
+    ProvideAppUtils(dimensions = dimensions, orientation = orientation) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
+}
+
+
+object AppTheme {
+    val dimens: Dimensions
+    @Composable
+    get() = LocalAppDimens.current
+
+
+    val orientation: Orientation
+        @Composable
+        get() = LocalOrientationMode.current
 }

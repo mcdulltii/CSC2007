@@ -2,6 +2,7 @@ package com.csc2007.notetaker.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,9 +27,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,7 +84,9 @@ fun TopNavBar(navController: NavController = rememberNavController(), route: Str
 fun TopSearchBar(search: MutableState<String> = rememberSaveable { mutableStateOf("") },
                  isActive: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) })
 {
-    Row {
+    Row (
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center) {
         SearchBar(
             query = search.value,
             onQueryChange = { search.value = it },
@@ -227,4 +233,27 @@ fun BottomNavBar(
             )
         }
     }
+}
+
+@Composable
+fun ProvideAppUtils(
+    dimensions: Dimensions,
+    orientation: Orientation,
+    content: @Composable () -> Unit
+) {
+    val dimSet = remember { dimensions }
+    val orientation = remember { orientation }
+    CompositionLocalProvider(
+        LocalAppDimens provides dimSet,
+        LocalOrientationMode provides orientation,
+        content = content
+    )
+}
+
+val LocalAppDimens = compositionLocalOf {
+    smallDimensions
+}
+
+val LocalOrientationMode = compositionLocalOf {
+    Orientation.Portrait
 }

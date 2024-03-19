@@ -5,13 +5,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ArrowRight
@@ -45,15 +48,20 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.csc2007.notetaker.database.viewmodel.PomodoroTimerViewModel
+import com.csc2007.notetaker.ui.AppTheme
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.NoteTakerTheme
+import com.csc2007.notetaker.ui.Orientation
 import com.csc2007.notetaker.ui.TopNavBarText
+import com.csc2007.notetaker.ui.WindowSizeClass
+import com.csc2007.notetaker.ui.rememberWindowSizeClass
 
 @Composable
 fun PomodoroSettingsPage(
     modifier: Modifier = Modifier,
     navController: NavController = rememberNavController(),
-    pomodoroTimerViewModel: PomodoroTimerViewModel = PomodoroTimerViewModel()
+    pomodoroTimerViewModel: PomodoroTimerViewModel = PomodoroTimerViewModel(),
+    window: WindowSizeClass = rememberWindowSizeClass()
 ) {
 
     var showPomodoroTimerDialog = remember { mutableStateOf(false) }
@@ -63,58 +71,121 @@ fun PomodoroSettingsPage(
         PomodoroTimerDialog(showPomodoroTimerDialog, selectedOption.value, pomodoroTimerViewModel)
     }
 
-    Column(modifier = modifier) {
-        TopNavBarText(navController = navController, title = "Pomodoro Timer Settings")
+    if (AppTheme.orientation == Orientation.Portrait) {
+        Column(modifier = modifier) {
+            TopNavBarText(navController = navController, title = "Pomodoro Timer Settings")
 
-        Column(modifier = Modifier.padding(16.dp)) {
-            ListItem(
-                headlineContent = { Text(text = "Adjust Pomodoro Timer") },
-                trailingContent = {
-                    Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
-                },
-                leadingContent = {
-                    Icon(Icons.Default.AccessTime, contentDescription = "Time Icon")
-                },
-                modifier = Modifier.clickable {
-                    showPomodoroTimerDialog.value = true
-                    selectedOption.value = "Pomodoro"
-                }
-            )
+            Column(modifier = Modifier.padding(16.dp)) {
+                ListItem(
+                    headlineContent = { Text(text = "Adjust Pomodoro Timer") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.AccessTime, contentDescription = "Time Icon")
+                    },
+                    modifier = Modifier.clickable {
+                        showPomodoroTimerDialog.value = true
+                        selectedOption.value = "Pomodoro"
+                    }
+                )
 
-            ListItem(
-                headlineContent = { Text(text = "Adjust Short Break Timer") },
-                trailingContent = {
-                    Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
-                },
-                leadingContent = {
-                    Icon(Icons.Default.HourglassEmpty, contentDescription = "Time Icon")
-                },
-                modifier = Modifier.clickable {
-                    showPomodoroTimerDialog.value = true
-                    selectedOption.value = "Short Break"
-                }
-            )
+                ListItem(
+                    headlineContent = { Text(text = "Adjust Short Break Timer") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.HourglassEmpty, contentDescription = "Time Icon")
+                    },
+                    modifier = Modifier.clickable {
+                        showPomodoroTimerDialog.value = true
+                        selectedOption.value = "Short Break"
+                    }
+                )
 
-            ListItem(
-                headlineContent = { Text(text = "Adjust Long Break Timer") },
-                trailingContent = {
-                    Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
-                },
-                leadingContent = {
-                    Icon(Icons.Default.HourglassEmpty, contentDescription = "Time Icon")
-                },
-                modifier = Modifier.clickable {
-                    showPomodoroTimerDialog.value = true
-                    selectedOption.value = "Long Break"
-                }
-            )
+                ListItem(
+                    headlineContent = { Text(text = "Adjust Long Break Timer") },
+                    trailingContent = {
+                        Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                    },
+                    leadingContent = {
+                        Icon(Icons.Default.HourglassEmpty, contentDescription = "Time Icon")
+                    },
+                    modifier = Modifier.clickable {
+                        showPomodoroTimerDialog.value = true
+                        selectedOption.value = "Long Break"
+                    }
+                )
 
-            Divider(thickness = 1.dp, color = Color(0xFFCAC4D0))
+                Divider(thickness = 1.dp, color = Color(0xFFCAC4D0))
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            BottomNavBar(navController = navController)
         }
+    } else {
+        Column(modifier = modifier) {
 
-        Spacer(modifier = Modifier.weight(1f))
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight(0.78f)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                TopNavBarText(navController = navController, title = "Pomodoro Timer Settings")
 
-        BottomNavBar(navController = navController)
+                Column(modifier = Modifier.padding(16.dp)) {
+                    ListItem(
+                        headlineContent = { Text(text = "Adjust Pomodoro Timer") },
+                        trailingContent = {
+                            Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                        },
+                        leadingContent = {
+                            Icon(Icons.Default.AccessTime, contentDescription = "Time Icon")
+                        },
+                        modifier = Modifier.clickable {
+                            showPomodoroTimerDialog.value = true
+                            selectedOption.value = "Pomodoro"
+                        }
+                    )
+
+                    ListItem(
+                        headlineContent = { Text(text = "Adjust Short Break Timer") },
+                        trailingContent = {
+                            Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                        },
+                        leadingContent = {
+                            Icon(Icons.Default.HourglassEmpty, contentDescription = "Time Icon")
+                        },
+                        modifier = Modifier.clickable {
+                            showPomodoroTimerDialog.value = true
+                            selectedOption.value = "Short Break"
+                        }
+                    )
+
+                    ListItem(
+                        headlineContent = { Text(text = "Adjust Long Break Timer") },
+                        trailingContent = {
+                            Icon(Icons.Default.ArrowRight, contentDescription = "Right Arrow")
+                        },
+                        leadingContent = {
+                            Icon(Icons.Default.HourglassEmpty, contentDescription = "Time Icon")
+                        },
+                        modifier = Modifier.clickable {
+                            showPomodoroTimerDialog.value = true
+                            selectedOption.value = "Long Break"
+                        }
+                    )
+
+                    Divider(thickness = 1.dp, color = Color(0xFFCAC4D0))
+                }
+            }
+
+            Row(modifier = Modifier.weight(1f)) {
+                BottomNavBar(navController = navController)
+            }
+        }
     }
 }
 
@@ -272,7 +343,10 @@ fun PomodoroTimerDialog(
 @Preview
 @Composable
 fun PomodoroTimerDialogPreview() {
-    NoteTakerTheme {
+
+    val window = rememberWindowSizeClass()
+
+    NoteTakerTheme(window) {
         PomodoroTimerDialog()
     }
 }
@@ -280,7 +354,9 @@ fun PomodoroTimerDialogPreview() {
 @Preview(showBackground = true)
 @Composable
 fun PomodoroSettingsPagePreview() {
-    NoteTakerTheme {
+    val window = rememberWindowSizeClass()
+
+    NoteTakerTheme(window) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

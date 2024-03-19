@@ -20,6 +20,7 @@ import com.csc2007.notetaker.database.viewmodel.UserViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.module.ModuleViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.note.NoteViewModelFactory
 import com.csc2007.notetaker.ui.NoteTakerTheme
+import com.csc2007.notetaker.ui.rememberWindowSizeClass
 import com.csc2007.notetaker.ui.util.NavGraph
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.firebase.Firebase
@@ -94,8 +95,9 @@ fun MainApp(
     firestorage: FirebaseStorage
 ) {
     val navController = rememberNavController()
+    val window = rememberWindowSizeClass()
 
-    NoteTakerTheme {
+    NoteTakerTheme(window) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background,
