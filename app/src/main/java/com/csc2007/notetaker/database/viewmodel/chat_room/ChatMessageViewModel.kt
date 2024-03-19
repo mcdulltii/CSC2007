@@ -2,6 +2,7 @@ package com.csc2007.notetaker.database.viewmodel.chat_room
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.lifecycle.ViewModel
 import com.csc2007.notetaker.database.ChatMessage
 import com.csc2007.notetaker.database.ChatRoom
 import com.google.firebase.firestore.FirebaseFirestore
@@ -9,7 +10,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import java.sql.Timestamp
 
-class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private val RoomId: String = "")
+class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private val RoomId: String = ""): ViewModel()
 {
     private val ChatRoomCollRef: String = "Rooms"
     private val ChatMessageCollRef: String = "Rooms/${RoomId}/ChatMessages"
@@ -35,6 +36,7 @@ class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private 
                     doc.getTimestamp("time_stamp").let{
                         val firebaseTimestamp = it
                         val millisecondsSinceEpoch = firebaseTimestamp?.seconds?.times(1000)?.plus(firebaseTimestamp.nanoseconds / 1000000)
+                            ?.plus(8 * 3600000)
                         time_stamp = Timestamp(millisecondsSinceEpoch!!)
                     }
 
@@ -114,11 +116,11 @@ class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private 
             }
     }
 
-    fun updateLastSent(room_id: String, content: String, time_stamp: Timestamp, user: String)
+    fun updateLastSent(content: String, time_stamp: Timestamp, user: String)
     {
         firestore_db
             .collection(ChatRoomCollRef)
-            .document(room_id)
+            .document(RoomId)
             .set(hashMapOf(
                 "last_message_content" to content,
                 "last_sent_message_time" to time_stamp,

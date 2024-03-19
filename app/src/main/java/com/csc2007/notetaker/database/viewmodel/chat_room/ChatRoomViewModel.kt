@@ -39,9 +39,12 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
                     val last_message_content = doc.getString("last_message_content")
                     val last_sender_user = doc.getString("last_sender_user")
                     val room_name = doc.getString("room_name")
-                    val time_stamp = doc.getTimestamp("last_sent_message_time")?.let {
-                        val millisecondsSinceEpoch = it.seconds * 1000 + it.nanoseconds / 1000000
-                        Timestamp(millisecondsSinceEpoch)
+                    var time_stamp: Timestamp? = null
+                    doc.getTimestamp("last_sent_message_time").let{
+                        val firebaseTimestamp = it
+                        val millisecondsSinceEpoch = firebaseTimestamp?.seconds?.times(1000)?.plus(firebaseTimestamp.nanoseconds / 1000000)
+                            ?.plus(8 * 3600000)
+                        time_stamp = Timestamp(millisecondsSinceEpoch!!)
                     }
                     val image_link = doc.get("image_link") as? URI
 

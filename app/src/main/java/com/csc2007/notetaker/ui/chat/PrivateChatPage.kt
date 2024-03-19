@@ -76,6 +76,9 @@ import com.csc2007.notetaker.ui.util.Screens
 import com.google.firebase.firestore.FirebaseFirestore
 import java.net.URI
 import java.sql.Timestamp
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 @Composable
 fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, firestore_db: FirebaseFirestore, roomName: String, roomId: String)
@@ -202,7 +205,10 @@ fun ShowEditOrDelete(showDialog: MutableState<Boolean>, message: ChatMessage, me
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red, contentColor = Color.White),
                         modifier = Modifier.padding(8.dp),
                         onClick = {
+                            val currentTimeMillis = System.currentTimeMillis()
+                            val currentTimeStamp = Timestamp(currentTimeMillis)
                             chatObserver.delete(message.message_id!!) // Just clear after deleting
+                            chatObserver.updateLastSent(content ="${message.sender_user!!} deleted a message", time_stamp = currentTimeStamp, user = message.sender_user!!)
                             showDialog.value = false
                         }
                     ) {
@@ -290,7 +296,7 @@ fun MessageRow(message: ChatMessage, myEmail: String, navController: NavHostCont
                 painter = painterResource(id = R.drawable.avatar_placeholder),
                 contentDescription = "profile picture",
                 modifier = Modifier
-                    .padding(5.dp)
+                    .padding(top = 25.dp, start = 5.dp)
                     .size(50.dp)
                     .clip(CircleShape)
             )
@@ -306,6 +312,11 @@ fun MessageRow(message: ChatMessage, myEmail: String, navController: NavHostCont
 //            }
             if(message.content != null)
             {
+                if(message.sender_email != myEmail)
+                {
+                    Text(text = "${message.sender_user!!}@${convertTimestampToTime(message.time_stamp!!)}", modifier = Modifier.padding(start = 8.dp), fontSize = 12.sp)
+                }
+                else Text(convertTimestampToTime(message.time_stamp!!), modifier = Modifier.padding(end = 8.dp), fontSize = 12.sp)
                 TextBubble(text = message.content, sender_email = message.sender_email!!, my_email = myEmail, message = message, userInput = userInput, messageIdToEdit = messageIdToEdit, chatObserver = chatObserver)
             }
         }
@@ -379,7 +390,7 @@ fun InputBar(modifier: Modifier = Modifier, username: String, myEmail: String, l
                         {
                             chatObserver.update(updatedMessage = userInput.value, message_id = editing_message_id.value)
                             chatObserver.updateLastSent(
-                                room_id = room_id,
+//                                room_id = room_id,
                                 content = "$username edited a message",
                                 time_stamp = currentTimeStamp,
                                 user = "System"
@@ -388,7 +399,7 @@ fun InputBar(modifier: Modifier = Modifier, username: String, myEmail: String, l
                         else{
                             chatObserver.insert(message = message, room_id = room_id)
                             chatObserver.updateLastSent(
-                                room_id = room_id,
+//                                room_id = room_id,
                                 content = userInput.value,
                                 time_stamp = currentTimeStamp,
                                 user = username
@@ -411,4 +422,10 @@ fun InputBar(modifier: Modifier = Modifier, username: String, myEmail: String, l
 fun calculateMaxWidth(percentage: Float): Dp {
     val screenWidth: Dp = LocalConfiguration.current.screenWidthDp.dp
     return (screenWidth * percentage)
+}
+
+fun convertTimestampToTime(timestamp: Timestamp): String {
+    val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
+    sdf.timeZone = TimeZone.getTimeZone("UTC")
+    return sdf.format(timestamp.time)
 }
