@@ -10,12 +10,11 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.sql.Timestamp
 
-class ChatRoomFileCollection(private val firestorage: FirebaseStorage, roomObserver: ChatRoomViewModel, username: String, time_stamp: Timestamp) {
+class ChatRoomFileCollection(private val firestorage: FirebaseStorage, roomObserver: ChatRoomViewModel) {
     val storageRef = firestorage.reference
     val sharedFilesRef: StorageReference = storageRef.child("sharedfiles")
     val room = roomObserver
-    val timeStamp = time_stamp
-    val user = username
+
     @WorkerThread
     fun addFile(roomId: String, fileName: String, fileByteArr: ByteArray): String {
         val roomSharedFilesRef =
@@ -35,7 +34,6 @@ class ChatRoomFileCollection(private val firestorage: FirebaseStorage, roomObser
                     Log.d("Firebase Storage", "Error occurred: ${err.message}")
                 }
         }
-        room.updateAfterShareNotes("shared their notes with the group.", time_stamp = timeStamp, user = user, roomId = roomId)
         return downloadUrl
     }
 

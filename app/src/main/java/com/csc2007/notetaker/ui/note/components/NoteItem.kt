@@ -85,7 +85,6 @@ fun NoteItem(
     selectedName: MutableState<String>,
     userRooms: List<ChatRoom>,
     firestorage: FirebaseStorage,
-    username: String
 ) {
 
     val firstChar = if (notes[index].title.isNotEmpty()) notes[index].title.first() else 'N'
@@ -232,7 +231,7 @@ fun NoteItem(
                                     selectedRoomID.value = userRoom.roomId!!
                                     selectedName.value = userRoom.room_name
 
-                                    val fileCollection = ChatRoomFileCollection(firestorage = firestorage, roomObserver = roomObserver, time_stamp = Timestamp(System.currentTimeMillis()), username = username)
+                                    val fileCollection = ChatRoomFileCollection(firestorage = firestorage, roomObserver = roomObserver)
                                     val pdfFile = generatePDF(context = context, content = content)
                                     fileCollection.addFile(selectedRoomID.value, fileName = title, fileByteArr = pdfFile)
                                     navController.navigate(Screens.PrivateChatScreen.route)

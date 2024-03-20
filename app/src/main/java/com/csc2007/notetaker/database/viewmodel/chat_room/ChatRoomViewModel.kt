@@ -175,7 +175,7 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
                     e
                 )
             }
-//        updateAfterShareNotes("shared their notes with the group.", time_stamp = currentTimeStamp, user = username, roomId = room_id)
+        updateAfterShareNotes("shared their notes with the group.", time_stamp = currentTimeStamp, user = username, roomId = room_id)
     }
 
     fun updateAfterShareNotes(content: String, time_stamp: Timestamp, user: String, roomId: String)

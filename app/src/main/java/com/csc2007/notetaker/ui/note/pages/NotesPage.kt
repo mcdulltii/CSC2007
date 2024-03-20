@@ -131,7 +131,6 @@ fun NotesPage(
                         selectedName = selectedRoomName,
                         userRooms = userRooms.value,
                         firestorage = firestorage,
-                        username = username
                     )
                 }
             }

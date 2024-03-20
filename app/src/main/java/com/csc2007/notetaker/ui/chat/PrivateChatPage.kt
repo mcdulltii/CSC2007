@@ -87,6 +87,7 @@ import java.util.TimeZone
 import android.app.DownloadManager
 import android.os.Environment
 import android.widget.Toast
+import androidx.compose.material.icons.filled.Settings
 
 
 @Composable
@@ -120,7 +121,6 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
                 imageDisplay = R.drawable.avatar_placeholder,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { navController.navigate(Screens.EditChatRoomScreen.route) },
             ) // Remember to include the image at the right
             MessageList(messages = messages_in_room.value, myEmail = email, navController = navController, listState = listState, userInput = userInput, messageIdToEdit = currentlyEditingMessageId, chatObserver = chatObserver, context = context)
 
@@ -137,15 +137,12 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
             Box(modifier = Modifier
                 .size(60.dp)
                 .padding(end = 0.dp)
-                .clickable {
-                    // use camera gallery(?) idk
-                    /* TODO  handle file upload and image upload */
-                },
+                .clickable { navController.navigate(Screens.EditChatRoomScreen.route) },
                 contentAlignment = Alignment.Center)
             {
                 Icon(
-                    imageVector = Icons.Default.AttachFile,
-                    contentDescription = "File Upload",
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Edit Room",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(40.dp)
                 )
