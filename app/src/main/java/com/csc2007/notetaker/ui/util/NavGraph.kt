@@ -217,7 +217,8 @@ fun NavGraph(
                 selectedRoomID = selectedRoomID,
                 selectedRoomName = selectedRoomName,
                 firestore_db = firestore_db,
-                userViewModel = userViewModel
+                userViewModel = userViewModel,
+                firestorage = firestorage
             )
         }
 

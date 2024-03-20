@@ -47,9 +47,11 @@ import com.csc2007.notetaker.database.viewmodel.chat_room.ChatRoomViewModel
 import com.csc2007.notetaker.database.viewmodel.note.NoteEvent
 import com.csc2007.notetaker.database.viewmodel.note.NoteState
 import com.csc2007.notetaker.ui.note.util.formatDate
+import com.csc2007.notetaker.ui.note.util.generatePDF
 import com.csc2007.notetaker.ui.util.Screens
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import java.sql.Timestamp
 
 @Composable
 fun CircularIconWithLetter(letter: Char) {
@@ -82,6 +84,8 @@ fun NoteItem(
     selectedRoomID: MutableState<String>,
     selectedName: MutableState<String>,
     userRooms: List<ChatRoom>,
+    firestorage: FirebaseStorage,
+    username: String
 ) {
 
     val firstChar = if (notes[index].title.isNotEmpty()) notes[index].title.first() else 'N'
@@ -228,7 +232,9 @@ fun NoteItem(
                                     selectedRoomID.value = userRoom.roomId!!
                                     selectedName.value = userRoom.room_name
 
-                                    roomObserver.shareNotesToRoom(content = "$title:\n\n$content", room_id = selectedRoomID.value)
+                                    val fileCollection = ChatRoomFileCollection(firestorage = firestorage, roomObserver = roomObserver, time_stamp = Timestamp(System.currentTimeMillis()), username = username)
+                                    val pdfFile = generatePDF(context = context, content = content)
+                                    fileCollection.addFile(selectedRoomID.value, fileName = title, fileByteArr = pdfFile)
                                     navController.navigate(Screens.PrivateChatScreen.route)
                                 })
                             }

@@ -148,7 +148,7 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
             }
     }
 
-    fun shareNotesToRoom(content: String, room_id: String){
+    fun uploadPDF(uri: String, pdfName: String, room_id: String){
         val currentTimeMillis = System.currentTimeMillis()
         val currentTimeStamp = Timestamp(currentTimeMillis)
         val message = ChatMessage(
@@ -156,9 +156,10 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
             sender_user = username,
             sender_email = email,
             time_stamp = currentTimeStamp,
-            content = content,
-            pdf_link = null
-            )
+            content = pdfName,
+            pdf_link = URI.create(uri)
+        )
+        Log.d("pdf", "Attempting to upload pdf: $uri")
         firestore_db
             .collection("Rooms/${room_id}/ChatMessages")
             .document()
@@ -176,7 +177,7 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
                     e
                 )
             }
-        updateAfterShareNotes("shared their notes with the group.", time_stamp = currentTimeStamp, user = username, roomId = room_id)
+//        updateAfterShareNotes("shared their notes with the group.", time_stamp = currentTimeStamp, user = username, roomId = room_id)
     }
 
     fun updateAfterShareNotes(content: String, time_stamp: Timestamp, user: String, roomId: String)

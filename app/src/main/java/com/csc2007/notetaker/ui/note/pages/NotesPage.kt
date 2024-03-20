@@ -40,6 +40,7 @@ import com.csc2007.notetaker.database.viewmodel.note.NoteEvent
 import com.csc2007.notetaker.database.viewmodel.note.NoteState
 import com.csc2007.notetaker.ui.util.Screens
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 @Composable
 fun NotesPage(
@@ -49,7 +50,8 @@ fun NotesPage(
     selectedRoomID: MutableState<String>,
     selectedRoomName: MutableState<String>,
     firestore_db: FirebaseFirestore,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    firestorage: FirebaseStorage
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -127,7 +129,9 @@ fun NotesPage(
                         roomObserver = roomObserver,
                         selectedRoomID = selectedRoomID,
                         selectedName = selectedRoomName,
-                        userRooms = userRooms.value
+                        userRooms = userRooms.value,
+                        firestorage = firestorage,
+                        username = username
                     )
                 }
             }

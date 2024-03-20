@@ -1,5 +1,9 @@
 package com.csc2007.notetaker.ui.chat
 
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -54,6 +58,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -79,6 +84,9 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
+import android.app.DownloadManager
+import android.os.Environment
+import android.widget.Toast
 
 @Composable
 fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, firestore_db: FirebaseFirestore, roomName: String, roomId: String)
@@ -91,7 +99,7 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
     // not sure what happens if change to different room, hopefully only renders the room specific ones. Should be fine though
     val listState = rememberLazyListState()
     val currentlyEditingMessageId = rememberSaveable{ mutableStateOf("")}
-
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         chatObserver.getMessagesFromRoom(messages_in_room = messages_in_room)
     }
@@ -113,7 +121,7 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
                     .fillMaxWidth()
                     .clickable { navController.navigate(Screens.EditChatRoomScreen.route) },
             ) // Remember to include the image at the right
-            MessageList(messages = messages_in_room.value, myEmail = email, navController = navController, listState = listState, userInput = userInput, messageIdToEdit = currentlyEditingMessageId, chatObserver = chatObserver)
+            MessageList(messages = messages_in_room.value, myEmail = email, navController = navController, listState = listState, userInput = userInput, messageIdToEdit = currentlyEditingMessageId, chatObserver = chatObserver, context = context)
 
         }
 
@@ -144,6 +152,52 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
         }
     }
 }
+
+@Composable
+fun pdfBubble(message: ChatMessage, context: Context)
+{
+    val maxWidthPercentage = 0.5f
+    val maxWidth = calculateMaxWidth(maxWidthPercentage)
+    Box(
+        modifier = Modifier
+            .size(maxWidth, 120.dp)
+            .padding(2.dp)
+            .clip(RoundedCornerShape(25.dp))
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally)
+        {
+            Text(text = "${message.content!!}.pdf", textAlign = TextAlign.Center)
+            Image(
+                painter = painterResource(id = R.drawable.pdf_image),
+                contentDescription = "pdf file",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable {
+                        downloadFile(message.pdf_link.toString(), context, message.content!!)
+                    },
+                contentScale = ContentScale.Fit
+            )
+        }
+    }
+}
+
+
+fun downloadFile(uri: String, context: Context, pdfName: String) {
+    val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    val downloadUri = Uri.parse(uri)
+
+    val request = DownloadManager.Request(downloadUri)
+        .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+        .setAllowedOverRoaming(false)
+        .setTitle("${pdfName}.pdf")
+        .setDescription("Downloading PDF file")
+        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "file_name.pdf")
+        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+
+    downloadManager.enqueue(request)
+    Toast.makeText(context, "Downloading PDF file...", Toast.LENGTH_SHORT).show()
+}
+
 
 @Composable
 fun TextBubble(text: String, sender_email: String, my_email: String, message: ChatMessage, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
@@ -231,9 +285,60 @@ fun ShowEditOrDelete(showDialog: MutableState<Boolean>, message: ChatMessage, me
         }
     }
 }
+@Composable
+fun ImageBubble(drawableId: Int, navController: NavHostController)
+{
+    var showOverlay = rememberSaveable{ mutableStateOf(false) }
+    val maxWidthPercentage = 0.5f
+    val maxWidth = calculateMaxWidth(maxWidthPercentage)
+    Box(
+        modifier = Modifier
+            .size(maxWidth, 120.dp)
+            .padding(2.dp)
+            .clip(RoundedCornerShape(25.dp))
+    ) {
+        Image(
+            painter = painterResource(id = drawableId),
+            contentDescription = "image message",
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable {
+                    showOverlay.value = true
+                },
+            contentScale = ContentScale.Fit
+        )
+        if(showOverlay.value) // bugged lmao
+        {
+            EnlargeImage(image = drawableId, showOverlay = showOverlay, navController = navController)
+        }
+    }
+}
 
 @Composable
-fun MessageRow(message: ChatMessage, myEmail: String, navController: NavHostController, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
+fun EnlargeImage(image: Int, showOverlay: MutableState<Boolean>, navController: NavHostController)
+{
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.5f)) // Semi-transparent black background
+            .clickable {
+                showOverlay.value = false // Dismiss the overlay when clicked
+            }
+    ) {
+        // Larger image content
+        Image(
+            painter = painterResource(id = image),
+            contentDescription = "image message",
+            modifier = Modifier
+                .align(Alignment.Center)
+                .clip(RoundedCornerShape(25.dp)),
+            contentScale = ContentScale.Fit
+        )
+    }
+}
+
+@Composable
+fun MessageRow(message: ChatMessage, myEmail: String, navController: NavHostController, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel, context: Context)
 {
     /* TODO re-implement the profile pictures once the database modeling has been done */
     Row(modifier = Modifier.fillMaxWidth(),
@@ -261,9 +366,13 @@ fun MessageRow(message: ChatMessage, myEmail: String, navController: NavHostCont
                 Text(text = "${message.sender_user!!}@${convertTimestampToTime(message.time_stamp!!)}", modifier = Modifier.padding(start = 8.dp), fontSize = 12.sp)
             }
             else Text(convertTimestampToTime(message.time_stamp!!), modifier = Modifier.padding(end = 8.dp), fontSize = 12.sp)
-            if(message.content != null)
+            if(message.pdf_link != null)
             {
-                TextBubble(text = message.content, sender_email = message.sender_email!!, my_email = myEmail, message = message, userInput = userInput, messageIdToEdit = messageIdToEdit, chatObserver = chatObserver)
+                pdfBubble(message = message, context = context)
+            }
+            else
+            {
+                TextBubble(text = message.content!!, sender_email = message.sender_email!!, my_email = myEmail, message = message, userInput = userInput, messageIdToEdit = messageIdToEdit, chatObserver = chatObserver)
             }
 
         }
@@ -272,7 +381,7 @@ fun MessageRow(message: ChatMessage, myEmail: String, navController: NavHostCont
 }
 
 @Composable
-fun MessageList(messages: List<ChatMessage>, myEmail: String, navController: NavHostController, listState: LazyListState, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
+fun MessageList(messages: List<ChatMessage>, myEmail: String, navController: NavHostController, listState: LazyListState, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel, context: Context)
 {
 
     LazyColumn(
@@ -280,7 +389,7 @@ fun MessageList(messages: List<ChatMessage>, myEmail: String, navController: Nav
         modifier = Modifier.testTag("LazyColumn")
     ) {
         items(messages) { message ->
-            MessageRow(message, myEmail, navController, userInput, messageIdToEdit, chatObserver = chatObserver)
+            MessageRow(message, myEmail, navController, userInput, messageIdToEdit, chatObserver = chatObserver, context = context)
         }
     }
 
