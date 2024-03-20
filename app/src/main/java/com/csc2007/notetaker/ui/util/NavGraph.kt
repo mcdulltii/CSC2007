@@ -44,6 +44,7 @@ import com.csc2007.notetaker.ui.camera.CameraPage
 import com.csc2007.notetaker.ui.chat.ChatPage
 import com.csc2007.notetaker.ui.chat.EditRoom
 import com.csc2007.notetaker.ui.chat.PrivateChatPage
+import com.csc2007.notetaker.ui.login.Login2FA
 import com.csc2007.notetaker.ui.login.LoginPage
 import com.csc2007.notetaker.ui.microphone.MicrophonePage
 import com.csc2007.notetaker.ui.microphone.VoiceToTextParser
@@ -58,6 +59,7 @@ import com.csc2007.notetaker.ui.settings.ChangePasswordPage
 import com.csc2007.notetaker.ui.settings.NotificationsSettingsPage
 import com.csc2007.notetaker.ui.settings.PomodoroSettingsPage
 import com.csc2007.notetaker.ui.settings.SettingsPage
+import com.csc2007.notetaker.ui.signup.Setup2FA
 import com.csc2007.notetaker.ui.signup.SignUpPage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.firebase.firestore.FirebaseFirestore
@@ -74,7 +76,9 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
 
     object LandingScreen : Screens(route = "landing_screen")
     object SignUpScreen : Screens(route = "signup_screen")
+    object Setup2FAScreen: Screens(route = "setup_2fa_screen")
     object LoginScreen : Screens(route = "login_screen")
+    object Login2FAScreen: Screens(route = "login_2fa_screen")
     object CameraScreen :
         Screens(route = "camera_screen", icon = FontAwesomeIcons.Solid.Camera, title = "Camera")
 
@@ -179,11 +183,19 @@ fun NavGraph(
             )
         }
 
+        composable(Screens.Setup2FAScreen.route) {
+            Setup2FA(userViewModel = userViewModel, navController = navController)
+        }
+
         composable(Screens.LoginScreen.route) {
             LoginPage(
                 userViewModel = userViewModel,
                 navController = navController,
             )
+        }
+
+        composable(Screens.Login2FAScreen.route) {
+            Login2FA(userViewModel = userViewModel, navController = navController)
         }
 
         composable(

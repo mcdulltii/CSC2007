@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.csc2007.notetaker.database.User
 import com.csc2007.notetaker.database.repository.UsersRepository
+import dev.turingcomplete.kotlinonetimepassword.HmacAlgorithm
+import dev.turingcomplete.kotlinonetimepassword.RandomSecretGenerator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -32,6 +34,12 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
     private val _loggedInUserUsername = MutableStateFlow<String>("")
     var loggedInUserUsername: StateFlow<String> = _loggedInUserUsername
 
+    private val _loggedInUserSecret = MutableStateFlow<ByteArray?>(null)
+    var loggedInUserSecret: StateFlow<ByteArray?> = _loggedInUserSecret
+
+    private val _registeredUserSecret = MutableStateFlow<ByteArray?>(null)
+    var registeredUserSecret: StateFlow<ByteArray?> = _registeredUserSecret
+
     val allUsers = repository.allUsers.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
@@ -49,6 +57,7 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
                     _loggedInUser.value = user
                     _loggedInUserEmail.value = user.email
                     _loggedInUserUsername.value = user.userName
+                    _loggedInUserSecret.value = user.secret
                 }
             }
         }
@@ -89,7 +98,13 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
 
     fun register(email: String, username: String, password: String) {
         viewModelScope.launch {
-            val user = User(email = email, userName = username, password = hashString(password))
+
+            val randomSecretGenerator = RandomSecretGenerator()
+            val secret: ByteArray = randomSecretGenerator.createRandomSecret(HmacAlgorithm.SHA1)
+
+            _registeredUserSecret.value = secret
+
+            val user = User(email = email, userName = username, password = hashString(password), secret = secret)
             repository.insert(user)
 
             val insertedUser = repository.getLastUser()

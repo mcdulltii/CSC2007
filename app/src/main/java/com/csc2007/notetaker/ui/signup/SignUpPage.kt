@@ -161,7 +161,7 @@ fun SignUpPage(
                         if (result!!.contains("Success")) {
                             LaunchedEffect(Unit) {
                                 delay(1000)
-                                navController.navigate("login_screen")
+                                navController.navigate(Screens.Setup2FAScreen.route)
                             }
                         }
                     }
@@ -262,7 +262,7 @@ fun SignUpPage(
                         if (result!!.contains("Success")) {
                             LaunchedEffect(Unit) {
                                 delay(1000)
-                                navController.navigate("login_screen")
+                                navController.navigate(Screens.Setup2FAScreen.route)
                             }
                         }
                     }

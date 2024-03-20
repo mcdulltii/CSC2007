@@ -37,7 +37,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         viewBinding = true
@@ -121,6 +121,11 @@ dependencies {
 
     // Summarization
     implementation("com.github.shubham0204:Text2Summary-Android:alpha-05")
+
+    // 2 Factor Authentication
+    implementation("dev.turingcomplete:kotlin-onetimepassword:2.4.0")
+    implementation("commons-codec:commons-codec:1.7")
+    implementation("com.lightspark:compose-qr-code:1.0.1")
 
     // PSPDFKIT
     val pspdfkit_version = "2024.1.2"
