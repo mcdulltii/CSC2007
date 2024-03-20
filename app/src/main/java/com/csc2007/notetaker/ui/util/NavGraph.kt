@@ -213,7 +213,11 @@ fun NavGraph(
             NotesPage(
                 navController = navController,
                 state = noteState,
-                onEvent = noteViewModel::onEvent
+                onEvent = noteViewModel::onEvent,
+                selectedRoomID = selectedRoomID,
+                selectedRoomName = selectedRoomName,
+                firestore_db = firestore_db,
+                userViewModel = userViewModel
             )
         }
 

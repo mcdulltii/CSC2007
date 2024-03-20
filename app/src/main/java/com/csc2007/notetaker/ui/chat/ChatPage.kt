@@ -282,18 +282,3 @@ fun CreateRoomDialog(
     }
 }
 
-@Composable
-fun ShowDialog(message: String) {
-    AlertDialog(
-        onDismissRequest = {},
-        title = { Text(text = "Success") },
-        text = { Text(text = message) },
-        confirmButton = {
-            Button(onClick = { /* Handle button click if needed */ }) {
-                Text(text = "OK")
-            }
-        }
-    )
-}
-
-

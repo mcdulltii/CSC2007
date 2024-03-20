@@ -146,12 +146,6 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
 }
 
 @Composable
-fun pdfBubble(message: ChatMessage)
-{
-    Text("Place holder for pdf to render here")
-}
-
-@Composable
 fun TextBubble(text: String, sender_email: String, my_email: String, message: ChatMessage, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
 {
     val showDialog = rememberSaveable{ mutableStateOf(false)}
@@ -237,57 +231,6 @@ fun ShowEditOrDelete(showDialog: MutableState<Boolean>, message: ChatMessage, me
         }
     }
 }
-@Composable
-fun ImageBubble(drawableId: Int, navController: NavHostController)
-{
-    var showOverlay = rememberSaveable{ mutableStateOf(false) }
-    val maxWidthPercentage = 0.5f
-    val maxWidth = calculateMaxWidth(maxWidthPercentage)
-    Box(
-        modifier = Modifier
-            .size(maxWidth, 120.dp)
-            .padding(2.dp)
-            .clip(RoundedCornerShape(25.dp))
-    ) {
-        Image(
-            painter = painterResource(id = drawableId),
-            contentDescription = "image message",
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable {
-                    showOverlay.value = true
-                },
-            contentScale = ContentScale.Fit
-        )
-        if(showOverlay.value) // bugged lmao
-        {
-            EnlargeImage(image = drawableId, showOverlay = showOverlay, navController = navController)
-        }
-    }
-}
-
-@Composable
-fun EnlargeImage(image: Int, showOverlay: MutableState<Boolean>, navController: NavHostController)
-{
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f)) // Semi-transparent black background
-            .clickable {
-                showOverlay.value = false // Dismiss the overlay when clicked
-            }
-    ) {
-        // Larger image content
-        Image(
-            painter = painterResource(id = image),
-            contentDescription = "image message",
-            modifier = Modifier
-                .align(Alignment.Center)
-                .clip(RoundedCornerShape(25.dp)),
-            contentScale = ContentScale.Fit
-        )
-    }
-}
 
 @Composable
 fun MessageRow(message: ChatMessage, myEmail: String, navController: NavHostController, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
@@ -318,13 +261,9 @@ fun MessageRow(message: ChatMessage, myEmail: String, navController: NavHostCont
                 Text(text = "${message.sender_user!!}@${convertTimestampToTime(message.time_stamp!!)}", modifier = Modifier.padding(start = 8.dp), fontSize = 12.sp)
             }
             else Text(convertTimestampToTime(message.time_stamp!!), modifier = Modifier.padding(end = 8.dp), fontSize = 12.sp)
-            if(message.pdf_link != null)
+            if(message.content != null)
             {
-                pdfBubble(message = message)
-            }
-            else
-            {
-                TextBubble(text = message.content!!, sender_email = message.sender_email!!, my_email = myEmail, message = message, userInput = userInput, messageIdToEdit = messageIdToEdit, chatObserver = chatObserver)
+                TextBubble(text = message.content, sender_email = message.sender_email!!, my_email = myEmail, message = message, userInput = userInput, messageIdToEdit = messageIdToEdit, chatObserver = chatObserver)
             }
 
         }

@@ -148,21 +148,47 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
             }
     }
 
-    fun uploadPDFToRoom(fileName: String, pdfURI: String, room_id: String){
+    fun shareNotesToRoom(content: String, room_id: String){
         val currentTimeMillis = System.currentTimeMillis()
         val currentTimeStamp = Timestamp(currentTimeMillis)
-        val pdfMessage = ChatMessage(
+        val message = ChatMessage(
             message_id = null,
             sender_user = username,
             sender_email = email,
             time_stamp = currentTimeStamp,
-            content = fileName,
-            pdf_link = URI.create(pdfURI)
+            content = content,
+            pdf_link = null
             )
         firestore_db
             .collection("Rooms/${room_id}/ChatMessages")
             .document()
-            .set(pdfMessage)
+            .set(message)
+            .addOnSuccessListener {
+                Log.d(
+                    "Sucessfully insert",
+                    "DocumentSnapshot successfully written!"
+                )
+            }
+            .addOnFailureListener { e ->
+                Log.w(
+                    "Failed to insert",
+                    "Error writing document",
+                    e
+                )
+            }
+        updateAfterShareNotes("shared their notes with the group.", time_stamp = currentTimeStamp, user = username, roomId = room_id)
+    }
+
+    fun updateAfterShareNotes(content: String, time_stamp: Timestamp, user: String, roomId: String)
+    {
+        firestore_db
+            .collection(ChatRoomCollRef)
+            .document(roomId)
+            .set(hashMapOf(
+                "last_message_content" to content,
+                "last_sent_message_time" to time_stamp,
+                "last_sender_user" to user
+            ), SetOptions.merge())
             .addOnSuccessListener {
                 Log.d(
                     "Sucessfully insert",

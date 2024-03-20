@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,16 +34,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.csc2007.notetaker.database.ChatRoom
 import com.csc2007.notetaker.database.Note
+import com.csc2007.notetaker.database.repository.ChatRoomFileCollection
+import com.csc2007.notetaker.database.viewmodel.chat_room.ChatRoomViewModel
 import com.csc2007.notetaker.database.viewmodel.note.NoteEvent
 import com.csc2007.notetaker.database.viewmodel.note.NoteState
 import com.csc2007.notetaker.ui.note.util.formatDate
 import com.csc2007.notetaker.ui.util.Screens
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 @Composable
 fun CircularIconWithLetter(letter: Char) {
@@ -68,7 +77,11 @@ fun NoteItem(
     onEvent: (NoteEvent) -> Unit,
     navController: NavController,
     notes: List<Note>,
-    moduleId: Int
+    moduleId: Int,
+    roomObserver: ChatRoomViewModel,
+    selectedRoomID: MutableState<String>,
+    selectedName: MutableState<String>,
+    userRooms: List<ChatRoom>,
 ) {
 
     val firstChar = if (notes[index].title.isNotEmpty()) notes[index].title.first() else 'N'
@@ -76,10 +89,17 @@ fun NoteItem(
     val content = notes[index].content
     val id = notes[index].id
 
+    val context = LocalContext.current
+
+
+
     val formattedDateAdded = formatDate(notes[index].dateAdded)
 
     var showMenu by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) } // State to control visibility of confirmation dialog
+    var showShareModal by remember { mutableStateOf(false) } // State to control visibility of share modal
+
+
 
     Box(
         modifier = Modifier
@@ -121,41 +141,6 @@ fun NoteItem(
                         contentDescription = "More Options",
                         tint = Color.Black
                     )
-
-                    DropdownMenu(
-                        expanded = showMenu,
-                        onDismissRequest = { showMenu = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Delete") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Filled.Delete,
-                                    contentDescription = "Delete",
-                                    tint = Color.Black
-                                )
-                            },
-                            onClick = {
-                                // Handle "Delete" click
-                                showMenu = false
-                                showDialog = true // Show confirmation dialog
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Share") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Filled.Share,
-                                    contentDescription = "Share",
-                                    tint = Color.Black
-                                )
-                            },
-                            onClick = {
-                                // Handle "Share" click
-                                showMenu = false
-                            }
-                        )
-                    }
                 }
             }
             Spacer(Modifier.height(5.dp))
@@ -164,6 +149,42 @@ fun NoteItem(
                 text = content,
                 modifier = Modifier.padding(10.dp)
             ) // Add padding if content text needs it
+        }
+
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text("Delete") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Delete",
+                        tint = Color.Black
+                    )
+                },
+                onClick = {
+                    // Handle "Delete" click
+                    showMenu = false
+                    showDialog = true // Show confirmation dialog
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Share") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Share,
+                        contentDescription = "Share",
+                        tint = Color.Black
+                    )
+                },
+                onClick = {
+                    // Handle "Share" click
+                    showMenu = false
+                    showShareModal = true
+                }
+            )
         }
 
         if (showDialog) {
@@ -176,7 +197,6 @@ fun NoteItem(
                         onClick = {
                             showDialog = false
                             onEvent(NoteEvent.DeleteNote(note = notes[index]))
-
                         }
                     ) {
                         Text("DELETE", color = Color.Red)
@@ -192,5 +212,37 @@ fun NoteItem(
             )
         }
 
+        if (showShareModal) {
+
+
+            AlertDialog(
+                onDismissRequest = { showShareModal = false },
+                title = { Text("Choose the chat") },
+                text = {
+                    LazyColumn {
+                        items(userRooms) { userRoom ->
+                            userRoom.room_name?.let {
+
+                                Text(it, modifier = Modifier.clickable {
+
+                                    selectedRoomID.value = userRoom.roomId!!
+                                    selectedName.value = userRoom.room_name
+
+                                    roomObserver.shareNotesToRoom(content = "$title:\n\n$content", room_id = selectedRoomID.value)
+                                    navController.navigate(Screens.PrivateChatScreen.route)
+                                })
+                            }
+
+
+                        }
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showShareModal = false }) {
+                        Text("OK")
+                    }
+                }
+            )
+        }
     }
 }
