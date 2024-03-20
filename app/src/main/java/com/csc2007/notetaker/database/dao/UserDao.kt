@@ -41,4 +41,7 @@ interface UserDao {
 
     @Query("INSERT INTO avatar_table (userId) VALUES (:userId)")
     suspend fun createNewAvatar(userId: Int)
+
+    @Query("SELECT secret FROM user_table WHERE email = :email")
+    suspend fun getUserSecret(email: String): ByteArray
 }

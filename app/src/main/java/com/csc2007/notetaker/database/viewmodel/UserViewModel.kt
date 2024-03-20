@@ -13,11 +13,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.security.MessageDigest
+import javax.crypto.SecretKey
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.PBEKeySpec
 
-fun hashString(password: String): ByteArray {
-    val data = password.toByteArray()
-    val sha256 = MessageDigest.getInstance("SHA-256")
-    return sha256.digest(data)
+@OptIn(ExperimentalStdlibApi::class)
+fun hashString(password: String, secret: ByteArray): ByteArray {
+    val factory: SecretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512")
+    val spec = PBEKeySpec(password.toCharArray(), secret, 1000, 256)
+    val key: SecretKey = factory.generateSecret(spec)
+    val hash: ByteArray = key.encoded
+
+    return hash
 }
 
 class UserViewModel(private val repository: UsersRepository) : ViewModel() {
@@ -48,11 +55,13 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
+            _loggedInUserSecret.value = null
             if (email.isEmpty() or password.isEmpty()) {
                 _loggedIn.value = false
             } else {
-                val user = repository.login(email, hashString(password))
-                _loggedIn.value = user != null && user.password.contentEquals(hashString(password))
+                _loggedInUserSecret.value = repository.getUserSecret(email)
+                val user = repository.login(email, hashString(password, loggedInUserSecret.value!!))
+                _loggedIn.value = true && user.password.contentEquals(hashString(password, loggedInUserSecret.value!!))
                 if (_loggedIn.value == true) {
                     _loggedInUser.value = user
                     _loggedInUserEmail.value = user.email
@@ -68,6 +77,12 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
         _loggedInUser.value = null
         _loggedInUserEmail.value = ""
         _loggedInUserUsername.value = ""
+    }
+
+    fun getUserSecret(email: String) {
+        viewModelScope.launch {
+            _loggedInUserSecret.value = repository.getUserSecret(email)
+        }
     }
 
 
@@ -92,7 +107,11 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
 
     fun updatePassword(password: String, id: Int) {
         viewModelScope.launch {
-            repository.updatePassword(password = hashString(password), id = id)
+            loggedInUserSecret.value?.let {
+                hashString(password,
+                    it
+                )
+            }?.let { repository.updatePassword(password = it, id = id) }
         }
     }
 
@@ -104,7 +123,7 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
 
             _registeredUserSecret.value = secret
 
-            val user = User(email = email, userName = username, password = hashString(password), secret = secret)
+            val user = User(email = email, userName = username, password = hashString(password, secret), secret = secret)
             repository.insert(user)
 
             val insertedUser = repository.getLastUser()
