@@ -191,7 +191,7 @@ fun downloadFile(uri: String, context: Context, pdfName: String) {
         .setAllowedOverRoaming(false)
         .setTitle("${pdfName}.pdf")
         .setDescription("Downloading PDF file")
-        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "file_name.pdf")
+        .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "${pdfName}.pdf")
         .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
 
     downloadManager.enqueue(request)
