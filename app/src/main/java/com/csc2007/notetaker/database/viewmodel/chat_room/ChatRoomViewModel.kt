@@ -47,7 +47,6 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
                             ?.plus(8 * 3600000)
                         time_stamp = Timestamp(millisecondsSinceEpoch!!)
                     }
-                    val image_link = doc.get("image_link") as? URI
 
                     val newRoom = ChatRoom(
                         roomId = roomId,
@@ -56,7 +55,6 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
                         room_name = room_name,
                         last_sent_message_time = time_stamp,
                         user_list = user_list,
-                        room_profile_picture = image_link
                     )
 
                     rooms.add(newRoom)

@@ -268,7 +268,6 @@ fun CreateRoomDialog(
                                     last_sender_user = "System",
                                     last_sent_message_time = currentTimeStamp,
                                     roomId = "",
-                                    room_profile_picture = URI("")
                                 )
                                 onRoomCreated(newRoom)
                             }
