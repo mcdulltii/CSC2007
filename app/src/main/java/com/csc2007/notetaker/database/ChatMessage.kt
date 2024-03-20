@@ -1,6 +1,7 @@
 package com.csc2007.notetaker.database
 
 import com.google.firebase.firestore.Blob
+import java.net.URI
 import java.sql.Timestamp
 
 data class ChatMessage(
@@ -9,5 +10,5 @@ data class ChatMessage(
     val sender_email: String?,
     val time_stamp: Timestamp?,
     val content: String?,
-    val image: Blob?
+    val pdf_link: URI?
 )

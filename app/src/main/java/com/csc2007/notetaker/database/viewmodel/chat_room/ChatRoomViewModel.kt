@@ -19,6 +19,7 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
     // Get all the rooms that this person currently is in
     private val ChatRoomCollRef: String = "Rooms"
     private val user_list: String = "user_list";
+
     /* TODO: CRUD functions using the observer methods */
     fun getAllRooms(roomsUserIsIn: MutableState<List<ChatRoom>>, userEmail: String) {
         val rooms = mutableListOf<ChatRoom>()
@@ -146,4 +147,36 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
                 )
             }
     }
+
+    fun uploadPDFToRoom(fileName: String, pdfURI: String, room_id: String){
+        val currentTimeMillis = System.currentTimeMillis()
+        val currentTimeStamp = Timestamp(currentTimeMillis)
+        val pdfMessage = ChatMessage(
+            message_id = null,
+            sender_user = username,
+            sender_email = email,
+            time_stamp = currentTimeStamp,
+            content = fileName,
+            pdf_link = URI.create(pdfURI)
+            )
+        firestore_db
+            .collection("Rooms/${room_id}/ChatMessages")
+            .document()
+            .set(pdfMessage)
+            .addOnSuccessListener {
+                Log.d(
+                    "Sucessfully insert",
+                    "DocumentSnapshot successfully written!"
+                )
+            }
+            .addOnFailureListener { e ->
+                Log.w(
+                    "Failed to insert",
+                    "Error writing document",
+                    e
+                )
+            }
+    }
+
+
 }

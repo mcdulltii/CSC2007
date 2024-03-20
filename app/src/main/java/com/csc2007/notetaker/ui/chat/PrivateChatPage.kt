@@ -146,6 +146,12 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
 }
 
 @Composable
+fun pdfBubble(message: ChatMessage)
+{
+    Text("Place holder for pdf to render here")
+}
+
+@Composable
 fun TextBubble(text: String, sender_email: String, my_email: String, message: ChatMessage, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
 {
     val showDialog = rememberSaveable{ mutableStateOf(false)}
@@ -305,20 +311,22 @@ fun MessageRow(message: ChatMessage, myEmail: String, navController: NavHostCont
         Column(modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = if(message.sender_email == myEmail) Alignment.End else Alignment.Start)
         {
-            // TODO change this section to render the pdf file instead, to keep it simple, it shouldn't be editable, but just deleteable
-//            if(message.imageContent != null)
-//            {
-//                ImageBubble(drawableId = message.imageContent, navController = navController)
-//            }
-            if(message.content != null)
+
+
+            if(message.sender_email != myEmail)
             {
-                if(message.sender_email != myEmail)
-                {
-                    Text(text = "${message.sender_user!!}@${convertTimestampToTime(message.time_stamp!!)}", modifier = Modifier.padding(start = 8.dp), fontSize = 12.sp)
-                }
-                else Text(convertTimestampToTime(message.time_stamp!!), modifier = Modifier.padding(end = 8.dp), fontSize = 12.sp)
-                TextBubble(text = message.content, sender_email = message.sender_email!!, my_email = myEmail, message = message, userInput = userInput, messageIdToEdit = messageIdToEdit, chatObserver = chatObserver)
+                Text(text = "${message.sender_user!!}@${convertTimestampToTime(message.time_stamp!!)}", modifier = Modifier.padding(start = 8.dp), fontSize = 12.sp)
             }
+            else Text(convertTimestampToTime(message.time_stamp!!), modifier = Modifier.padding(end = 8.dp), fontSize = 12.sp)
+            if(message.pdf_link != null)
+            {
+                pdfBubble(message = message)
+            }
+            else
+            {
+                TextBubble(text = message.content!!, sender_email = message.sender_email!!, my_email = myEmail, message = message, userInput = userInput, messageIdToEdit = messageIdToEdit, chatObserver = chatObserver)
+            }
+
         }
 
     }
@@ -384,19 +392,20 @@ fun InputBar(modifier: Modifier = Modifier, username: String, myEmail: String, l
                             sender_email = myEmail,
                             time_stamp = currentTimeStamp,
                             content = userInput.value,
-                            image = null
+                            pdf_link = null
                         )
-                        if(editing_message_id.value.isNotEmpty())
-                        {
-                            chatObserver.update(updatedMessage = userInput.value, message_id = editing_message_id.value)
+                        if (editing_message_id.value.isNotEmpty()) {
+                            chatObserver.update(
+                                updatedMessage = userInput.value,
+                                message_id = editing_message_id.value
+                            )
                             chatObserver.updateLastSent(
 //                                room_id = room_id,
                                 content = "$username edited a message",
                                 time_stamp = currentTimeStamp,
                                 user = "System"
                             )
-                        }
-                        else{
+                        } else {
                             chatObserver.insert(message = message, room_id = room_id)
                             chatObserver.updateLastSent(
 //                                room_id = room_id,
@@ -407,7 +416,8 @@ fun InputBar(modifier: Modifier = Modifier, username: String, myEmail: String, l
                         }
 
                         Log.d("messages", "Message being sent, ${userInput.value}")
-                        editing_message_id.value = "" // Clear the currently editing message_id if any
+                        editing_message_id.value =
+                            "" // Clear the currently editing message_id if any
                         userInput.value = "" // clear user input
                         Log.d("messages", "Clearing the userInput to send new message")
                     }

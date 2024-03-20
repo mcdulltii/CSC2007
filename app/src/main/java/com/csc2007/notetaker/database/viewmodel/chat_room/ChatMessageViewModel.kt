@@ -8,6 +8,7 @@ import com.csc2007.notetaker.database.ChatRoom
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
+import java.net.URI
 import java.sql.Timestamp
 
 class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private val RoomId: String = ""): ViewModel()
@@ -30,6 +31,7 @@ class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private 
                     var content: String? = null
                     var time_stamp: Timestamp? = null
                     var id: String?
+                    var pdf_link: URI? = null
 
                     id = doc.id
 
@@ -50,7 +52,12 @@ class ChatMessageViewModel(private val firestore_db: FirebaseFirestore, private 
                         content = it
                     }
 
-                    val newMessage = ChatMessage(message_id = id, sender_user = sender_user, sender_email = sender_email, content = content, time_stamp = time_stamp, image = null)
+                    doc.getString("pdf_link")?.let{
+                        val pdfLinkString = it
+                        pdf_link = URI.create(pdfLinkString)
+                    }
+
+                    val newMessage = ChatMessage(message_id = id, sender_user = sender_user, sender_email = sender_email, content = content, time_stamp = time_stamp, pdf_link = pdf_link)
 
                     messages.add(newMessage)
                 }
