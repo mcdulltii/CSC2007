@@ -64,7 +64,7 @@ fun LoginPage(
     val password = rememberSaveable { mutableStateOf("") }
 
     if (loggedInState == true) {
-        navController.navigate(Screens.ChatScreen.route)
+        navController.navigate(Screens.Login2FAScreen.route)
     }
 
 

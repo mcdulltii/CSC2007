@@ -38,6 +38,15 @@ class UsersRepository(private val userDao: UserDao, private val dataStore: DataS
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
+    suspend fun getUserSecret(email: String): ByteArray {
+        return withContext(Dispatchers.IO) {
+            userDao.getUserSecret(email)
+        }
+    }
+
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
     suspend fun updateEmailAndUserName(email: String, username: String, id: Int) {
         userDao.updateEmailAndUserName(email, username, id)
     }
