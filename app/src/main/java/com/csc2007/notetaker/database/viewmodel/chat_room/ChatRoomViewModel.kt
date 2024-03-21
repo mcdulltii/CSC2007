@@ -19,6 +19,7 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
     // Get all the rooms that this person currently is in
     private val ChatRoomCollRef: String = "Rooms"
     private val user_list: String = "user_list";
+
     /* TODO: CRUD functions using the observer methods */
     fun getAllRooms(roomsUserIsIn: MutableState<List<ChatRoom>>, userEmail: String) {
         val rooms = mutableListOf<ChatRoom>()
@@ -46,7 +47,6 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
                             ?.plus(8 * 3600000)
                         time_stamp = Timestamp(millisecondsSinceEpoch!!)
                     }
-                    val image_link = doc.get("image_link") as? URI
 
                     val newRoom = ChatRoom(
                         roomId = roomId,
@@ -55,7 +55,6 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
                         room_name = room_name,
                         last_sent_message_time = time_stamp,
                         user_list = user_list,
-                        room_profile_picture = image_link
                     )
 
                     rooms.add(newRoom)
@@ -146,4 +145,63 @@ class ChatRoomViewModel(private val firestore_db: FirebaseFirestore, private val
                 )
             }
     }
+
+    fun uploadPDF(uri: String, pdfName: String, room_id: String){
+        val currentTimeMillis = System.currentTimeMillis()
+        val currentTimeStamp = Timestamp(currentTimeMillis)
+        val message = ChatMessage(
+            message_id = null,
+            sender_user = username,
+            sender_email = email,
+            time_stamp = currentTimeStamp,
+            content = pdfName,
+            pdf_link = URI.create(uri)
+        )
+        Log.d("pdf", "Attempting to upload pdf: $uri")
+        firestore_db
+            .collection("Rooms/${room_id}/ChatMessages")
+            .document()
+            .set(message)
+            .addOnSuccessListener {
+                Log.d(
+                    "Sucessfully insert",
+                    "DocumentSnapshot successfully written!"
+                )
+            }
+            .addOnFailureListener { e ->
+                Log.w(
+                    "Failed to insert",
+                    "Error writing document",
+                    e
+                )
+            }
+        updateAfterShareNotes("shared their notes with the group.", time_stamp = currentTimeStamp, user = username, roomId = room_id)
+    }
+
+    fun updateAfterShareNotes(content: String, time_stamp: Timestamp, user: String, roomId: String)
+    {
+        firestore_db
+            .collection(ChatRoomCollRef)
+            .document(roomId)
+            .set(hashMapOf(
+                "last_message_content" to content,
+                "last_sent_message_time" to time_stamp,
+                "last_sender_user" to user
+            ), SetOptions.merge())
+            .addOnSuccessListener {
+                Log.d(
+                    "Sucessfully insert",
+                    "DocumentSnapshot successfully written!"
+                )
+            }
+            .addOnFailureListener { e ->
+                Log.w(
+                    "Failed to insert",
+                    "Error writing document",
+                    e
+                )
+            }
+    }
+
+
 }

@@ -19,9 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.GroupAdd
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
@@ -40,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -53,22 +50,18 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.csc2007.notetaker.R
-import com.csc2007.notetaker.database.ChatMessage
 import com.csc2007.notetaker.database.ChatRoom
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
-import com.csc2007.notetaker.database.viewmodel.chat_room.ChatMessageViewModel
 import com.csc2007.notetaker.database.viewmodel.chat_room.ChatRoomViewModel
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.TopSearchBar
 import com.csc2007.notetaker.ui.util.Screens
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.CoroutineScope
-import java.net.URI
 import java.sql.Timestamp
 
 @Composable
 fun ChatPage(navController: NavHostController,
-             firestore_db: FirebaseFirestore,
+             firestoreDb: FirebaseFirestore,
              viewModel: UserViewModel = viewModel(),
              selectedRoomID: MutableState<String>,
              selectedRoomName: MutableState<String>)
@@ -79,7 +72,7 @@ fun ChatPage(navController: NavHostController,
     val username by viewModel.loggedInUserUsername.collectAsState()
     val email by viewModel.loggedInUserEmail.collectAsState()
 
-    val roomObserver = ChatRoomViewModel(firestore_db = firestore_db, username = username, email = email) // TODO change this to the actual room ID
+    val roomObserver = ChatRoomViewModel(firestore_db = firestoreDb, username = username, email = email) // TODO change this to the actual room ID
 
     val thisUsersRooms = rememberSaveable{mutableStateOf(emptyList<ChatRoom>())}
     val showDialog = rememberSaveable{mutableStateOf(false)}
@@ -268,7 +261,6 @@ fun CreateRoomDialog(
                                     last_sender_user = "System",
                                     last_sent_message_time = currentTimeStamp,
                                     roomId = "",
-                                    room_profile_picture = URI("")
                                 )
                                 onRoomCreated(newRoom)
                             }
@@ -281,19 +273,4 @@ fun CreateRoomDialog(
         }
     }
 }
-
-@Composable
-fun ShowDialog(message: String) {
-    AlertDialog(
-        onDismissRequest = {},
-        title = { Text(text = "Success") },
-        text = { Text(text = message) },
-        confirmButton = {
-            Button(onClick = { /* Handle button click if needed */ }) {
-                Text(text = "OK")
-            }
-        }
-    )
-}
-
 

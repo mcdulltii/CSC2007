@@ -11,22 +11,39 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.csc2007.notetaker.database.ChatRoom
+import com.csc2007.notetaker.database.viewmodel.UserViewModel
+import com.csc2007.notetaker.database.viewmodel.chat_room.ChatRoomViewModel
 import com.csc2007.notetaker.database.viewmodel.note.NoteEvent
 import com.csc2007.notetaker.database.viewmodel.note.NoteState
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.ml.quaterion.text2summary.Text2Summary
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun NotePage(navController: NavHostController, state: NoteState, onEvent: (NoteEvent) -> Unit) {
-
+fun NotePage(
+    navController: NavHostController,
+    state: NoteState,
+    onEvent: (NoteEvent) -> Unit,
+    selectedRoomID: MutableState<String>,
+    selectedRoomName: MutableState<String>,
+    firestoreDb: FirebaseFirestore,
+    userViewModel: UserViewModel,
+    firestorage: FirebaseStorage
+) {
 
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -37,6 +54,16 @@ fun NotePage(navController: NavHostController, state: NoteState, onEvent: (NoteE
     val title = note?.title
     val content = note?.content
 
+    val userRooms = rememberSaveable{mutableStateOf(emptyList<ChatRoom>())}
+    val username by userViewModel.loggedInUserUsername.collectAsState()
+    val email by userViewModel.loggedInUserEmail.collectAsState()
+
+    val roomObserver = ChatRoomViewModel(firestore_db = firestoreDb, username = username, email = email)
+
+    // Attach snapshot listener
+    LaunchedEffect(Unit) {
+        roomObserver.getAllRooms(roomsUserIsIn = userRooms, userEmail = email)
+    }
 
     Scaffold(
         topBar = {
@@ -57,7 +84,13 @@ fun NotePage(navController: NavHostController, state: NoteState, onEvent: (NoteE
                             }
                             Text2Summary.summarizeAsync(content, 0.7f, callback)
                         }
-                    }
+                    },
+                    shareContent = content,
+                    roomObserver = roomObserver,
+                    selectedRoomID = selectedRoomID,
+                    selectedName = selectedRoomName,
+                    userRooms = userRooms.value,
+                    firestorage = firestorage,
                 )
             }
         },
