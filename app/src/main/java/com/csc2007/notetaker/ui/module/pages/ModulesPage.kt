@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -63,7 +62,7 @@ fun ModulesPage(
                     items(state.modules.size) { index ->
                         ModuleItem(
                             state = state,
-                                    onEvent = onEvent,
+                            onEvent = onEvent,
                             navController = navController,
                             index = index
                         )

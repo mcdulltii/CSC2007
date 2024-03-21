@@ -1,32 +1,25 @@
 package com.csc2007.notetaker.ui.chat
 
 import android.util.Log
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircleOutline
-import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -44,24 +37,18 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.csc2007.notetaker.R
-import com.csc2007.notetaker.database.ChatRoom
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.database.viewmodel.chat_room.ChatRoomViewModel
-import com.csc2007.notetaker.ui.TopNavBarText
-import com.csc2007.notetaker.ui.util.Screens
 import com.google.firebase.firestore.FirebaseFirestore
-import java.net.URI
 import java.sql.Timestamp
 
 @Composable
 fun EditRoom(
     navController: NavHostController,
     viewModel: UserViewModel,
-    firestore_db: FirebaseFirestore,
+    firestoreDb: FirebaseFirestore,
     roomName: MutableState<String>,
     roomId: String
 ) {
@@ -70,7 +57,7 @@ fun EditRoom(
     val usersToAdd = rememberSaveable { mutableStateOf(mutableListOf<String>()) }
     val username by viewModel.loggedInUserUsername.collectAsState()
 
-    val roomObserver = ChatRoomViewModel(firestore_db = firestore_db)
+    val roomObserver = ChatRoomViewModel(firestore_db = firestoreDb)
 
     Column(modifier = Modifier.fillMaxSize())
     {

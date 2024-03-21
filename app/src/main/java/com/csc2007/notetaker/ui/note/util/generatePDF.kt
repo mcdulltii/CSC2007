@@ -32,5 +32,4 @@ fun generatePDF(context: Context, content: String) : ByteArray {
     pdfDocument.close()
 
     return outputStream.toByteArray()
-
 }

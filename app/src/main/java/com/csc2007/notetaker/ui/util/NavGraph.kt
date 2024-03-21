@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -22,7 +21,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import coil.annotation.ExperimentalCoilApi
-import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.viewmodel.AvatarViewModel
 import com.csc2007.notetaker.database.viewmodel.AvatarViewModelFactory
 import com.csc2007.notetaker.database.viewmodel.ItemViewModel
@@ -139,10 +137,10 @@ fun NavGraph(
     userViewModelFactory: UserViewModelFactory,
     noteViewModelFactory: NoteViewModelFactory,
     moduleViewModelFactory: ModuleViewModelFactory,
-    itemViewModelFactory: ItemViewModelFactory, 
-    ownViewModelFactory: OwnViewModelFactory, 
+    itemViewModelFactory: ItemViewModelFactory,
+    ownViewModelFactory: OwnViewModelFactory,
     avatarViewModelFactory: AvatarViewModelFactory,
-    firestore_db : FirebaseFirestore,
+    firestoreDb : FirebaseFirestore,
     firestorage : FirebaseStorage
 ) {
 
@@ -216,7 +214,7 @@ fun NavGraph(
                 onEvent = noteViewModel::onEvent,
                 selectedRoomID = selectedRoomID,
                 selectedRoomName = selectedRoomName,
-                firestore_db = firestore_db,
+                firestoreDb = firestoreDb,
                 userViewModel = userViewModel,
                 firestorage = firestorage
             )
@@ -230,7 +228,12 @@ fun NavGraph(
             NotePage(
                 navController = navController,
                 state = noteState,
-                onEvent = noteViewModel::onEvent
+                onEvent = noteViewModel::onEvent,
+                selectedRoomID = selectedRoomID,
+                selectedRoomName = selectedRoomName,
+                firestoreDb = firestoreDb,
+                userViewModel = userViewModel,
+                firestorage = firestorage
             )
         }
 
@@ -253,7 +256,12 @@ fun NavGraph(
             NotePage(
                 navController = navController,
                 state = noteState,
-                onEvent = noteViewModel::onEvent
+                onEvent = noteViewModel::onEvent,
+                selectedRoomID = selectedRoomID,
+                selectedRoomName = selectedRoomName,
+                firestoreDb = firestoreDb,
+                userViewModel = userViewModel,
+                firestorage = firestorage
             )
         }
 
@@ -274,18 +282,18 @@ fun NavGraph(
         }
 
         composable(Screens.ChatScreen.route) {
-            ChatPage(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, selectedRoomID = selectedRoomID, selectedRoomName = selectedRoomName)
+            ChatPage(navController = navController, viewModel = userViewModel, firestoreDb = firestoreDb, selectedRoomID = selectedRoomID, selectedRoomName = selectedRoomName)
         }
 
         composable(Screens.PrivateChatScreen.route) {
             val user by userViewModel.loggedInUser.collectAsState()
             val userId = user?.id
-            PrivateChatPage(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, roomName = selectedRoomName.value, roomId = selectedRoomID.value)
+            PrivateChatPage(navController = navController, viewModel = userViewModel, firestore_db = firestoreDb, roomName = selectedRoomName.value, roomId = selectedRoomID.value)
         }                                                                                                          /* TODO change to selectedRoom.value */
 
         composable(Screens.EditChatRoomScreen.route)
         {
-            EditRoom(navController = navController, viewModel = userViewModel, firestore_db = firestore_db, roomName = selectedRoomName, roomId = selectedRoomID.value)
+            EditRoom(navController = navController, viewModel = userViewModel, firestoreDb = firestoreDb, roomName = selectedRoomName, roomId = selectedRoomID.value)
         }
 
 

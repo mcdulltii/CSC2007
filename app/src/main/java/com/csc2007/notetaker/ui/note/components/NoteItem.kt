@@ -1,6 +1,8 @@
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,9 +51,7 @@ import com.csc2007.notetaker.database.viewmodel.note.NoteState
 import com.csc2007.notetaker.ui.note.util.formatDate
 import com.csc2007.notetaker.ui.note.util.generatePDF
 import com.csc2007.notetaker.ui.util.Screens
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import java.sql.Timestamp
 
 @Composable
 fun CircularIconWithLetter(letter: Char) {
@@ -94,15 +94,11 @@ fun NoteItem(
 
     val context = LocalContext.current
 
-
-
     val formattedDateAdded = formatDate(notes[index].dateAdded)
 
     var showMenu by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) } // State to control visibility of confirmation dialog
     var showShareModal by remember { mutableStateOf(false) } // State to control visibility of share modal
-
-
 
     Box(
         modifier = Modifier
@@ -145,6 +141,46 @@ fun NoteItem(
                         tint = Color.Black
                     )
                 }
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Delete") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Filled.Delete,
+                                    contentDescription = "Delete",
+                                    tint = Color.Black
+                                )
+                            },
+                            onClick = {
+                                // Handle "Delete" click
+                                showMenu = false
+                                showDialog = true // Show confirmation dialog
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Share") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Filled.Share,
+                                    contentDescription = "Share",
+                                    tint = Color.Black
+                                )
+                            },
+                            onClick = {
+                                // Handle "Share" click
+                                showMenu = false
+                                showShareModal = true
+                            }
+                        )
+                    }
+                }
             }
             Spacer(Modifier.height(5.dp))
 
@@ -152,42 +188,6 @@ fun NoteItem(
                 text = content,
                 modifier = Modifier.padding(10.dp)
             ) // Add padding if content text needs it
-        }
-
-        DropdownMenu(
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false }
-        ) {
-            DropdownMenuItem(
-                text = { Text("Delete") },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Delete,
-                        contentDescription = "Delete",
-                        tint = Color.Black
-                    )
-                },
-                onClick = {
-                    // Handle "Delete" click
-                    showMenu = false
-                    showDialog = true // Show confirmation dialog
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Share") },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Share,
-                        contentDescription = "Share",
-                        tint = Color.Black
-                    )
-                },
-                onClick = {
-                    // Handle "Share" click
-                    showMenu = false
-                    showShareModal = true
-                }
-            )
         }
 
         if (showDialog) {
@@ -216,8 +216,6 @@ fun NoteItem(
         }
 
         if (showShareModal) {
-
-
             AlertDialog(
                 onDismissRequest = { showShareModal = false },
                 title = { Text("Choose the chat") },
@@ -244,7 +242,7 @@ fun NoteItem(
                 },
                 confirmButton = {
                     TextButton(onClick = { showShareModal = false }) {
-                        Text("OK")
+                        Text("CANCEL")
                     }
                 }
             )

@@ -23,9 +23,7 @@ import com.csc2007.notetaker.ui.NoteTakerTheme
 import com.csc2007.notetaker.ui.rememberWindowSizeClass
 import com.csc2007.notetaker.ui.util.NavGraph
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -110,7 +108,7 @@ fun MainApp(
                 itemViewModelFactory = itemViewModelFactory,
                 ownViewModelFactory = ownViewModelFactory,
                 avatarViewModelFactory = avatarViewModelFactory,
-                firestore_db = firestore_db,
+                firestoreDb = firestore_db,
                 firestorage = firestorage
             )
         }

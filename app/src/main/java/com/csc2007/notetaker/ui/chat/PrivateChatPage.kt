@@ -1,15 +1,14 @@
 package com.csc2007.notetaker.ui.chat
 
-import android.content.ActivityNotFoundException
+import android.app.DownloadManager
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
+import android.os.Environment
 import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,20 +25,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AttachFile
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.GroupAdd
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -62,7 +54,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -71,7 +62,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.ChatMessage
-import com.csc2007.notetaker.database.ChatRoom
 import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.database.viewmodel.chat_room.ChatMessageViewModel
 import com.csc2007.notetaker.database.viewmodel.chat_room.ChatRoomViewModel
@@ -79,15 +69,10 @@ import com.csc2007.notetaker.ui.TopNavBarText
 import com.csc2007.notetaker.ui.colors
 import com.csc2007.notetaker.ui.util.Screens
 import com.google.firebase.firestore.FirebaseFirestore
-import java.net.URI
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
-import android.app.DownloadManager
-import android.os.Environment
-import android.widget.Toast
-import androidx.compose.material.icons.filled.Settings
 
 
 @Composable
@@ -97,13 +82,13 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
     val chatObserver = ChatMessageViewModel(firestore_db = firestore_db, RoomId = roomId) // TODO change this to the actual room ID
     val roomObserver = ChatRoomViewModel(firestore_db = firestore_db)
     // Init messages state
-    val messages_in_room = remember{ mutableStateOf(emptyList<ChatMessage>()) }
+    val messagesInRoom = remember{ mutableStateOf(emptyList<ChatMessage>()) }
     // not sure what happens if change to different room, hopefully only renders the room specific ones. Should be fine though
     val listState = rememberLazyListState()
     val currentlyEditingMessageId = rememberSaveable{ mutableStateOf("")}
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        chatObserver.getMessagesFromRoom(messages_in_room = messages_in_room)
+        chatObserver.getMessagesFromRoom(messages_in_room = messagesInRoom)
     }
 
     // Init this pages' inputs and auxiliary viewModel observers
@@ -122,7 +107,7 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
                 modifier = Modifier
                     .fillMaxWidth()
             ) // Remember to include the image at the right
-            MessageList(messages = messages_in_room.value, myEmail = email, navController = navController, listState = listState, userInput = userInput, messageIdToEdit = currentlyEditingMessageId, chatObserver = chatObserver, context = context)
+            MessageList(messages = messagesInRoom.value, myEmail = email, navController = navController, listState = listState, userInput = userInput, messageIdToEdit = currentlyEditingMessageId, chatObserver = chatObserver, context = context)
 
         }
 
@@ -134,25 +119,21 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
             // add logic checks for even if input is empty but theres an image/file attached to allow sending
             InputBar(label = "Text message", userInput = userInput, username = username, myEmail = email, modifier = Modifier.weight(0.6f), chatObserver = chatObserver, room_id = roomId, editing_message_id = currentlyEditingMessageId)
 
-            Box(modifier = Modifier
-                .size(60.dp)
-                .padding(end = 0.dp)
-                .clickable { navController.navigate(Screens.EditChatRoomScreen.route) },
-                contentAlignment = Alignment.Center)
-            {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Edit Room",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(40.dp)
-                )
-            }
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = "Edit Room",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .size(30.dp)
+                    .padding(4.dp)
+                    .clickable { navController.navigate(Screens.EditChatRoomScreen.route) },
+            )
         }
     }
 }
 
 @Composable
-fun pdfBubble(message: ChatMessage, context: Context)
+fun PdfBubble(message: ChatMessage, context: Context)
 {
     val maxWidthPercentage = 0.5f
     val maxWidth = calculateMaxWidth(maxWidthPercentage)
@@ -198,11 +179,11 @@ fun downloadFile(uri: String, context: Context, pdfName: String) {
 
 
 @Composable
-fun TextBubble(text: String, sender_email: String, my_email: String, message: ChatMessage, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
+fun TextBubble(text: String, senderEmail: String, myEmail: String, message: ChatMessage, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel)
 {
     val showDialog = rememberSaveable{ mutableStateOf(false)}
     val backgroundColor =
-        if(sender_email == my_email) colors.primaryColor
+        if(senderEmail == myEmail) colors.primaryColor
         else MaterialTheme.colorScheme.secondary
 
     val textColor = Color.White
@@ -228,7 +209,7 @@ fun TextBubble(text: String, sender_email: String, my_email: String, message: Ch
             textAlign = TextAlign.Center
         )
     }
-    if(sender_email == my_email)
+    if(senderEmail == myEmail)
     {
         ShowEditOrDelete(showDialog = showDialog, message = message, messageIdToEdit = messageIdToEdit, userInput = userInput, chatObserver = chatObserver)
     }
@@ -283,57 +264,6 @@ fun ShowEditOrDelete(showDialog: MutableState<Boolean>, message: ChatMessage, me
         }
     }
 }
-@Composable
-fun ImageBubble(drawableId: Int, navController: NavHostController)
-{
-    var showOverlay = rememberSaveable{ mutableStateOf(false) }
-    val maxWidthPercentage = 0.5f
-    val maxWidth = calculateMaxWidth(maxWidthPercentage)
-    Box(
-        modifier = Modifier
-            .size(maxWidth, 120.dp)
-            .padding(2.dp)
-            .clip(RoundedCornerShape(25.dp))
-    ) {
-        Image(
-            painter = painterResource(id = drawableId),
-            contentDescription = "image message",
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable {
-                    showOverlay.value = true
-                },
-            contentScale = ContentScale.Fit
-        )
-        if(showOverlay.value) // bugged lmao
-        {
-            EnlargeImage(image = drawableId, showOverlay = showOverlay, navController = navController)
-        }
-    }
-}
-
-@Composable
-fun EnlargeImage(image: Int, showOverlay: MutableState<Boolean>, navController: NavHostController)
-{
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f)) // Semi-transparent black background
-            .clickable {
-                showOverlay.value = false // Dismiss the overlay when clicked
-            }
-    ) {
-        // Larger image content
-        Image(
-            painter = painterResource(id = image),
-            contentDescription = "image message",
-            modifier = Modifier
-                .align(Alignment.Center)
-                .clip(RoundedCornerShape(25.dp)),
-            contentScale = ContentScale.Fit
-        )
-    }
-}
 
 @Composable
 fun MessageRow(message: ChatMessage, myEmail: String, navController: NavHostController, userInput: MutableState<String>, messageIdToEdit: MutableState<String>, chatObserver: ChatMessageViewModel, context: Context)
@@ -366,11 +296,11 @@ fun MessageRow(message: ChatMessage, myEmail: String, navController: NavHostCont
             else Text(convertTimestampToTime(message.time_stamp!!), modifier = Modifier.padding(end = 8.dp), fontSize = 12.sp)
             if(message.pdf_link != null)
             {
-                pdfBubble(message = message, context = context)
+                PdfBubble(message = message, context = context)
             }
             else
             {
-                TextBubble(text = message.content!!, sender_email = message.sender_email!!, my_email = myEmail, message = message, userInput = userInput, messageIdToEdit = messageIdToEdit, chatObserver = chatObserver)
+                TextBubble(text = message.content!!, senderEmail = message.sender_email!!, myEmail = myEmail, message = message, userInput = userInput, messageIdToEdit = messageIdToEdit, chatObserver = chatObserver)
             }
 
         }
@@ -405,17 +335,17 @@ fun MessageList(messages: List<ChatMessage>, myEmail: String, navController: Nav
 fun InputBar(modifier: Modifier = Modifier, username: String, myEmail: String, label: String, userInput: MutableState<String>, chatObserver: ChatMessageViewModel, room_id: String, editing_message_id: MutableState<String>)
 {
         TextField(
-        value = userInput.value,
-        onValueChange = { userInput.value = it },
-        singleLine = false,
-        modifier = modifier,
-        label = {Text(label)},
-        maxLines = 5,
-        shape = RoundedCornerShape(30.dp),
-        colors = TextFieldDefaults.textFieldColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            unfocusedIndicatorColor = Color.Transparent,
-            cursorColor = colors.primaryColor // change to our color scheme
+            value = userInput.value,
+            onValueChange = { userInput.value = it },
+            singleLine = false,
+            modifier = modifier,
+            label = {Text(label)},
+            maxLines = 5,
+            shape = RoundedCornerShape(30.dp),
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                unfocusedIndicatorColor = Color.Transparent,
+                cursorColor = colors.primaryColor // change to our color scheme
         ),
         trailingIcon = {
             Icon(

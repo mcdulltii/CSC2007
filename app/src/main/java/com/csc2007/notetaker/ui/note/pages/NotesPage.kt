@@ -1,9 +1,9 @@
 package com.csc2007.notetaker.ui.note.pages
 
-import NoteAppBarWithSortTypes
-import NoteSearchBar
 import ExpandableFloatingActionButton
+import NoteAppBarWithSortTypes
 import NoteItem
+import NoteSearchBar
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -49,22 +49,20 @@ fun NotesPage(
     onEvent: (NoteEvent) -> Unit,
     selectedRoomID: MutableState<String>,
     selectedRoomName: MutableState<String>,
-    firestore_db: FirebaseFirestore,
+    firestoreDb: FirebaseFirestore,
     userViewModel: UserViewModel,
     firestorage: FirebaseStorage
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
-
     val moduleId = navController.currentBackStackEntry?.arguments?.getInt("moduleId") ?: -1
-
 
     Log.d("ModuleID from state", state.moduleId.value.toString())
     val userRooms = rememberSaveable{mutableStateOf(emptyList<ChatRoom>())}
     val username by userViewModel.loggedInUserUsername.collectAsState()
     val email by userViewModel.loggedInUserEmail.collectAsState()
 
-    val roomObserver = ChatRoomViewModel(firestore_db = firestore_db, username = username, email = email)
+    val roomObserver = ChatRoomViewModel(firestore_db = firestoreDb, username = username, email = email)
 
     // Attach snapshot listener
     LaunchedEffect(Unit) {
@@ -74,8 +72,6 @@ fun NotesPage(
     val notes = state.notes.filter { note ->
         note.moduleId == moduleId
     }
-
-
 
     Scaffold(
         floatingActionButton = {
