@@ -49,9 +49,10 @@ class NoteViewModel(private val repository: NotesRepository) : ViewModel() {
     }.flatMapLatest { it }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
 
-    val state = combine(_state, _sortType, notes, _searchQuery) { state, sortType, notes, searchQuery ->
-        state.copy(notes = notes, sortType = sortType, searchQuery = searchQuery)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NoteState())
+    val state =
+        combine(_state, _sortType, notes, _searchQuery) { state, sortType, notes, searchQuery ->
+            state.copy(notes = notes, sortType = sortType, searchQuery = searchQuery)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NoteState())
 
 
     fun onEvent(event: NoteEvent) {
@@ -95,6 +96,12 @@ class NoteViewModel(private val repository: NotesRepository) : ViewModel() {
 
             is NoteEvent.SortNotes -> {
                 _sortType.value = event.sortType
+            }
+
+            is NoteEvent.DeleteAllNotes -> {
+                viewModelScope.launch {
+                    repository.deleteALlNote(event.moduleId)
+                }
             }
 
             else -> {}

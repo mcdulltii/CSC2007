@@ -49,6 +49,7 @@ import com.csc2007.notetaker.ui.microphone.VoiceToTextParser
 import com.csc2007.notetaker.ui.module.pages.AddModulePage
 import com.csc2007.notetaker.ui.module.pages.ModulesPage
 import com.csc2007.notetaker.ui.note.pages.AddNotePage
+import com.csc2007.notetaker.ui.note.pages.EditNotePage
 import com.csc2007.notetaker.ui.note.pages.NotePage
 import com.csc2007.notetaker.ui.note.pages.NotesPage
 import com.csc2007.notetaker.ui.pomodoro.PomodoroPage
@@ -74,9 +75,9 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
 
     object LandingScreen : Screens(route = "landing_screen")
     object SignUpScreen : Screens(route = "signup_screen")
-    object Setup2FAScreen: Screens(route = "setup_2fa_screen")
+    object Setup2FAScreen : Screens(route = "setup_2fa_screen")
     object LoginScreen : Screens(route = "login_screen")
-    object Login2FAScreen: Screens(route = "login_2fa_screen")
+    object Login2FAScreen : Screens(route = "login_2fa_screen")
     object CameraScreen :
         Screens(route = "camera_screen", icon = FontAwesomeIcons.Solid.Camera, title = "Camera")
 
@@ -110,8 +111,12 @@ sealed class Screens(val route: String, val title: String? = null, val icon: Ima
             title = "Private Chat"
         )
 
-    object EditChatRoomScreen:
-        Screens(route = "edit_chat_room_screen", icon = Icons.Default.ChatBubbleOutline, title = "Edit Room")
+    object EditChatRoomScreen :
+        Screens(
+            route = "edit_chat_room_screen",
+            icon = Icons.Default.ChatBubbleOutline,
+            title = "Edit Room"
+        )
 
     object PomodoroScreen :
         Screens(route = "pomodoro_screen", icon = Icons.Default.AccessTime, title = "Pomodoro")
@@ -144,8 +149,8 @@ fun NavGraph(
     itemViewModelFactory: ItemViewModelFactory,
     ownViewModelFactory: OwnViewModelFactory,
     avatarViewModelFactory: AvatarViewModelFactory,
-    firestoreDb : FirebaseFirestore,
-    firestorage : FirebaseStorage
+    firestoreDb: FirebaseFirestore,
+    firestorage: FirebaseStorage
 ) {
 
     val pomodoroTimerViewModel = PomodoroTimerViewModel()
@@ -160,13 +165,13 @@ fun NavGraph(
     val moduleViewModel: ModuleViewModel = viewModel(factory = moduleViewModelFactory)
     val moduleState by moduleViewModel.state.collectAsState()
 
-    val selectedRoomID = rememberSaveable{ mutableStateOf("")}
-    val selectedRoomName = rememberSaveable{ mutableStateOf("")}
+    val selectedRoomID = rememberSaveable { mutableStateOf("") }
+    val selectedRoomName = rememberSaveable { mutableStateOf("") }
 
 
     NavHost(
         navController = navController,
-        startDestination = Screens.LandingScreen.route
+        startDestination = Screens.ModulesScreen.route
     ) {
 
         composable(Screens.LandingScreen.route) {
@@ -200,11 +205,15 @@ fun NavGraph(
             Screens.CameraScreen.route + "/{moduleId}",
             arguments = listOf(navArgument(name = "moduleId") { type = NavType.IntType })
         ) {
-            CameraPage(navController = navController, onEvent = noteViewModel::onEvent, state = noteState)
+            CameraPage(
+                navController = navController,
+                onEvent = noteViewModel::onEvent,
+                state = noteState
+            )
         }
 
         composable(
-            Screens.MicrophoneScreen.route  + "/{moduleId}",
+            Screens.MicrophoneScreen.route + "/{moduleId}",
             arguments = listOf(navArgument(name = "moduleId") { type = NavType.IntType })
         ) {
             val application = LocalContext.current.applicationContext as Application
@@ -233,19 +242,12 @@ fun NavGraph(
         }
 
         composable(
-            Screens.EditNoteScreen.route + "/{moduleId}",
-            arguments = listOf(navArgument(name = "moduleId") { type = NavType.IntType }
-            )
+            Screens.EditNoteScreen.route
         ) {
-            NotePage(
+            EditNotePage(
                 navController = navController,
                 state = noteState,
-                onEvent = noteViewModel::onEvent,
-                selectedRoomID = selectedRoomID,
-                selectedRoomName = selectedRoomName,
-                firestoreDb = firestoreDb,
-                userViewModel = userViewModel,
-                firestorage = firestorage
+                onEvent = noteViewModel::onEvent
             )
         }
 
@@ -294,18 +296,36 @@ fun NavGraph(
         }
 
         composable(Screens.ChatScreen.route) {
-            ChatPage(navController = navController, viewModel = userViewModel, firestoreDb = firestoreDb, selectedRoomID = selectedRoomID, selectedRoomName = selectedRoomName)
+            ChatPage(
+                navController = navController,
+                viewModel = userViewModel,
+                firestoreDb = firestoreDb,
+                selectedRoomID = selectedRoomID,
+                selectedRoomName = selectedRoomName
+            )
         }
 
         composable(Screens.PrivateChatScreen.route) {
             val user by userViewModel.loggedInUser.collectAsState()
             val userId = user?.id
-            PrivateChatPage(navController = navController, viewModel = userViewModel, firestore_db = firestoreDb, roomName = selectedRoomName.value, roomId = selectedRoomID.value)
+            PrivateChatPage(
+                navController = navController,
+                viewModel = userViewModel,
+                firestore_db = firestoreDb,
+                roomName = selectedRoomName.value,
+                roomId = selectedRoomID.value
+            )
         }                                                                                                          /* TODO change to selectedRoom.value */
 
         composable(Screens.EditChatRoomScreen.route)
         {
-            EditRoom(navController = navController, viewModel = userViewModel, firestoreDb = firestoreDb, roomName = selectedRoomName, roomId = selectedRoomID.value)
+            EditRoom(
+                navController = navController,
+                viewModel = userViewModel,
+                firestoreDb = firestoreDb,
+                roomName = selectedRoomName,
+                roomId = selectedRoomID.value
+            )
         }
 
 

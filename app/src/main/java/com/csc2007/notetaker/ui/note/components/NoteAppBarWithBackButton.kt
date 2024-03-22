@@ -36,6 +36,7 @@ import com.csc2007.notetaker.ui.util.Screens
 import com.google.firebase.storage.FirebaseStorage
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.Edit
 import compose.icons.fontawesomeicons.solid.HandScissors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,6 +46,7 @@ fun NoteAppBarWithBackButton(
     title: String,
     onClickDelete: () -> Unit = {},
     onClickSummary: () -> Unit = {},
+    onClickEdit: () -> Unit = {},
     shareContent: String? = "",
     roomObserver: ChatRoomViewModel,
     selectedRoomID: MutableState<String>,
@@ -96,22 +98,6 @@ fun NoteAppBarWithBackButton(
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("Share") },
-                    leadingIcon = {
-                        Icon(
-                            modifier = Modifier.size(20.dp),
-                            imageVector = Icons.Filled.Share,
-                            contentDescription = "Share",
-                            tint = Color.Black
-                        )
-                    },
-                    onClick = {
-                        // Handle "Share" click
-                        showMenu = false
-                        showShareModal = true
-                    }
-                )
-                DropdownMenuItem(
                     text = { Text("Summarize") },
                     leadingIcon = {
                         Icon(
@@ -125,6 +111,20 @@ fun NoteAppBarWithBackButton(
                         // Handle "Summarize" click
                         showMenu = false
                         showSummarize = true
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Edit") },
+                    leadingIcon = {
+                        Icon(
+                            modifier = Modifier.size(20.dp),
+                            imageVector = FontAwesomeIcons.Solid.Edit,
+                            contentDescription = "Edit",
+                            tint = Color.Black
+                        )
+                    },
+                    onClick = {
+                        onClickEdit()
                     }
                 )
             }

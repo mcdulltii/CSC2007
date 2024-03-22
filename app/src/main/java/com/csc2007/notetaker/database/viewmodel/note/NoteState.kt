@@ -11,6 +11,7 @@ data class NoteState(
     val sortType: SortType = SortType.ASC_TITLE,
     var moduleId: MutableState<Int> = mutableStateOf(0),
     val searchQuery: String = "",
+    var noteId: MutableState<Int> = mutableStateOf(0)
 )
 enum class SortType {
     ASC_TITLE,

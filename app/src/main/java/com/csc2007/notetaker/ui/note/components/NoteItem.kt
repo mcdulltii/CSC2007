@@ -100,6 +100,8 @@ fun NoteItem(
     var showDialog by remember { mutableStateOf(false) } // State to control visibility of confirmation dialog
     var showShareModal by remember { mutableStateOf(false) } // State to control visibility of share modal
 
+
+
     Box(
         modifier = Modifier
             .padding(vertical = 5.dp)
