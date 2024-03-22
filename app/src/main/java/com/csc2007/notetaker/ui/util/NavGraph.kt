@@ -171,7 +171,7 @@ fun NavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = Screens.ModulesScreen.route
+        startDestination = Screens.LandingScreen.route
     ) {
 
         composable(Screens.LandingScreen.route) {
