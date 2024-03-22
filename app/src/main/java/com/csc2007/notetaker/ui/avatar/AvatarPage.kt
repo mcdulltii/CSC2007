@@ -70,6 +70,9 @@ fun AvatarPage(
     val loggedInUser = userViewModel.loggedInUser.collectAsState().value
     val id = remember { mutableStateOf(if (loggedInUser !== null) loggedInUser.id else 0) }
 
+    // Get current logged in user's points
+    val loggedInUserPoints = userViewModel.loggedInUserPoints.collectAsState().value
+
     // Get current logged in user's avatar
     avatarViewModel.getUserAvatar(userId = id.value)
     val avatarImageString = remember { mutableStateOf("") }
@@ -131,7 +134,7 @@ fun AvatarPage(
                 ) {
                     Icon(Icons.Default.MonetizationOn, contentDescription = "Money Icon")
 
-                    Text(text = "30,000")
+                    Text(text = "$loggedInUserPoints")
                 }
 
                 ElevatedButton(onClick = {
@@ -167,7 +170,9 @@ fun AvatarPage(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Box(
-                            modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 20.dp),
                             contentAlignment = Alignment.TopEnd
                         ) {
                             Image(

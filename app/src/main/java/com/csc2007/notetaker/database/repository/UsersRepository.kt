@@ -16,7 +16,7 @@ class UsersRepository(private val userDao: UserDao, private val dataStore: DataS
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun login(email: String, password: ByteArray): User {
+    suspend fun login(email: String, password: ByteArray): User? {
         return withContext(Dispatchers.IO) {
             userDao.login(email, password)
         }
@@ -44,7 +44,6 @@ class UsersRepository(private val userDao: UserDao, private val dataStore: DataS
         }
     }
 
-
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun updateEmailAndUserName(email: String, username: String, id: Int) {
@@ -69,5 +68,21 @@ class UsersRepository(private val userDao: UserDao, private val dataStore: DataS
     @WorkerThread
     suspend fun createNewAvatar(userId: Int) {
         userDao.createNewAvatar(userId)
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun getUserPoints(email: String): Int {
+        return withContext(Dispatchers.IO) {
+            userDao.getUserPoints(email)
+        }
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun updateUserPoints(points: Int, email: String) {
+        return withContext(Dispatchers.IO) {
+            userDao.updateUserPoints(points, email)
+        }
     }
 }

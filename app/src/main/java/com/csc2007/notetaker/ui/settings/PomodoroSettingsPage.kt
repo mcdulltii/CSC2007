@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
@@ -40,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -200,6 +202,8 @@ fun PomodoroTimerDialog(
     var displayMinutes = remember { mutableStateOf("") }
     var displaySeconds = remember { mutableStateOf("") }
 
+    val maxNumber = 60
+
     if (title == "Pomodoro") {
         displayMinutes.value = pomodoroTimerViewModel.pomodoroMinutes.collectAsState().value.toString()
         displaySeconds.value = pomodoroTimerViewModel.pomodoroSeconds.collectAsState().value.toString()
@@ -233,8 +237,17 @@ fun PomodoroTimerDialog(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     TextField(
-                        value = displayMinutes.value.padStart(2, '0'),
-                        onValueChange = { displayMinutes.value = it },
+                        value = displayMinutes.value,
+                        onValueChange = {
+                            if (it.isEmpty()) {
+                                displayMinutes.value = 0.toString()
+                            } else {
+                                if (it.toInt() <= maxNumber ) {
+                                    displayMinutes.value = it
+                                }
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         textStyle = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontSize = 57.sp,
@@ -256,8 +269,16 @@ fun PomodoroTimerDialog(
                         color = MaterialTheme.colorScheme.onPrimaryContainer)
 
                     TextField(
-                        value = displaySeconds.value.padStart(2, '0'),
-                        onValueChange = { displaySeconds.value = it },
+                        value = displaySeconds.value,
+                        onValueChange = {
+                            if (it.isEmpty()) {
+                                displaySeconds.value = 0.toString()
+                            } else {
+                                if (it.toInt() <= maxNumber ) {
+                                    displaySeconds.value = it
+                                }
+                            }
+                        },
                         textStyle = TextStyle(
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontSize = 57.sp,

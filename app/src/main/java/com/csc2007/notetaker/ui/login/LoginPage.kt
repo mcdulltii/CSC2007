@@ -19,6 +19,7 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +46,7 @@ import com.csc2007.notetaker.ui.TopNavBar
 import com.csc2007.notetaker.ui.WindowSizeClass
 import com.csc2007.notetaker.ui.rememberWindowSizeClass
 import com.csc2007.notetaker.ui.util.Screens
+import kotlinx.coroutines.delay
 
 @Composable
 fun LoginPage(
@@ -135,6 +137,11 @@ fun LoginPage(
 
                     if (loggedInState == false) {
                         ShowFailedSnackbar()
+
+                        LaunchedEffect(key1 = null) {
+                            delay(2000)
+                            userViewModel.resetLoggedInState()
+                        }
                     }
                 }
             }

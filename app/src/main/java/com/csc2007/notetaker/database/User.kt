@@ -10,7 +10,8 @@ data class User(
     @ColumnInfo(name = "email") val email: String,
     @ColumnInfo(name = "username") val userName: String,
     @ColumnInfo(name = "password") val password: ByteArray,
-    @ColumnInfo(name = "secret") val secret: ByteArray
+    @ColumnInfo(name = "secret") val secret: ByteArray,
+    @ColumnInfo(name = "points") val points: Int,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

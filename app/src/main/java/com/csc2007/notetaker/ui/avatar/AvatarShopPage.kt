@@ -1,5 +1,6 @@
 package com.csc2007.notetaker.ui.avatar
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -66,6 +67,8 @@ fun AvatarShopPage(
     window: WindowSizeClass = rememberWindowSizeClass()
 ) {
 
+    val itemPointsCost = 500
+
     val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.gift_box_2))
 
     var isPlaying by remember { mutableStateOf(false) }
@@ -73,6 +76,7 @@ fun AvatarShopPage(
     val progress by animateLottieCompositionAsState(composition = composition, isPlaying = isPlaying)
 
     var itemSnackBarState by remember { mutableStateOf(true) }
+    var failedSnackBarState by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -83,7 +87,8 @@ fun AvatarShopPage(
     // Get current logged in user's details
     val loggedInUser = userViewModel.loggedInUser.collectAsState().value
     val id = remember { mutableStateOf(if (loggedInUser !== null) loggedInUser.id else 0 ) }
-
+    val loggedInUserPoints = userViewModel.loggedInUserPoints.collectAsState().value
+    Log.d("AvatarShopPage", "${loggedInUserPoints}")
     LaunchedEffect(key1 = progress) {
         if (progress == 0.01f) {
             isPlaying = true
@@ -109,12 +114,26 @@ fun AvatarShopPage(
             }
 
             Button(onClick = {
-                isPlaying = true
-                randomItem.value = selectRandomItem(items)
-                ownViewModel.insert(userId = id.value, itemId = randomItem.value!!.id)
-                coroutineScope.launch {
-                    delay(1800)
-                    itemSnackBarState = true
+                if (loggedInUserPoints < itemPointsCost) {
+                    coroutineScope.launch {
+                        failedSnackBarState = true
+                        delay(2000)
+                        failedSnackBarState = false
+                    }
+                } else {
+                    if (loggedInUser != null) {
+                        userViewModel.updateUserPoints(points = (loggedInUserPoints - itemPointsCost), email = loggedInUser.email )
+                        isPlaying = true
+                        randomItem.value = selectRandomItem(items)
+                        ownViewModel.insert(userId = id.value, itemId = randomItem.value!!.id)
+                        coroutineScope.launch {
+                            delay(1800)
+                            itemSnackBarState = true
+
+                            delay(3000)
+                            itemSnackBarState = false
+                        }
+                    }
                 }
 
             }) {
@@ -126,6 +145,10 @@ fun AvatarShopPage(
 
             if ((itemSnackBarState) and (randomItem.value != null)) {
                 randomItem.value?.let { ShowItemSnackBar(it) }
+            }
+
+            if (failedSnackBarState) {
+                ShowFailedSnackBar()
             }
 
             BottomNavBar(navController = navController)
@@ -172,16 +195,22 @@ fun AvatarShopPage(
                     ) {
                         Button(
                             onClick = {
-                            isPlaying = true
-                            randomItem.value = selectRandomItem(items)
-                            ownViewModel.insert(userId = id.value, itemId = randomItem.value!!.id)
-                            coroutineScope.launch {
-                                delay(1800)
-                                itemSnackBarState = true
+                                if (loggedInUserPoints < itemPointsCost) {
+                                    coroutineScope.launch {
 
-                                delay(3000)
-                                itemSnackBarState = false
-                            }
+                                    }
+                                } else {
+                                    isPlaying = true
+                                    randomItem.value = selectRandomItem(items)
+                                    ownViewModel.insert(userId = id.value, itemId = randomItem.value!!.id)
+                                    coroutineScope.launch {
+                                        delay(1800)
+                                        itemSnackBarState = true
+
+                                        delay(3000)
+                                        itemSnackBarState = false
+                                    }
+                                }
                         }) {
                             Text(
                                 text = "Purchase for 500 Coins")
@@ -192,7 +221,6 @@ fun AvatarShopPage(
             if ((itemSnackBarState) and (randomItem.value != null)) {
                 randomItem.value?.let { ShowItemSnackBar(it) }
             }
-
             Row(modifier = Modifier.weight(1f)) {
                 BottomNavBar(navController = navController)
             }
@@ -231,6 +259,21 @@ private fun ShowItemSnackBar(item: Item) {
                 contentDescription = "Item Image",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.size(50.dp))
+        }
+    }
+}
+
+@Composable
+fun ShowFailedSnackBar() {
+    Snackbar(
+        modifier = Modifier.padding(8.dp),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Insufficient Points!")
         }
     }
 }

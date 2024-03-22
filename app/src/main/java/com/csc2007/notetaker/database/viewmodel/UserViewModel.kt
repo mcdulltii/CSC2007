@@ -41,6 +41,9 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
     private val _loggedInUserUsername = MutableStateFlow<String>("")
     var loggedInUserUsername: StateFlow<String> = _loggedInUserUsername
 
+    private val _loggedInUserPoints = MutableStateFlow<Int>(0)
+    var loggedInUserPoints: StateFlow<Int> = _loggedInUserPoints
+
     private val _loggedInUserSecret = MutableStateFlow<ByteArray?>(null)
     var loggedInUserSecret: StateFlow<ByteArray?> = _loggedInUserSecret
 
@@ -59,17 +62,29 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
             if (email.isEmpty() or password.isEmpty()) {
                 _loggedIn.value = false
             } else {
-                _loggedInUserSecret.value = repository.getUserSecret(email)
-                val user = repository.login(email, hashString(password, loggedInUserSecret.value!!))
-                _loggedIn.value = true && user.password.contentEquals(hashString(password, loggedInUserSecret.value!!))
-                if (_loggedIn.value == true) {
-                    _loggedInUser.value = user
-                    _loggedInUserEmail.value = user.email
-                    _loggedInUserUsername.value = user.userName
-                    _loggedInUserSecret.value = user.secret
+                try {
+                    _loggedInUserSecret.value = repository.getUserSecret(email)
+                    val user = repository.login(email, hashString(password, loggedInUserSecret.value!!))
+                    if (user != null) {
+                        _loggedIn.value = true && user.password.contentEquals(hashString(password, loggedInUserSecret.value!!))
+                        if (_loggedIn.value == true) {
+                            _loggedInUser.value = user
+                            _loggedInUserEmail.value = user.email
+                            _loggedInUserUsername.value = user.userName
+                            _loggedInUserSecret.value = user.secret
+                            _loggedInUserPoints.value = user.points
+                        }
+                    }
+                } catch (e: NullPointerException) {
+                    _loggedIn.value = false
                 }
+
             }
         }
+    }
+
+    fun resetLoggedInState() {
+        _loggedIn.value = null
     }
 
     fun logout() {
@@ -77,11 +92,18 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
         _loggedInUser.value = null
         _loggedInUserEmail.value = ""
         _loggedInUserUsername.value = ""
+        _loggedInUserPoints.value = 0
     }
 
     fun getUserSecret(email: String) {
         viewModelScope.launch {
             _loggedInUserSecret.value = repository.getUserSecret(email)
+        }
+    }
+
+    fun getUserPoints(email: String) {
+        viewModelScope.launch {
+            _loggedInUserPoints.value = repository.getUserPoints(email)
         }
     }
 
@@ -92,6 +114,13 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
             _loggedInUser.value = user
             _loggedInUserEmail.value = user.email
             _loggedInUserUsername.value = user.userName
+        }
+    }
+
+    fun updateUserPoints(points: Int, email: String) {
+        viewModelScope.launch {
+            repository.updateUserPoints(points, email)
+            _loggedInUserPoints.value = repository.getUserPoints(email)
         }
     }
 
@@ -123,7 +152,7 @@ class UserViewModel(private val repository: UsersRepository) : ViewModel() {
 
             _registeredUserSecret.value = secret
 
-            val user = User(email = email, userName = username, password = hashString(password, secret), secret = secret)
+            val user = User(email = email, userName = username, password = hashString(password, secret), secret = secret, points = 0)
             repository.insert(user)
 
             val insertedUser = repository.getLastUser()
