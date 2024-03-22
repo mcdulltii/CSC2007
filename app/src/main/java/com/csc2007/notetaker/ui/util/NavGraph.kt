@@ -332,6 +332,7 @@ fun NavGraph(
         composable(Screens.PomodoroScreen.route) {
             PomodoroPage(
                 navController = navController,
+                userViewModel = userViewModel,
                 pomodoroTimerViewModel = pomodoroTimerViewModel
             )
         }

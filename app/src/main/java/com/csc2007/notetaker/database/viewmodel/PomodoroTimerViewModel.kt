@@ -3,6 +3,7 @@ package com.csc2007.notetaker.database.viewmodel
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.csc2007.notetaker.R
@@ -12,6 +13,9 @@ import java.util.concurrent.TimeUnit
 
 class PomodoroTimerViewModel() : ViewModel() {
     private var countDownTimer: CountDownTimer? = null
+
+    private val _timerPomodoroComplete = MutableStateFlow(false)
+    var timerPomodoroComplete: StateFlow<Boolean> = _timerPomodoroComplete
 
     private val _pomodoroMinutes = MutableStateFlow(15)
     var pomodoroMinutes: StateFlow<Int> = _pomodoroMinutes
@@ -46,9 +50,12 @@ class PomodoroTimerViewModel() : ViewModel() {
     private val _displaySeconds = MutableStateFlow(_pomodoroSeconds.value.toString())
     var displaySeconds: StateFlow<String> = _displaySeconds
 
+    val pointsMultiplier = 2
+
     fun startTimer(context: Context, selectedTimer: String) {
 
         _timerState.value = true
+        _timerPomodoroComplete.value = false
         countDownTimer = object : CountDownTimer(timeLeft.value, countDownInterval) {
             override fun onTick(millisUntilFinished: Long) {
                 _displayMinutes.value = (TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) % 60).toString()
@@ -57,12 +64,19 @@ class PomodoroTimerViewModel() : ViewModel() {
             }
 
             override fun onFinish() {
+                if (selectedTimer == "Pomodoro") {
+                    _timerPomodoroComplete.value = true
+                }
                 _timerState.value = false
                 countDownTimer?.cancel()
                 playSound(context)
                 resetTimer(selectedTimer)
             }
         }.start()
+    }
+
+    fun setTimerPomodoroComplete() {
+        _timerPomodoroComplete.value = false
     }
 
     fun pauseTimer() {

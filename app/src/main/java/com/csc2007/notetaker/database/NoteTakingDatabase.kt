@@ -15,7 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [User::class, Item::class, Own::class, Avatar::class, Note::class, Module::class], version = 2)
+@Database(entities = [User::class, Item::class, Own::class, Avatar::class, Note::class, Module::class], version = 3)
 abstract class NoteTakingDatabase : RoomDatabase() {
 
     abstract fun userDao() : UserDao

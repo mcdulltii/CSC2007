@@ -16,7 +16,13 @@ interface UserDao {
     fun getUsers(): Flow<List<User>>
 
     @Query("SELECT * FROM user_table WHERE email = :email  AND password = :password")
-    fun login(email: String, password: ByteArray): User
+    fun login(email: String, password: ByteArray): User?
+
+    @Query("SELECT points FROM user_table WHERE email = :email")
+    fun getUserPoints(email: String): Int
+
+    @Query("UPDATE user_table SET points = :points WHERE email = :email")
+    fun updateUserPoints(points: Int, email: String)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(user: User)

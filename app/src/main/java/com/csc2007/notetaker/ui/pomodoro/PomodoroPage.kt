@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -46,9 +47,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.csc2007.notetaker.database.viewmodel.PomodoroTimerViewModel
+import com.csc2007.notetaker.database.viewmodel.UserViewModel
 import com.csc2007.notetaker.ui.AppTheme
 import com.csc2007.notetaker.ui.BottomNavBar
 import com.csc2007.notetaker.ui.NoteTakerTheme
@@ -62,18 +65,38 @@ import com.csc2007.notetaker.ui.util.Screens
 fun PomodoroPage(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
+    userViewModel: UserViewModel = viewModel(),
     pomodoroTimerViewModel: PomodoroTimerViewModel = PomodoroTimerViewModel(),
     window: WindowSizeClass = rememberWindowSizeClass()
 ) {
 
-    val context = LocalContext.current
+    val pointsMultiplier = 2
 
-    var displayMinutes = pomodoroTimerViewModel.displayMinutes.collectAsState()
-    var displaySeconds = pomodoroTimerViewModel.displaySeconds.collectAsState()
+    val context = LocalContext.current
 
     var timerState = pomodoroTimerViewModel.timerState.collectAsState()
 
     var selectedTimer = rememberSaveable { mutableStateOf("Pomodoro") }
+
+    var displayMinutes = pomodoroTimerViewModel.displayMinutes.collectAsState()
+    var displaySeconds = pomodoroTimerViewModel.displaySeconds.collectAsState()
+
+    var timerPomodoroComplete = pomodoroTimerViewModel.timerPomodoroComplete.collectAsState()
+
+    var loggedInUser = userViewModel.loggedInUser.collectAsState()
+    var loggedInUserPoints = userViewModel.loggedInUserPoints.collectAsState()
+
+    LaunchedEffect(key1 = null) {
+        pomodoroTimerViewModel.resetTimer(selectedTimer.value)
+    }
+
+    if ((selectedTimer.value == "Pomodoro") and (timerPomodoroComplete.value)) {
+        val pomodoroMinutes = pomodoroTimerViewModel.pomodoroMinutes.collectAsState().value
+        val pomodoroSeconds = pomodoroTimerViewModel.pomodoroSeconds.collectAsState().value
+        val totalPoints = ((((pomodoroMinutes * 60) + pomodoroSeconds) / 15) * pointsMultiplier).toInt()
+        loggedInUser.value?.let { userViewModel.updateUserPoints(points = (totalPoints + loggedInUserPoints.value), email = it.email) }
+        pomodoroTimerViewModel.setTimerPomodoroComplete()
+    }
 
     if (AppTheme.orientation == Orientation.Portrait) {
         Column(
@@ -369,7 +392,9 @@ fun PomodoroPage(
                     }
 
                     Column(
-                        modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
