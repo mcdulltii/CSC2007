@@ -36,6 +36,7 @@ import com.csc2007.notetaker.ui.util.Screens
 import com.google.firebase.storage.FirebaseStorage
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.Edit
 import compose.icons.fontawesomeicons.solid.HandScissors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,6 +46,7 @@ fun NoteAppBarWithBackButton(
     title: String,
     onClickDelete: () -> Unit = {},
     onClickSummary: () -> Unit = {},
+    onClickEdit: () -> Unit = {},
     shareContent: String? = "",
     roomObserver: ChatRoomViewModel,
     selectedRoomID: MutableState<String>,
@@ -80,19 +82,33 @@ fun NoteAppBarWithBackButton(
                 onDismissRequest = { showMenu = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Delete") },
+                    text = { Text("Edit") },
                     leadingIcon = {
                         Icon(
                             modifier = Modifier.size(20.dp),
-                            imageVector = Icons.Filled.Delete,
-                            contentDescription = "Delete",
+                            imageVector = FontAwesomeIcons.Solid.Edit,
+                            contentDescription = "Edit",
                             tint = Color.Black
                         )
                     },
                     onClick = {
-                        // Handle "Delete" click
+                        onClickEdit()
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Summarize") },
+                    leadingIcon = {
+                        Icon(
+                            modifier = Modifier.size(20.dp),
+                            imageVector = FontAwesomeIcons.Solid.HandScissors,
+                            contentDescription = "Summarize",
+                            tint = Color.Black
+                        )
+                    },
+                    onClick = {
+                        // Handle "Summarize" click
                         showMenu = false
-                        showDialog = true // Show confirmation dialog
+                        showSummarize = true
                     }
                 )
                 DropdownMenuItem(
@@ -112,43 +128,43 @@ fun NoteAppBarWithBackButton(
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("Summarize") },
+                    text = { Text("Delete") },
                     leadingIcon = {
                         Icon(
                             modifier = Modifier.size(20.dp),
-                            imageVector = FontAwesomeIcons.Solid.HandScissors,
-                            contentDescription = "Summarize",
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = "Delete",
                             tint = Color.Black
                         )
                     },
                     onClick = {
-                        // Handle "Summarize" click
+                        // Handle "Delete" click
                         showMenu = false
-                        showSummarize = true
+                        showDialog = true // Show confirmation dialog
                     }
                 )
             }
         }
     )
 
-    if (showDialog) {
+    if (showSummarize) {
         AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text(text = "Confirm Delete") },
-            text = { Text(text = "Are you sure you want to delete this item?") },
+            onDismissRequest = { showSummarize = false },
+            title = { Text(text = "Confirm Summarize") },
+            text = { Text(text = "Are you sure you want to summarize this item?") },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        onClickDelete()
-                        showDialog = false
+                        onClickSummary()
+                        showSummarize = false
                     }
                 ) {
-                    Text("DELETE", color = Color.Red)
+                    Text("SUMMARIZE", color = Color.Black)
                 }
             },
             dismissButton = {
                 TextButton(
-                    onClick = { showDialog = false }
+                    onClick = { showSummarize = false }
                 ) {
                     Text("CANCEL")
                 }
@@ -198,24 +214,24 @@ fun NoteAppBarWithBackButton(
         )
     }
 
-    if (showSummarize) {
+    if (showDialog) {
         AlertDialog(
-            onDismissRequest = { showSummarize = false },
-            title = { Text(text = "Confirm Summarize") },
-            text = { Text(text = "Are you sure you want to summarize this item?") },
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Confirm Delete") },
+            text = { Text(text = "Are you sure you want to delete this item?") },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        onClickSummary()
-                        showSummarize = false
+                        onClickDelete()
+                        showDialog = false
                     }
                 ) {
-                    Text("SUMMARIZE", color = Color.Black)
+                    Text("DELETE", color = Color.Red)
                 }
             },
             dismissButton = {
                 TextButton(
-                    onClick = { showSummarize = false }
+                    onClick = { showDialog = false }
                 ) {
                     Text("CANCEL")
                 }

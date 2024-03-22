@@ -100,6 +100,8 @@ fun NoteItem(
     var showDialog by remember { mutableStateOf(false) } // State to control visibility of confirmation dialog
     var showShareModal by remember { mutableStateOf(false) } // State to control visibility of share modal
 
+
+
     Box(
         modifier = Modifier
             .padding(vertical = 5.dp)
@@ -150,21 +152,6 @@ fun NoteItem(
                         onDismissRequest = { showMenu = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Delete") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Filled.Delete,
-                                    contentDescription = "Delete",
-                                    tint = Color.Black
-                                )
-                            },
-                            onClick = {
-                                // Handle "Delete" click
-                                showMenu = false
-                                showDialog = true // Show confirmation dialog
-                            }
-                        )
-                        DropdownMenuItem(
                             text = { Text("Share") },
                             leadingIcon = {
                                 Icon(
@@ -179,6 +166,21 @@ fun NoteItem(
                                 showShareModal = true
                             }
                         )
+                        DropdownMenuItem(
+                            text = { Text("Delete") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Filled.Delete,
+                                    contentDescription = "Delete",
+                                    tint = Color.Black
+                                )
+                            },
+                            onClick = {
+                                // Handle "Delete" click
+                                showMenu = false
+                                showDialog = true // Show confirmation dialog
+                            }
+                        )
                     }
                 }
             }
@@ -188,31 +190,6 @@ fun NoteItem(
                 text = content,
                 modifier = Modifier.padding(10.dp)
             ) // Add padding if content text needs it
-        }
-
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                title = { Text(text = "Confirm Delete") },
-                text = { Text(text = "Are you sure you want to delete this item?") },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            showDialog = false
-                            onEvent(NoteEvent.DeleteNote(note = notes[index]))
-                        }
-                    ) {
-                        Text("DELETE", color = Color.Red)
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = { showDialog = false }
-                    ) {
-                        Text("CANCEL")
-                    }
-                }
-            )
         }
 
         if (showShareModal) {
@@ -242,6 +219,31 @@ fun NoteItem(
                 },
                 confirmButton = {
                     TextButton(onClick = { showShareModal = false }) {
+                        Text("CANCEL")
+                    }
+                }
+            )
+        }
+
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text(text = "Confirm Delete") },
+                text = { Text(text = "Are you sure you want to delete this item?") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showDialog = false
+                            onEvent(NoteEvent.DeleteNote(note = notes[index]))
+                        }
+                    ) {
+                        Text("DELETE", color = Color.Red)
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { showDialog = false }
+                    ) {
                         Text("CANCEL")
                     }
                 }
