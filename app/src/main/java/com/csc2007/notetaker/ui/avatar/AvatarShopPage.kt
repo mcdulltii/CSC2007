@@ -197,18 +197,23 @@ fun AvatarShopPage(
                             onClick = {
                                 if (loggedInUserPoints < itemPointsCost) {
                                     coroutineScope.launch {
-
+                                        failedSnackBarState = true
+                                        delay(2000)
+                                        failedSnackBarState = false
                                     }
                                 } else {
-                                    isPlaying = true
-                                    randomItem.value = selectRandomItem(items)
-                                    ownViewModel.insert(userId = id.value, itemId = randomItem.value!!.id)
-                                    coroutineScope.launch {
-                                        delay(1800)
-                                        itemSnackBarState = true
+                                    if (loggedInUser != null) {
+                                        userViewModel.updateUserPoints(points = (loggedInUserPoints - itemPointsCost), email = loggedInUser.email )
+                                        isPlaying = true
+                                        randomItem.value = selectRandomItem(items)
+                                        ownViewModel.insert(userId = id.value, itemId = randomItem.value!!.id)
+                                        coroutineScope.launch {
+                                            delay(1800)
+                                            itemSnackBarState = true
 
-                                        delay(3000)
-                                        itemSnackBarState = false
+                                            delay(3000)
+                                            itemSnackBarState = false
+                                        }
                                     }
                                 }
                         }) {

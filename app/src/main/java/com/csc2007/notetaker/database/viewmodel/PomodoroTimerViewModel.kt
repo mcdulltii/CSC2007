@@ -65,7 +65,6 @@ class PomodoroTimerViewModel() : ViewModel() {
 
             override fun onFinish() {
                 if (selectedTimer == "Pomodoro") {
-                    Log.d("TimerViewModel", "Finished!!!")
                     _timerPomodoroComplete.value = true
                 }
                 _timerState.value = false
