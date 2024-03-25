@@ -59,8 +59,7 @@ class MainActivity : ComponentActivity() {
             applicationContext, (application as NoteTakingApp).noteRepository
         )
 
-//        val firestore_db = Firebase.firestore // idk why it says Firestore_db can't resolve sometimes, extremely weird
-        val firestore_db = Firestore_db().get_firestore_db(this)
+        val firestoreDb = Firestore_db().get_firestore_db(this)
         val firestorage = Firestorage_db().get_firestorage_db(this)
 
         setContent {
@@ -71,7 +70,7 @@ class MainActivity : ComponentActivity() {
                 itemViewModelFactory = itemViewModelFactory,
                 ownViewModelFactory = ownViewModelFactory,
                 avatarViewModelFactory = avatarViewModelFactory,
-                firestore_db = firestore_db,
+                firestoreDb = firestoreDb,
                 firestorage = firestorage
             )
         }
@@ -89,13 +88,13 @@ fun MainApp(
     itemViewModelFactory: ItemViewModelFactory,
     ownViewModelFactory: OwnViewModelFactory,
     avatarViewModelFactory: AvatarViewModelFactory,
-    firestore_db: FirebaseFirestore,
+    firestoreDb: FirebaseFirestore,
     firestorage: FirebaseStorage
 ) {
     val navController = rememberNavController()
     val window = rememberWindowSizeClass()
 
-    NoteTakerTheme(window) {
+    NoteTakerTheme(window, darkTheme = false) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background,
@@ -108,7 +107,7 @@ fun MainApp(
                 itemViewModelFactory = itemViewModelFactory,
                 ownViewModelFactory = ownViewModelFactory,
                 avatarViewModelFactory = avatarViewModelFactory,
-                firestoreDb = firestore_db,
+                firestoreDb = firestoreDb,
                 firestorage = firestorage
             )
         }
