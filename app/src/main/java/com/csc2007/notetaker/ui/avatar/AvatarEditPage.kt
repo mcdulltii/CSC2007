@@ -22,9 +22,11 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -76,17 +78,16 @@ fun AvatarEditPage(
     val loggedInUser = userViewModel.loggedInUser.collectAsState().value
     val id = remember { mutableStateOf(if (loggedInUser !== null) loggedInUser.id else 0) }
 
+    val type = remember { mutableStateOf("Hat") }
+
     // Get current logged in user's items
-    ownViewModel.getOwnedItems(userId = id.value)
+    ownViewModel.getOwnedItems(userId = id.value, type = type.value)
     val ownedItems by ownViewModel.ownedItems.collectAsState()
 
     // Get current logged in user's avatar
     avatarViewModel.getUserAvatar(userId = id.value)
-    val avatarImageString = remember { mutableStateOf("") }
     avatarViewModel.getUserAvatarImage()
-    avatarImageString.value = avatarViewModel.avatarImageString.collectAsState().value
-
-    val selectedTab = remember { mutableStateOf("hat") }
+    val avatarImageString = avatarViewModel.avatarImageString.collectAsState()
 
     val context = LocalContext.current
     val imageLoader = ImageLoader.Builder(context)
@@ -121,6 +122,18 @@ fun AvatarEditPage(
                     .size(250.dp)
                     .align(Alignment.CenterHorizontally)
             )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Button(onClick = {
+                    avatarViewModel.unEquipItem(userId = id.value, itemType = type.value)
+                }) {
+                    Text(text = "Unequip")
+                }
+            }
+
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -168,7 +181,7 @@ fun AvatarEditPage(
                 }
             }
 
-            AvatarBottomNavBar()
+            AvatarBottomNavBar(type = type)
         }
     } else {
 
@@ -196,13 +209,20 @@ fun AvatarEditPage(
                             ),
                             contentDescription = "Avatar Image",
                             modifier = Modifier
-                                .size(250.dp)
+                                .size(150.dp)
                                 .align(Alignment.CenterHorizontally)
                         )
+
+                        Button(onClick = {
+                            avatarViewModel.unEquipItem(userId = id.value, itemType = type.value)
+                        }) {
+                            Text(text = "Unequip")
+                        }
                     }
 
                     Column(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
                             .clip(shape = RoundedCornerShape(30.dp, 30.dp, 0.dp, 0.dp))
                             .background(color = MaterialTheme.colorScheme.secondaryContainer)
                     ) {
@@ -246,7 +266,7 @@ fun AvatarEditPage(
             }
 
             Row(modifier = Modifier.weight(1f)) {
-                AvatarBottomNavBar()
+                AvatarBottomNavBar(type = type)
             }
         }
     }

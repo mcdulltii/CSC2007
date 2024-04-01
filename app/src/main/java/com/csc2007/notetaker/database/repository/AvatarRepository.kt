@@ -35,9 +35,57 @@ class AvatarRepository(private val avatarDao: AvatarDao) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun equipHat(hatId: Int) {
+    suspend fun getEquippedShirt(userId: Int): AvatarItem {
         return withContext(Dispatchers.IO) {
-            avatarDao.equipHat(hatId)
+            avatarDao.getEquippedShirt(userId)
+        }
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun equipHat(hatId: Int, userId: Int) {
+        return withContext(Dispatchers.IO) {
+            avatarDao.equipHat(hatId, userId)
+        }
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun equipAccessory(accessoryId: Int, userId: Int) {
+        return withContext(Dispatchers.IO) {
+            avatarDao.equipAccessory(accessoryId, userId)
+        }
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun equipShirt(shirtId: Int, userId: Int) {
+        return withContext(Dispatchers.IO) {
+            avatarDao.equipShirt(shirtId, userId)
+        }
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun unEquipHat(userId: Int) {
+        return withContext(Dispatchers.IO) {
+            avatarDao.unEquipHat(userId)
+        }
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun unEquipAccessory(userId: Int) {
+        return withContext(Dispatchers.IO) {
+            avatarDao.unEquipAccessory(userId)
+        }
+    }
+
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun unEquipShirt(userId: Int) {
+        return withContext(Dispatchers.IO) {
+            avatarDao.unEquipShirt(userId)
         }
     }
 }

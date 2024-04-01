@@ -70,7 +70,9 @@ abstract class NoteTakingDatabase : RoomDatabase() {
                 itemDao.insert(item)
                 item = Item(id = 1, name = "Santa Boy Hat", type = "Hat", rarity = "Epic", image = "santa_boy_hat")
                 itemDao.insert(item)
-                item = Item(id = 2, name = "Janus Wig", type = "Hat", rarity = "Legendary", image = "janus_wig")
+                item = Item(id = 2, name = "Doggy Mouth", type = "Accessory", rarity = "Legendary", image = "doggy_mouth")
+                itemDao.insert(item)
+                item = Item(id = 3, name = "White Shirt", type = "Shirt", rarity = "Epic", image = "white_shirt")
                 itemDao.insert(item)
             }
         }

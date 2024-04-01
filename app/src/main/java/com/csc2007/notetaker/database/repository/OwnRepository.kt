@@ -11,9 +11,9 @@ class OwnRepository(private val ownDao: OwnDao) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun getOwnedItems(userId: Int): List<OwnItem> {
+    suspend fun getOwnedItems(userId: Int, type: String): List<OwnItem> {
         return withContext(Dispatchers.IO) {
-            ownDao.getOwnedItems(userId = userId)
+            ownDao.getOwnedItems(userId = userId, type = type)
         }
     }
 

@@ -15,9 +15,9 @@ class OwnViewModel(private val repository: OwnRepository): ViewModel() {
     private val _ownedItems = MutableStateFlow<List<OwnItem>?>(null)
     var ownedItems: StateFlow<List<OwnItem>?> = _ownedItems
 
-    fun getOwnedItems(userId: Int) {
+    fun getOwnedItems(userId: Int, type: String) {
         viewModelScope.launch {
-            _ownedItems.value = repository.getOwnedItems(userId)
+            _ownedItems.value = repository.getOwnedItems(userId, type)
         }
     }
 

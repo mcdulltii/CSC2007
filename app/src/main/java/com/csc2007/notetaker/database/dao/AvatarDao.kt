@@ -17,6 +17,24 @@ interface AvatarDao {
     @Query("SELECT * FROM avatar_table, item_table WHERE avatar_table.userId = :userId AND avatar_table.accessory = item_table.id")
     suspend fun getEquippedAccessory(userId: Int): AvatarItem
 
-    @Query("UPDATE avatar_table SET hat = :hatId")
-    suspend fun equipHat(hatId: Int)
+    @Query("SELECT * FROM avatar_table, item_table WHERE avatar_table.userId = :userId AND avatar_table.shirt = item_table.id")
+    suspend fun getEquippedShirt(userId: Int): AvatarItem
+
+    @Query("UPDATE avatar_table SET hat = :hatId WHERE userId = :userId")
+    suspend fun equipHat(hatId: Int, userId: Int)
+
+    @Query("UPDATE avatar_table SET accessory = :accessoryId WHERE userId = :userId")
+    suspend fun equipAccessory(accessoryId: Int, userId: Int)
+
+    @Query("UPDATE avatar_table SET shirt = :shirtId WHERE userId = :userId")
+    suspend fun equipShirt(shirtId: Int, userId: Int)
+
+    @Query("UPDATE avatar_table SET hat = null WHERE userId = :userId")
+    suspend fun unEquipHat(userId: Int)
+
+    @Query("UPDATE avatar_table SET accessory = null WHERE userId = :userId")
+    suspend fun unEquipAccessory(userId: Int)
+
+    @Query("UPDATE avatar_table SET shirt = null WHERE userId = :userId")
+    suspend fun unEquipShirt(userId: Int)
 }
