@@ -12,12 +12,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.security.MessageDigest
 import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 
-@OptIn(ExperimentalStdlibApi::class)
 fun hashString(password: String, secret: ByteArray): ByteArray {
     val factory: SecretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512")
     val spec = PBEKeySpec(password.toCharArray(), secret, 1000, 256)
