@@ -45,12 +45,13 @@ class OwnViewModelTest {
         runBlocking {
             // Given
             val userId = 1
+            val type = "Hat"
             val mockItems =
                 listOf(OwnItem(userId = userId, 1, "Item 1"), OwnItem(userId = userId, 2, "Item 2"))
-            `when`(mockRepository.getOwnedItems(userId)).thenReturn(mockItems)
+            `when`(mockRepository.getOwnedItems(userId, type)).thenReturn(mockItems)
 
             // When
-            viewModel.getOwnedItems(userId)
+            viewModel.getOwnedItems(userId, type)
 
             // Then
             viewModel.ownedItems.value?.let {
