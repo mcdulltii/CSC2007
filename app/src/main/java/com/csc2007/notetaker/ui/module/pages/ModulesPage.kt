@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.csc2007.notetaker.database.viewmodel.module.ModuleEvent
 import com.csc2007.notetaker.database.viewmodel.module.ModuleState
 import com.csc2007.notetaker.ui.BottomNavBar
@@ -28,7 +29,7 @@ import com.csc2007.notetaker.ui.util.Screens
 
 @Composable
 fun ModulesPage(
-    navController: NavHostController,
+    navController: NavHostController = rememberNavController(),
     state: ModuleState,
     onEvent: (ModuleEvent) -> Unit
 ) {

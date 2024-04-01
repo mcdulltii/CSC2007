@@ -70,6 +70,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
 
     // Room components
     implementation("androidx.room:room-ktx:2.6.1")
@@ -77,10 +78,12 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore:24.10.3")
     implementation("com.google.firebase:firebase-storage:20.3.0")
     implementation("com.google.firebase:firebase-firestore-ktx:24.10.3")
+    implementation("androidx.test:monitor:1.6.1")
+    implementation("androidx.test.ext:junit-ktx:1.1.5")
     ksp("androidx.room:room-compiler:2.6.1")
     androidTestImplementation("androidx.room:room-testing:2.6.1")
 
-    val compose_version = "1.6.1"
+    val compose_version = "1.6.4"
     implementation("androidx.compose.ui:ui:${compose_version}")
     implementation("androidx.compose.ui:ui-tooling-preview:${compose_version}")
     implementation("androidx.compose.material:material-icons-extended")
@@ -95,9 +98,13 @@ dependencies {
     implementation("androidx.camera:camera-extensions:${camerax_version}")
 
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.8.22")
+    testImplementation("org.mockito:mockito-core:5.7.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${compose_version}")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:${compose_version}")
     debugImplementation("androidx.compose.ui:ui-tooling:${compose_version}")
 
     // OCR

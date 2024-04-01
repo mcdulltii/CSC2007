@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,12 +38,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.csc2007.notetaker.R
 import com.csc2007.notetaker.database.viewmodel.module.ModuleEvent
@@ -55,7 +54,7 @@ import com.csc2007.notetaker.database.viewmodel.module.ModuleState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddModulePage(
-    navController: NavController,
+    navController: NavController = rememberNavController(),
     onEvent: (ModuleEvent) -> Unit,
     state: ModuleState
 ) {

@@ -1,12 +1,10 @@
 package com.csc2007.notetaker.database.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.csc2007.notetaker.database.AvatarItem
 import com.csc2007.notetaker.database.repository.AvatarRepository
-import com.csc2007.notetaker.database.repository.OwnRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -36,7 +34,6 @@ class AvatarViewModel(private val repository: AvatarRepository): ViewModel() {
                 _equippedAccessory.value = repository.getEquippedAccessory(avatar.userId)
                 _avatarImageString.value = _avatarImageString.value + "_" + _equippedAccessory.value!!.image
             }
-            Log.d("AvatarViewModel", "Executed!")
         }
     }
 
