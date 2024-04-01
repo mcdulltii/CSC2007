@@ -10,8 +10,8 @@ import com.csc2007.notetaker.database.OwnItem
 @Dao
 interface OwnDao {
 
-    @Query("SELECT * FROM own_table, item_table WHERE own_table.itemId = item_table.id AND own_table.userId = :userId")
-    suspend fun getOwnedItems(userId: Int): List<OwnItem>
+    @Query("SELECT * FROM own_table, item_table WHERE own_table.itemId = item_table.id AND own_table.userId = :userId AND item_table.type = :type")
+    suspend fun getOwnedItems(userId: Int, type: String): List<OwnItem>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(own: Own)

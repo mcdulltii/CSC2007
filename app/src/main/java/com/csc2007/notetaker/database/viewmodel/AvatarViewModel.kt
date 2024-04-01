@@ -19,6 +19,9 @@ class AvatarViewModel(private val repository: AvatarRepository): ViewModel() {
     private val _equippedAccessory = MutableStateFlow<AvatarItem?>(null)
     var equippedAccessory: StateFlow<AvatarItem?> = _equippedAccessory
 
+    private val _equippedShirt = MutableStateFlow<AvatarItem?>(null)
+    var equippedShirt: StateFlow<AvatarItem?> = _equippedShirt
+
     private val _avatarImageString = MutableStateFlow<String>("base_avatar")
     var avatarImageString: StateFlow<String> = _avatarImageString
 
@@ -29,12 +32,14 @@ class AvatarViewModel(private val repository: AvatarRepository): ViewModel() {
 
             if (avatar.hat !== null) {
                 _equippedHat.value = repository.getEquippedHat(avatar.userId)
-//                _avatarImageString.value = _avatarImageString.value + "_" + _equippedHat.value!!.image
             }
 
             if (avatar.accessory !== null) {
                 _equippedAccessory.value = repository.getEquippedAccessory(avatar.userId)
-                _avatarImageString.value = _avatarImageString.value + "_" + _equippedAccessory.value!!.image
+            }
+
+            if (avatar.shirt !== null) {
+                _equippedShirt.value = repository.getEquippedShirt(avatar.userId)
             }
             Log.d("AvatarViewModel", "Executed!")
         }
@@ -52,6 +57,10 @@ class AvatarViewModel(private val repository: AvatarRepository): ViewModel() {
             if (_equippedAccessory.value != null) {
                 _avatarImageString.value = _avatarImageString.value + "_" + _equippedAccessory.value!!.image
             }
+
+            if (_equippedShirt.value != null) {
+                _avatarImageString.value = _avatarImageString.value + "_" + _equippedShirt.value!!.image
+            }
         }
     }
 
@@ -59,7 +68,19 @@ class AvatarViewModel(private val repository: AvatarRepository): ViewModel() {
         viewModelScope.launch {
             if (itemType == "Hat") {
                 if (itemId != null) {
-                    repository.equipHat(itemId)
+                    repository.equipHat(itemId, userId)
+                }
+            }
+
+            if (itemType == "Accessory") {
+                if (itemId != null) {
+                    repository.equipAccessory(itemId, userId)
+                }
+            }
+
+            if (itemType == "Shirt") {
+                if (itemId != null) {
+                    repository.equipShirt(itemId, userId)
                 }
             }
             val avatar = repository.getUserAvatar(userId)
@@ -71,7 +92,10 @@ class AvatarViewModel(private val repository: AvatarRepository): ViewModel() {
 
             if (avatar.accessory !== null) {
                 _equippedAccessory.value = repository.getEquippedAccessory(avatar.userId)
-                _avatarImageString.value = _avatarImageString.value + "_" + _equippedAccessory.value!!.image
+            }
+
+            if (avatar.shirt !== null) {
+                _equippedShirt.value = repository.getEquippedShirt(avatar.userId)
             }
 
             _avatarImageString.value = "base_avatar"
@@ -82,6 +106,51 @@ class AvatarViewModel(private val repository: AvatarRepository): ViewModel() {
 
             if (_equippedAccessory.value != null) {
                 _avatarImageString.value = _avatarImageString.value + "_" + _equippedAccessory.value!!.image
+            }
+
+            if (_equippedShirt.value != null) {
+                _avatarImageString.value = _avatarImageString.value + "_" + _equippedShirt.value!!.image
+            }
+
+            Log.d("AvatarViewModel", "${_equippedHat.value}")
+            Log.d("AvatarViewModel", "${_equippedShirt.value}")
+            Log.d("AvatarViewModel", "${_avatarImageString.value}")
+        }
+    }
+
+    fun unEquipItem(userId: Int, itemType: String?) {
+        viewModelScope.launch {
+            if (itemType == "Hat") {
+                repository.unEquipHat(userId)
+            }
+
+            if (itemType == "Accessory") {
+                repository.unEquipAccessory(userId)
+            }
+
+            if (itemType == "Shirt") {
+                repository.unEquipShirt(userId)
+            }
+
+            val avatar = repository.getUserAvatar(userId)
+
+            _equippedHat.value = repository.getEquippedHat(avatar.userId)
+            _equippedAccessory.value = repository.getEquippedAccessory(avatar.userId)
+            _equippedShirt.value = repository.getEquippedShirt(avatar.userId)
+
+
+            _avatarImageString.value = "base_avatar"
+
+            if (_equippedHat.value != null) {
+                _avatarImageString.value = _avatarImageString.value + "_" + _equippedHat.value!!.image
+            }
+
+            if (_equippedAccessory.value != null) {
+                _avatarImageString.value = _avatarImageString.value + "_" + _equippedAccessory.value!!.image
+            }
+
+            if (_equippedShirt.value != null) {
+                _avatarImageString.value = _avatarImageString.value + "_" + _equippedShirt.value!!.image
             }
         }
     }

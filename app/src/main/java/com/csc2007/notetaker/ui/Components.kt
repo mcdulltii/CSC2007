@@ -137,10 +137,12 @@ fun TopNavBarText(navController: NavController = rememberNavController(), title:
 }
 
 @Composable
-fun AvatarBottomNavBar() {
+fun AvatarBottomNavBar(type: MutableState<String>) {
     BottomAppBar {
         NavigationBarItem(
-            onClick = { /*TODO*/ },
+            onClick = {
+                type.value = "Hat"
+            },
             label = {
                     Text(text = "Hat")
             },
@@ -149,7 +151,9 @@ fun AvatarBottomNavBar() {
         )
 
         NavigationBarItem(
-            onClick = { /*TODO*/ },
+            onClick = {
+                type.value = "Accessory"
+            },
             label = {
                 Text(text = "Accessory")
             },
@@ -158,7 +162,9 @@ fun AvatarBottomNavBar() {
         )
 
         NavigationBarItem(
-            onClick = { /*TODO*/ },
+            onClick = {
+                type.value = "Shirt"
+            },
             label = {
                 Text(text = "Shirt")
             },
@@ -167,7 +173,9 @@ fun AvatarBottomNavBar() {
         )
 
         NavigationBarItem(
-            onClick = { /*TODO*/ },
+            onClick = {
+                type.value = "Pants"
+            },
             label = {
                 Text(text = "Pants")
             },
@@ -176,7 +184,9 @@ fun AvatarBottomNavBar() {
         )
 
         NavigationBarItem(
-            onClick = { /*TODO*/ },
+            onClick = {
+                type.value = "Shoes"
+            },
             label = {
                 Text(text = "Shoes")
             },

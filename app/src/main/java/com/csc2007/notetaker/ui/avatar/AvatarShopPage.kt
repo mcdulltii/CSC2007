@@ -278,7 +278,7 @@ fun ShowFailedSnackBar() {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Insufficient Points!")
+            Text(text = "Insufficient Coins!")
         }
     }
 }
