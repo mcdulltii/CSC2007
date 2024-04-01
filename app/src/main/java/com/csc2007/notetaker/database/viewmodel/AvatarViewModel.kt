@@ -108,10 +108,6 @@ class AvatarViewModel(private val repository: AvatarRepository): ViewModel() {
             if (_equippedShirt.value != null) {
                 _avatarImageString.value = _avatarImageString.value + "_" + _equippedShirt.value!!.image
             }
-
-            Log.d("AvatarViewModel", "${_equippedHat.value}")
-            Log.d("AvatarViewModel", "${_equippedShirt.value}")
-            Log.d("AvatarViewModel", "${_avatarImageString.value}")
         }
     }
 
