@@ -111,7 +111,7 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
 
         }
 
-        Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.padding(4.dp))
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(4.dp))
         {
 
             Spacer(Modifier.padding(8.dp))
@@ -124,7 +124,7 @@ fun PrivateChatPage(navController: NavHostController, viewModel: UserViewModel, 
                 contentDescription = "Edit Room",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
-                    .size(30.dp)
+                    .size(40.dp)
                     .padding(4.dp)
                     .clickable { navController.navigate(Screens.EditChatRoomScreen.route) },
             )
