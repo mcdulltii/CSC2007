@@ -19,16 +19,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,8 +46,6 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import coil.size.Size
-import com.csc2007.notetaker.R
-import com.csc2007.notetaker.database.AvatarItem
 import com.csc2007.notetaker.database.viewmodel.AvatarViewModel
 import com.csc2007.notetaker.database.viewmodel.ItemViewModel
 import com.csc2007.notetaker.database.viewmodel.OwnViewModel
@@ -139,7 +134,7 @@ fun AvatarEditPage(
 
             Column(
                 modifier = Modifier
-                    .height(400.dp)
+                    .height(300.dp)
                     .fillMaxWidth()
                     .clip(shape = RoundedCornerShape(30.dp, 30.dp, 0.dp, 0.dp))
                     .background(color = MaterialTheme.colorScheme.secondaryContainer)
