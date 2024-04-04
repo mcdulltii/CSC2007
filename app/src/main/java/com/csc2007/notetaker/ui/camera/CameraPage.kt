@@ -84,19 +84,22 @@ fun CameraPage(
     ) {
         if (imageUri != EMPTY_IMAGE_URI) {
             if (isPdf(contentResolver, imageUri)) {
-                val document = PdfDocumentLoader.openDocument(context, imageUri)
-                val pageIndexes: Set<Int> = (0 until document.pageCount).toSet()
-                val allPagesText = StringBuilder()
+                try {
+                    val document = PdfDocumentLoader.openDocument(context, imageUri)
+                    val pageIndexes: Set<Int> = (0 until document.pageCount).toSet()
+                    val allPagesText = StringBuilder()
 
-                // Iterate through all pages of the document
-                for (pageIndex in pageIndexes) {
-                    // Extract text from the current page
-                    val pageText = document.getPageText(pageIndex)
-                    allPagesText.append(pageText)
-                    allPagesText.append("\n\n")
+                    // Iterate through all pages of the document
+                    for (pageIndex in pageIndexes) {
+                        // Extract text from the current page
+                        val pageText = document.getPageText(pageIndex)
+                        allPagesText.append(pageText)
+                        allPagesText.append("\n\n")
+                    }
+                    recognizedText.value = allPagesText.toString()
+                } catch (e: Exception) {
+                    recognizedText.value = "Error: $e"
                 }
-
-                recognizedText.value = allPagesText.toString()
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -414,16 +417,20 @@ val EMPTY_IMAGE_URI: Uri = Uri.parse("file://dev/null")
 private fun ocrImage(context: Context, uri: Uri): MutableState<String?> {
     val recognizedText = remember { mutableStateOf<String?>(null) }
 
-    val image = InputImage.fromFilePath(context, uri)
-    val recognizer: TextRecognizer = TextRecognition.getClient()
-    recognizer.process(image)
-        .addOnSuccessListener { texts ->
-            recognizedText.value = processTextRecognitionResult(texts)
-        }
-        .addOnFailureListener { e ->
-            e.printStackTrace()
-            recognizedText.value = "Text recognition failed"
-        }
+    try {
+        val image = InputImage.fromFilePath(context, uri)
+        val recognizer: TextRecognizer = TextRecognition.getClient()
+        recognizer.process(image)
+            .addOnSuccessListener { texts ->
+                recognizedText.value = processTextRecognitionResult(texts)
+            }
+            .addOnFailureListener { e ->
+                e.printStackTrace()
+                recognizedText.value = "Text recognition failed"
+            }
+    } catch (e: Exception) {
+        recognizedText.value = "Error: $e"
+    }
 
     return recognizedText
 }
