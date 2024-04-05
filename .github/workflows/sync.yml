@@ -43,7 +43,14 @@ jobs:
 
       - name: Check for changes
         run: |
-          git diff --exit-code || (echo "No changes to sync"; exit 0)
+          git diff --name-only --exit-code > changed_files.txt
+          if [ -s changed_files.txt ]; then
+            echo "Changes detected, proceeding with sync."
+            rm changed_files.txt -f
+          else
+            echo "No changes to sync."
+            exit 0
+          fi
 
       - name: Push to destination repository
         run: |
