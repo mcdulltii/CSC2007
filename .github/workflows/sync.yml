@@ -36,6 +36,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: test-feature
     if: needs.test-feature.outputs.test-passed == 'true'
+    outputs:
+      changes: ${{ steps.check-changes.outputs.changes }}
 
     steps:
       - name: Checkout source repository
@@ -43,11 +45,10 @@ jobs:
 
       - name: Check for changes
         run: |
-          git diff --exit-code || echo "no_changes=true" >> $GITHUB_ENV
-          echo "no_changes=$no_changes"
+          git diff --exit-code || echo "::set-output name=changes::true"
 
       - name: Push to destination repository
-        if: steps.check-changes.outputs.no_changes != 'true'
+        if: steps.check-changes.outputs.changes != 'true'
         run: |
           git config --global user.email "mcdulltii@gmail.com"
           git config --global user.name "mcdulltii"
