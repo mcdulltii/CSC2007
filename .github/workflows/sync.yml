@@ -26,7 +26,7 @@ jobs:
       - name: Run Tests with Gradle
         id: test
         run: |
-          ./gradlew test
+          ./gradlew test || exit 1
           echo "::set-output name=test-passed::true"
       - name: Test Result
         if: steps.test.outputs.test-passed == 'true'
@@ -40,6 +40,10 @@ jobs:
     steps:
       - name: Checkout source repository
         uses: actions/checkout@v2
+
+      - name: Check for changes
+        run: |
+          git diff --exit-code || (echo "No changes to sync"; exit 0)
 
       - name: Push to destination repository
         run: |
