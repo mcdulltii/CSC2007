@@ -32,23 +32,44 @@ jobs:
         if: steps.test.outputs.test-passed == 'true'
         run: echo "Unit tests passed!"
 
-  sync:
+  check-differences:
     runs-on: ubuntu-latest
     needs: test-feature
-    if: needs.test-feature.outputs.test-passed == 'true'
-    outputs:
-      changes: ${{ steps.check-changes.outputs.changes }}
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.event.repository.full_name }}
+
+      - name: Checkout destination repository
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.ORG_NAME }}/inf2007-team25-2024
+          ref: main
+
+      - name: Check for differences
+        id: check-differences
+        run: |
+          git diff --name-only ${{ github.sha }} HEAD > files_changed.txt || echo "No files changed"
+          if [ -s files_changed.txt ]; then
+            echo "There are new files, trigger sync job"
+            echo "::set-output name=files-changed::true"
+          else
+            echo "No new files, skipping sync job"
+            echo "::set-output name=files-changed::false"
+          fi
+
+  sync:
+    runs-on: ubuntu-latest
+    needs: [test-feature, check-differences]
+    if: needs.test-feature.outputs.test-passed == 'true' && needs.check-differences.outputs.files-changed == 'true'
 
     steps:
       - name: Checkout source repository
         uses: actions/checkout@v2
 
-      - name: Check for changes
-        run: |
-          git diff --exit-code || echo "::set-output name=changes::true"
-
       - name: Push to destination repository
-        if: steps.check-changes.outputs.changes != 'true'
         run: |
           git config --global user.email "mcdulltii@gmail.com"
           git config --global user.name "mcdulltii"
