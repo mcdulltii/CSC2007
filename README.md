@@ -9,7 +9,7 @@ SIT CSC2007 (Mobile Application Development) Assignment
 5. [Program Usage](#program-usage)
 6. [Demonstration Video](#denmostration-video)
 
-### CSC3102 Data Analytics Team 2
+### CSC2007 Mobile Application Development Team 25
 ---
 - Poh Kuang Yi (*2201354*) 
 - Zaw Wana (*2201190*)
@@ -92,8 +92,6 @@ The following lists the third party libraries that were incorporated within our 
 
 ### Program Usage
 ---
-The final fine-tuned UWB models are available in the `/export` folder. However, you can train or test the model by following the instructions below. Do note that data processing and model training/testing may take a while to run due to the complexities and nature of the dataset.
-
 1. Run the mobile application 
 
 2. Enter the following SQL commands to insert the gachapon items into the Room Database:
