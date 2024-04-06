@@ -49,8 +49,7 @@ jobs:
           git clone https://${{ secrets.PAT }}@github.com/${{ env.ORG_NAME }}/${{ env.ORIGINAL_REPO_NAME }}.git
           cd inf2007-team25-2024
           cp ../${{ env.ORIGINAL_REPO_NAME }}/* . -rf
-          git diff --name-only ${{ github.sha }} HEAD > files_changed.txt || echo "No files changed"
-          if [ -s files_changed.txt ]; then
+          if [[ $(git status --porcelain) ]]; then
             echo "There are new files, trigger sync job"
             git add .
             git commit -m "Sync from source"
