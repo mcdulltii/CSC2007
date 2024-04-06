@@ -186,6 +186,6 @@ The following lists the third party libraries that were incorporated within our 
 
 3. Restart/Rebuild the mobile application
 
-### Demonstration Video
+## Demonstration Video
 
-[Link To Video](https://www.youtube.com/watch?v=1enO8tr-CoM&feature=youtu.be)
+[![Link To Video](https://img.youtube.com/vi/1enO8tr-CoM/maxresdefault.jpg)](https://youtu.be/1enO8tr-CoM)
