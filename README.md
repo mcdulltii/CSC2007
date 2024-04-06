@@ -1,65 +1,147 @@
-# CSC2007
-SIT CSC2007 (Mobile Application Development) Assignment
+# INF2007
 
-### Table of Contents
-1. [Team](#inf2007-mobile-application-development-team-25)
-2. [Overview](#overview)
-3. [Functionalities](#functionalities)
-4. [Repository Structure](#repository-structure)
-5. [Program Usage](#program-usage)
-6. [Demonstration Video](#denmostration-video)
+SIT INF2007/CSC2007 (Mobile Application Development) Assignment
 
-### CSC2007 Mobile Application Development Team 25
----
-- Poh Kuang Yi (*2201354*) 
+## Table of Contents
+
+- [Team](#inf2007csc2007-mobile-application-development-team-25)
+- [Overview](#overview)
+- [Functionalities](#functionalities)
+- [Repository Structure](#repository-structure)
+- [Program Usage](#program-usage)
+- [Demonstration Video](#demonstration-video)
+
+## INF2007/CSC2007 Mobile Application Development Team 25
+
+- Poh Kuang Yi (*2201354*)
 - Zaw Wana (*2201190*)
-- Aaron Ti Yu Ren (*1902943*) 
+- Aaron Ti Yu Ren (*1902943*)
 - Tan Yu Jie (*2201782*)
 - Ang Hui Lun (*2201377*)
 
-### Overview
----
+## Overview
+
 The goal of his project to to revolutionize the way students are able to take notes through their mobile application. Allowing users to quickly comprehend complex information through our AI summarizaion tool and take notes via Audio-to-Text, files, and images. Students are also able to exchange information with one another via a chatting feature and interact with their own personalized avatar which they can obtain items via the Gachapon mechanism. 
 
-### Functionalities
+## Functionalities
+
 The following lists the functionalities that was implemented within the mobile application:
+
 1. Login, Sign Up
+
     - Ability to sign up and login
+
 2. Modules, Notes and Individual Notes Pages
+
     - Creation of modules which are able to store individual notes for better organization of notes
+
 3. One Time Password (OTP) 2 Factor Authentication
+
     - Security feature to prevent bruteforcing of password
+
 4. Optical Charactare Recognition
+
     - Allows users to upload notes via images, and files into our application and converts them into text
+
 5. Speech to Text
+
     - Captures the audio from the microphone and converts them to text
+
 6. Chatting/Group Chat
+
     - Facilitates the sharing of information with other students and able to upload files/notes
+
 7. Pomodoro Timer
+
     - Promotes good study habits with the Pomodoro Timer
+
 8. Avatar
+
     - Incentivizes and motivates students to study through the ability to customize their personalized avatar
+
 9. Settings
+
     - Updating of personal information, timers for the Pomodoro Timer, and notifications
 
-### Repository Structure
----
+## Repository Structure
+
 ```
-./app/src/main/java/com/csc2007/notetaker/database/repository (contains the list of repositories to interact with the data)
-
-./app/src/main/java/com/csc2007/notetaker/database/viewmodel (contains the list of viewmodels)
-
-./app/src/main/java/com/csc2007/notetaker/database/dao (contains the list of daos)
-
-./app/src/main/java/com/csc2007/notetaker/ui (used to store individual UI pages)
-
-./app/src/main/java/com/csc2007/notetaker/Components.kt (contains the globally used composables)
-
-README.md (this file)
+app
+\---src
+    +---androidTest
+    |   \---java
+    |       \---com
+    |           \---csc2007
+    |               \---notetaker
+    |                   \---ui
+    +---main
+    |   +---java
+    |   |   \---com
+    |   |       \---csc2007
+    |   |           \---notetaker
+    |   |               +---database
+    |   |               |   +---dao
+    |   |               |   +---repository
+    |   |               |   \---viewmodel
+    |   |               |       +---chat_room
+    |   |               |       +---module
+    |   |               |       \---note
+    |   |               \---ui
+    |   |                   +---avatar
+    |   |                   +---camera
+    |   |                   +---chat
+    |   |                   +---gallery
+    |   |                   +---login
+    |   |                   +---microphone
+    |   |                   +---module
+    |   |                   |   +---components
+    |   |                   |   \---pages
+    |   |                   +---note
+    |   |                   |   +---components
+    |   |                   |   +---pages
+    |   |                   |   \---util
+    |   |                   +---pomodoro
+    |   |                   +---settings
+    |   |                   +---signup
+    |   |                   \---util
+    |   \---res
+    |       +---drawable
+    |       +---drawable-nodpi
+    |       +---font
+    |       +---mipmap-anydpi-v26
+    |       +---mipmap-hdpi
+    |       +---mipmap-mdpi
+    |       +---mipmap-xhdpi
+    |       +---mipmap-xxhdpi
+    |       +---mipmap-xxxhdpi
+    |       +---raw
+    |       +---values
+    |       +---values-land
+    |       +---values-night
+    |       \---xml
+    \---test
+        \---java
+            \---com
+                \---csc2007
+                    \---notetaker
+                        \---database
 ```
 
-### Third Party Libraries
-The following lists the third party libraries that were incorporated within our project which can be found in the `AndroidManifest.xml` file.
+> `./app/src/main/java/com/csc2007/notetaker/database/repository` contains the list of repositories to interact with the data
+>
+> `./app/src/main/java/com/csc2007/notetaker/database/viewmodel` contains the list of viewmodels
+>
+> `./app/src/main/java/com/csc2007/notetaker/database/dao` contains the list of daos
+>
+> `./app/src/main/java/com/csc2007/notetaker/ui` used to store individual UI pages
+>
+> `./app/src/main/java/com/csc2007/notetaker/Components.kt` contains the globally used composables
+> 
+> `./README.md` this file
+
+## Third Party Libraries
+
+The following lists the third party libraries that were incorporated within our project which can be found in the [build.gradle.kts](./app/build.gradle.kts) file.
 - `implementation("androidx.room:room-ktx:2.6.1")`
 - `implementation("androidx.datastore:datastore-core:1.0.0")`
 - `implementation("com.google.firebase:firebase-firestore:24.10.3")`
@@ -89,20 +171,21 @@ The following lists the third party libraries that were incorporated within our 
 - `implementation("com.pspdfkit:pspdfkit-ocr:$pspdfkit_version")`
 - `api("com.pspdfkit:pspdfkit-ocr-english:$pspdfkit_version")`
 
+## Program Usage
 
-### Program Usage
----
 1. Run the mobile application 
 
 2. Enter the following SQL commands to insert the gachapon items into the Room Database:
+
     ```SQL
     INSERT INTO item_table VALUES (0, "Penguin Hat", "Hat", "Rare", "hat_1")
     INSERT INTO item_table VALUES (1, "Santa Boy Hat", "Hat", "Epic", "santa_boy_hat")
     INSERT INTO item_table VALUES (2, "Doggy Mouth", "Accessory", "Legendary", "doggy_mouth")
     INSERT INTO item_table VALUES (3, "White Shirt", "Shirt", "Epic", "white_shirt")
     ```
+
 3. Restart/Rebuild the mobile application
 
-### Denmostration Video
+### Demonstration Video
 
 [Link To Video](https://www.youtube.com/watch?v=1enO8tr-CoM&feature=youtu.be)
