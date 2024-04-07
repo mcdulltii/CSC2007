@@ -21,7 +21,7 @@ SIT INF2007/CSC2007 (Mobile Application Development) Assignment
 
 ## Overview
 
-The goal of his project to to revolutionize the way students are able to take notes through their mobile application. Allowing users to quickly comprehend complex information through our AI summarizaion tool and take notes via Audio-to-Text, files, and images. Students are also able to exchange information with one another via a chatting feature and interact with their own personalized avatar which they can obtain items via the Gachapon mechanism. 
+The goal of this project is to revolutionize the way students are able to take notes through their mobile application. Allowing users to quickly comprehend complex information through our AI summarization tool and take notes via Audio-to-Text, files, and images. Students are also able to exchange information with one another via a chatting feature and interact with their own personalized avatar which they can obtain items via the Gachapon mechanism. 
 
 ## Functionalities
 
@@ -39,7 +39,7 @@ The following lists the functionalities that was implemented within the mobile a
 
     - Security feature to prevent bruteforcing of password
 
-4. Optical Charactare Recognition
+4. Optical Character Recognition
 
     - Allows users to upload notes via images, and files into our application and converts them into text
 
